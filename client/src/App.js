@@ -1,10 +1,10 @@
 'use strict';
-import LoginButton from './Page/Button';
+import ModalButton from './Components/ModalButton';
 
 function App() {
   return (
     <div>
-      <LoginButton />
+      <ModalButton />
     </div>
   );
 }
