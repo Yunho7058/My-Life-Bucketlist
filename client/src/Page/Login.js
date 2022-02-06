@@ -42,23 +42,22 @@ const ClossBtn = styled.span`
 
 function Login(props) {
   const [loginInfo, setLoginInfo] = useState({
-    user_id: '',
-    user_password: '',
+    username: '',
+    password: '',
   });
 
   const handleLoginBtnClick = () => {
-    let url = '';
-    if (!(loginInfo.user_id, loginInfo.user_password)) {
+    if (!(loginInfo.username, loginInfo.password)) {
       return setErrMsg('아이디와 비밀번호를 입력 해주세요.');
     } else {
       axios
-        .post(url, loginInfo, {
+        .post('http://127.0.0.1:8000/api/token/', loginInfo, {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
         })
         .then((res) => {
           // 1. 로컬스토리지에 토큰 저장(왜 토큰을 저장할까???)
-          localStorage.setItem('accToken', res.data.accessToken);
+          localStorage.setItem('accToken', res.data.access);
           // 2. 모달 창 꺼지고
           props.setIsSignupModal(false);
           // 3. 로그인 상태로 변경
@@ -90,13 +89,13 @@ function Login(props) {
         <div>
           <LoginInput
             type="id"
-            onChange={handleInputValue('user_id')}
+            onChange={handleInputValue('username')}
             onKeyPress={enterKey}
             placeholder="아디를 입력하세요."
           ></LoginInput>
           <LoginInput
             type="password"
-            onChange={handleInputValue('user_password')}
+            onChange={handleInputValue('password')}
             onKeyPress={enterKey}
             placeholder="비밀번호를 입력하세요."
           ></LoginInput>

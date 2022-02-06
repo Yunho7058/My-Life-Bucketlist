@@ -56,11 +56,11 @@ const SuccessSignupView = styled.div`
 
 function Signup(props) {
   const [signupInfo, setSignupInfo] = useState({
-    user_id: '',
-    user_password: '',
-    user_passwordConfirm: '',
-    user_email: '',
-    user_name: '',
+    username: '',
+    password: '',
+    passwordConfirm: '',
+    email: '',
+    name: '',
   });
   const [msg, setMsg] = useState({
     msgId: '',
@@ -96,7 +96,7 @@ function Signup(props) {
 
   const inputValuePassword = (key) => (e) => {
     const { value } = e.target;
-    if (signupInfo.user_passwordConfirm.length === 0 && value.length === 0) {
+    if (signupInfo.passwordConfirm.length === 0 && value.length === 0) {
       setMsg({ ...msg, msgPasswordC: '' });
     } else if (value.length < 8) {
       setMsg({ ...msg, msgPassword: '8글자 이상 입력해 주세요.' });
@@ -109,19 +109,18 @@ function Signup(props) {
 
   const inputValuePasswordC = (key) => (e) => {
     const { value } = e.target;
-    if (signupInfo.user_password.length === 0 && value.length === 0) {
+    if (signupInfo.password.length === 0 && value.length === 0) {
       setMsg({ ...msg, msgPasswordC: '' });
       setCheck({ ...check, checkPassword: false });
     } else if (
-      (signupInfo.user_password !== value &&
-        signupInfo.user_passwordConfirm !== value) ||
+      (signupInfo.password !== value && signupInfo.passwordConfirm !== value) ||
       value.length === 0
     ) {
       setMsg({ ...msg, msgPasswordC: '비밀번호를 확인해주세요.' });
       setCheck({ ...check, checkPassword: false });
     } else if (
-      signupInfo.user_password === value ||
-      signupInfo.user_passwordConfirm === value
+      signupInfo.password === value ||
+      signupInfo.passwordConfirm === value
     ) {
       setMsg({ ...msg, msgPasswordC: '비밀번호가 일치합니다.' });
       setCheck({ ...check, checkPassword: true });
@@ -201,37 +200,37 @@ function Signup(props) {
           <ClossBtn onClick={props.signupClick}>&times;</ClossBtn>
           <SignupInput
             type="id"
-            value={signupInfo.user_id}
+            value={signupInfo.username}
             placeholder="아이디를 입력해주세요."
-            onChange={inputValueId('user_id')}
+            onChange={inputValueId('username')}
           />
           <div>{msg.msgId}</div>
           <SignupInput
             type="password"
-            value={signupInfo.user_password}
+            value={signupInfo.password}
             placeholder="비밀번호를 입력해주세요."
-            onChange={inputValuePassword('user_password')}
+            onChange={inputValuePassword('password')}
           />
           <div>{msg.msgPassword}</div>
           <SignupInput
             type="password"
-            value={signupInfo.user_passwordConfirm}
+            value={signupInfo.passwordConfirm}
             placeholder="비밀번호를 재입력해주세요."
-            onChange={inputValuePasswordC('user_passwordConfirm')}
+            onChange={inputValuePasswordC('passwordConfirm')}
           />
           <div>{msg.msgPasswordC}</div>
           <SignupInput
             placeholder="이메일을 입력해주세요."
             type="email"
-            value={signupInfo.user_email}
-            onChange={inputValueEmail('user_email')}
+            value={signupInfo.email}
+            onChange={inputValueEmail('email')}
           />
           <div>{msg.msgEmail}</div>
           <SignupInput
             placeholder="이름을 입력해주세요."
             type="text"
-            value={signupInfo.user_name}
-            onChange={inputValueName('user_name')}
+            value={signupInfo.name}
+            onChange={inputValueName('name')}
           />
           <div>{msg.msgName}</div>
           <div>{msg.msgSignup}</div>
