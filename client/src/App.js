@@ -1,10 +1,11 @@
 'use strict';
-import ModalButton from './Components/ModalButton';
+
+import MainPage from './Page/Main';
 
 function App() {
   return (
     <div>
-      <ModalButton />
+      <MainPage />
     </div>
   );
 }

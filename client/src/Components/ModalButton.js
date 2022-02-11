@@ -23,36 +23,29 @@ function ModalButton() {
   };
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('accessToken');
-    axios
-      .get('url', {
-        headers: { authorization: `Bearer ${accessToken}` },
-        withCredentials: true,
-      })
-      .then((res) => {
-        setIsLogin(true);
-      })
-      .catch((err) => {
-        setIsLogin(false);
-        console.log(err, '로그인 새로고침 err');
-      });
+    const accessToken = localStorage.getItem('access');
+    const url = new URL(window.location.href);
+    const authorizationCode = url.searchParams.get('code');
+    if (localStorage.getItem('accToken')) {
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
+    }
   }, []);
 
+  // useEffect(() => {
+  //   const url = new URL(window.location.href);
+  //   const authorizationCode = url.searchParams.get('code');
+  //   if (authorizationCode) {
+  //     setIsLoading(true);
+  //     getAccessToken(authorizationCode);
+  //   } else {
+  //     issueTokens();
+  //   })
+
   const handleLogoutClick = () => {
-    axios
-      .get('url', {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-        withCredentials: true,
-      })
-      .then((res) => {
-        localStorage.clear();
-        setIsLogin(false);
-      })
-      .catch((err) => {
-        console.log(err, '로그아웃 err');
-      });
+    localStorage.clear();
+    setIsLogin(false);
   };
 
   return (
@@ -67,7 +60,7 @@ function ModalButton() {
           loginClick={loginClick}
           signupClick={signupClick}
           setIsLogin={setIsLogin}
-          setIsSignupModal={setIsSignupModal}
+          setIsLoginModal={setIsLoginModal}
         />
       ) : null}
       {isSignupModal ? (

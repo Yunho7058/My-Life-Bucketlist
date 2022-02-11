@@ -77,9 +77,11 @@ function Signup(props) {
     checkName: false,
   });
   const [isSuccessSignup, setIsSuccessSignup] = useState(false);
+  //const [isSu]
 
   const inputValueId = (key) => (e) => {
     const { value } = e.target;
+
     const only = value.replace(
       /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g,
       ''
@@ -131,7 +133,7 @@ function Signup(props) {
   const inputValueEmail = (key) => (e) => {
     const { value } = e.target;
     const emailReplace =
-      /([\w-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+      /^[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
 
     if (emailReplace.test(value)) {
       setMsg({ ...msg, msgEmail: '사용할 수 있는 이메일입니다.' });
@@ -165,7 +167,7 @@ function Signup(props) {
     ) {
       setMsg({ ...msg, msgSignup: '' });
       axios
-        .post('url', signupInfo, {
+        .post('http://127.0.0.1:8000/api/accounts/signup/', signupInfo, {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
         })
@@ -173,11 +175,14 @@ function Signup(props) {
           //1. 회원가입 완료 모달 실행
 
           setIsSuccessSignup(true);
-          setMsg({ ...msg, msgSignup: '회원가입이 되었습니다.' });
+          setMsg({ ...msg, msgSignup: '회원가입을 완료하였습니다.' });
           //2. 확인 버튼 누르면 로그인 모달로 이동
         })
         .catch((err) => {
-          setMsg({ ...msg, msgSignup: '잘못된 요청입니다.' });
+          setMsg({
+            ...msg,
+            msgSignup: '중복된 아이디 입니다.',
+          });
           console.log(err, '회원가입 err');
         });
     } else {

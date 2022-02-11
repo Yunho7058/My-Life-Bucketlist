@@ -59,7 +59,7 @@ function Login(props) {
           // 1. 로컬스토리지에 토큰 저장(왜 토큰을 저장할까???)
           localStorage.setItem('accToken', res.data.access);
           // 2. 모달 창 꺼지고
-          props.setIsSignupModal(false);
+          props.setIsLoginModal(false);
           // 3. 로그인 상태로 변경
           props.setIsLogin(true);
         })
@@ -74,11 +74,16 @@ function Login(props) {
 
   const handleInputValue = (key) => (e) => {
     setLoginInfo({ ...loginInfo, [key]: e.target.value.toLowerCase() });
-    console.log(loginInfo);
   };
 
   const enterKey = (e) => {
     if (e.key === 'Enter') return handleLoginBtnClick();
+  };
+
+  const KakaoLoginClick = () => {
+    window.location.assign(
+      `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REACT_APP_KAKAO_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT_URI}&response_type=code`
+    );
   };
 
   return (
@@ -104,7 +109,7 @@ function Login(props) {
         <Btn onClick={handleLoginBtnClick}>로그인</Btn>
         <Btn onClick={props.signupClick}>회원가입</Btn>
         <div>
-          <Btn>카카오톡으로 로그인</Btn>
+          <Btn onClick={KakaoLoginClick}>카카오톡으로 로그인</Btn>
         </div>
         <div>
           <Btn>비밀번호찾기</Btn>
