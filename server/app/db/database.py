@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
 
-SQLALCHEMY_DATABASE_URL = f"mysql://{settings.DATABASE_NAME}:{settings.DATABASE_PASSWORD}@localhost:3306/coco_database"
+SQLALCHEMY_DATABASE_URL = f"mysql://{settings.DATABASE_USERNAME}:{settings.DATABASE_PASSWORD}@{settings.DATABASE_HOST}:3306/{settings.DATABASE_NAME}"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL
 )

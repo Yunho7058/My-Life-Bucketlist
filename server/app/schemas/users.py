@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
 
 
 class UserBase(BaseModel):
@@ -28,7 +28,10 @@ class User(UserBase):
         orm_mode = True
 
 
-class Token(BaseModel):
-    access_token: str
+class RefreshToken(BaseModel):
     refresh_token: str
+
+
+class Token(RefreshToken):
+    access_token: str
     token_type: str
