@@ -1,12 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from fastapi.security import OAuth2PasswordRequestForm 
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 
-from app.api.dependencies import get_db, oauth2_scheme, get_current_user, get_current_user_by_refresh_token
+from app.api.dependencies import (
+    get_db, oauth2_scheme, 
+    get_current_user, 
+    get_current_user_by_refresh_token
+)
 from app.schemas.users import User, UserCreate, Token
 from app.crud.users import create_user, authenticate
-from app.core.security import create_token, get_kakao_token
+from app.core.security import (
+    create_token, 
+    get_kakao_token, 
+    get_kakao_user_email
+)
 from app.core.config import settings
 
 
@@ -35,10 +43,19 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
 
 @router.post("/token/kakao", response_model=Token)
-def kakao_login(code: str):
+def kakao_login(code: str = Body(...)):
     response = get_kakao_token(code)
-    print(response)
-    return
+    data = response.json()
+    if response.status_code != 200:
+        raise HTTPException(status_code=400)
+    response = get_kakao_user_email(data.get("access_token"))
+    data = response.json()
+    if response.status_code != 200:
+        raise HTTPException(status_code=400)
+    print("========================response")
+    print(data)
+    print(response.status_code)
+    return 
 
 
 @router.post("/token/refresh", response_model=Token)

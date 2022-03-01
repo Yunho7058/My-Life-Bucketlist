@@ -5,6 +5,7 @@ from jose import JWTError
 from sqlalchemy.orm import Session
 from app.crud.users import get_user
 from app.core.security import decode_token
+from app.schemas.users import RefreshToken
 
 
 def get_db():
@@ -43,9 +44,9 @@ def get_current_user(username: str = Depends(authenticate_by_token), db: Session
     return user
 
 
-def get_current_user_by_refresh_token(refresh_token: str, db: Session = Depends(get_db)):
+def get_current_user_by_refresh_token(refresh_token: RefreshToken, db: Session = Depends(get_db)):
     try:
-        payload = decode_token(refresh_token)
+        payload = decode_token(refresh_token.refresh_token)
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception

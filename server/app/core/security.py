@@ -48,11 +48,21 @@ def decode_token(token: str):
 
 def get_kakao_token(code):
     url = "https://kauth.kakao.com/oauth/token"
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {
         "grant_type": "authorization_code",
         "code": code,
         "client_id": settings.KAKAO_CLIENT_ID,
         "redirect_uri": settings.KAKAO_REDIRECT_URI
     }
-    response = requests.post(url)
+    response = requests.post(url, headers=headers, data=data)
+    return response
+
+
+def get_kakao_user_email(token):
+    url = "https://kapi.kakao.com/v2/user/me"
+    headers = {
+        "Authorization": "Bearer " + token,
+    }
+    response = requests.get(url, headers=headers)
     return response
