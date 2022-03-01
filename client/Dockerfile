@@ -1,5 +1,5 @@
 # react
-FROM node:lts-alpine AS builder
+FROM node:16.14.0 AS builder
 
 WORKDIR /app
 
