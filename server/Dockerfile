@@ -2,7 +2,7 @@ FROM python:3.10.2-alpine
 
 WORKDIR /server
 
-RUN yum install python3-devel mysql-devel
+RUN apt-get install python3-dev default-libmysqlclient-dev build-essential
 
 COPY ./requirements.txt /server/requirements.txt
 
