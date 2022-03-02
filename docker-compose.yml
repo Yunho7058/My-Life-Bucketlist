@@ -4,6 +4,8 @@ services:
   fastapi:
     container_name: fastapi
     build: ./server/
+    ports:
+      - "8000:8000"
     restart: always
   
   nginx:
