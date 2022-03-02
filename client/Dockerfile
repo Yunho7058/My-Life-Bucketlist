@@ -3,7 +3,7 @@ FROM node:16.14.0-alpine AS builder
 
 WORKDIR /client
 
-COPY package.json ./
+COPY package*.json ./
 RUN npm install --production
 
 COPY . .
