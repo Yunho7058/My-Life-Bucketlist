@@ -16,4 +16,4 @@ RUN apk del build-deps
 
 COPY ./app /server/app
 
-CMD ["uvicorn", "app.main:app", "--proxy-headers", "--host", "127.0.0.1", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]
