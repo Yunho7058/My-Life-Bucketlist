@@ -9,7 +9,7 @@ from app.core.config import settings
 
 base.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(docs_url="/api/docs", redoc_url=None)
 
 app.include_router(router)
 
