@@ -2,7 +2,7 @@ FROM python:3.10.2-alpine
 
 WORKDIR /server
 
-RUN sudo yum install python3-devel mysql-devel
+RUN yum install python3-devel mysql-devel
 
 COPY ./requirements.txt /server/requirements.txt
 
