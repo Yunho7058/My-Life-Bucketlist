@@ -1,10 +1,10 @@
 # react
-FROM node:16.14.0 AS builder
+FROM node:16.14.0-alpine AS builder
 
 WORKDIR /client
 
 COPY package*.json ./
-RUN npm install --production
+RUN npm install --no-optional --production
 
 COPY . .
 RUN npm run build
