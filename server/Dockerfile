@@ -2,6 +2,8 @@ FROM python:3.10.2-alpine
 
 WORKDIR /server
 
+RUN sudo yum install python3-devel mysql-devel
+
 COPY ./requirements.txt /server/requirements.txt
 
 RUN pip install --no-cache-dir -r /server/requirements.txt
