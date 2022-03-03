@@ -1,10 +1,11 @@
 'use strict';
-import LoginButton from './Page/Button';
+
+import MainPage from './Page/Main';
 
 function App() {
   return (
     <div>
-      <LoginButton />
+      <MainPage />
     </div>
   );
 }
