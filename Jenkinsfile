@@ -10,11 +10,11 @@ pipeline {
     stage('dockerizing') {
       steps {
         dir(path: 'server') {
-          sh 'docker build -t fastapi .'
+          sh 'docker build --rm -t fastapi .'
         }
 
         dir(path: 'client') {
-          sh 'docker build -t nginx .'
+          sh 'docker build --rm -t nginx .'
         }
 
       }
