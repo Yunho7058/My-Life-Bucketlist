@@ -9,7 +9,11 @@ from app.core.config import settings
 
 base.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(docs_url="/api/docs", redoc_url=None, openapi_url="/api/openapi.json")
+app = FastAPI(
+    docs_url="/api/docs", 
+    redoc_url=None, 
+    openapi_url="/api/openapi.json"
+)
 
 app.include_router(router)
 
