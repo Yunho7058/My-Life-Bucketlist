@@ -1,13 +1,18 @@
 pipeline {
   agent any
+
+  environment {
+        GIT_URL = "https://github.com/Yunho7058/sincheonCoco.git"
+  }
+
   stages {
-    stage('prepare') {
+    stage('Pull') {
       steps {
-        git(url: 'https://github.com/Yunho7058/sincheonCoco', branch: 'main', changelog: true, poll: true)
+        git(url: '${GIT_URL}', branch: 'main', changelog: true, poll: true)
       }
     }
 
-    stage('dockerizing') {
+    stage('Build') {
       steps {
         dir(path: 'server') {
           sh 'docker build --rm -t fastapi .'
@@ -20,14 +25,14 @@ pipeline {
       }
     }
 
-    stage('deploy') {
+    stage('Deploy') {
       steps {
         sh 'docker-compose down || true'
         sh 'docker-compose up -d'
       }
     }
 
-    stage('finish') {
+    stage('Finish') {
       steps {
         sh 'docker image prune -f'
       }
