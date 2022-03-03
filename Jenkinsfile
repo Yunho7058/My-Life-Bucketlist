@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('prepare') {
       steps {
-        git(url: 'https://github.com/Yunho7058/sincheonCoco', branch: 'dev', changelog: true, poll: true)
+        git(url: 'https://github.com/Yunho7058/sincheonCoco', branch: 'main', changelog: true, poll: true)
       }
     }
 
