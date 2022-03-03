@@ -4,7 +4,7 @@ WORKDIR /server
 
 # mysqlclient 설치를 위한 step
 RUN apk update \
-    && apk add --virtual build-deps gcc python3-dev musl-dev libc-dev libffi-dev \
+    && apk add --virtual build-deps gcc python3-dev musl-dev openssl-dev libc-dev libffi-dev \
     && apk add --no-cache mariadb-dev
 
 COPY ./requirements.txt /server/requirements.txt
