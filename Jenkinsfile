@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Pull') {
       steps {
-        git(url: '${GIT_URL}', branch: 'main', changelog: true, poll: true)
+        git(url: "${GIT_URL}", branch: "main", changelog: true, poll: true)
       }
     }
 
