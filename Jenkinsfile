@@ -9,10 +9,8 @@ pipeline {
     stage('Pull') {
       steps {
         git(url: "${GIT_URL}", branch: "main", changelog: true, poll: true)
-        sh "echo 'workspace is ${env.WORKSPACE}'"
-        sh "echo 'job_name is ${env.JOB_NAME}'"
-        sh "echo 'job_base_name is ${env.JOB_BASE_NAME}'"
-        // sh 'docker cp /home/ec2-user/ jenkins_jenkins_1:/var/jenkins_home/workspace/CocoProject-CICD/client'
+        sh "docker cp /home/ec2-user/react_env/.env jenkins_jenkins_1:${env.WORKSPACE}/client"
+        sh "docker cp /home/ec2-user/fastapi_env/.env jenkins_jenkins_1:${env.WORKSPACE}/server/app"
       }
     }
 
