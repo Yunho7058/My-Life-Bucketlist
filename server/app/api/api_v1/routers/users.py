@@ -9,7 +9,7 @@ from app.api.dependencies import (
     get_current_user_by_refresh_token
 )
 from app.schemas.users import User, UserCreate, Token
-from app.crud.users import create_user, authenticate
+from app.crud.users import create_user, authenticate, get_user
 from app.core.security import (
     create_token, 
     get_kakao_token, 
@@ -26,6 +26,8 @@ router = APIRouter(
 
 @router.post("/signup", status_code=201, response_model=User)
 def signup(user: UserCreate, db: Session = Depends(get_db)):
+    if get_user(db, user.username):
+        raise HTTPException(status_code=400, detail="username is already existed")
     db_user = create_user(db, user)
     return db_user
 
