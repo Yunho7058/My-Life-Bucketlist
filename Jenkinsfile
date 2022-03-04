@@ -3,15 +3,15 @@ pipeline {
 
   environment {
     GIT_URL = "https://github.com/Yunho7058/sincheonCoco.git"
-    sh "echo 'workspace is ${env.WORKSPACE}'"
-    sh "echo 'job_name is ${env.JOB_NAME}'"
-    sh "echo 'job_base_name is ${env.JOB_BASE_NAME}'"
   }
 
   stages {
     stage('Pull') {
       steps {
         git(url: "${GIT_URL}", branch: "main", changelog: true, poll: true)
+        sh "echo 'workspace is ${env.WORKSPACE}'"
+        sh "echo 'job_name is ${env.JOB_NAME}'"
+        sh "echo 'job_base_name is ${env.JOB_BASE_NAME}'"
         // sh 'docker cp /home/ec2-user/ jenkins_jenkins_1:/var/jenkins_home/workspace/CocoProject-CICD/client'
       }
     }
