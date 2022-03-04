@@ -17,11 +17,11 @@ pipeline {
     stage('Build') {
       steps {
         dir(path: 'server') {
-          sh 'docker build --rm -t fastapi .'
+          sh 'docker build --rm -t coco-fastapi:0.0.1 .'
         }
 
         dir(path: 'client') {
-          sh 'docker build --rm -t nginx .'
+          sh 'docker build --rm -t coco-nginx:0.0.1 .'
         }
 
       }
