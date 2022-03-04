@@ -9,8 +9,8 @@ pipeline {
     stage('Pull') {
       steps {
         git(url: "${GIT_URL}", branch: "main", changelog: true, poll: true)
-        sh "docker cp /home/ec2-user/react_env/.env jenkins_jenkins_1:${env.WORKSPACE}/client"
-        sh "docker cp /home/ec2-user/fastapi_env/.env jenkins_jenkins_1:${env.WORKSPACE}/server/app"
+        sh "docker cp /react_env/.env jenkins_jenkins_1:${env.WORKSPACE}/client"
+        sh "docker cp /fastapi_env/.env jenkins_jenkins_1:${env.WORKSPACE}/server/app"
       }
     }
 
