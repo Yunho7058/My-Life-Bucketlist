@@ -20,3 +20,8 @@ services:
     restart: always
     env_file:
       - ./client/.env
+    volumes:
+      - node_modules:/client/node_modules
+
+volumes:
+  node_modules:
