@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    GIT_URL = "https://github.com/Yunho7058/sincheonCoco.git"
+    GIT_URL = "https://github.com/Yunho7058/My-Life-Bucketlist.git"
   }
 
   stages {
