@@ -3,7 +3,7 @@ version: "3.8"
 services:
   fastapi:
     container_name: fastapi
-    image: "coco-fastapi:0.1.0"
+    image: "mlb-fastapi:0.1.0"
     ports:
       - "8000:8000"
     restart: always
@@ -14,7 +14,7 @@ services:
     depends_on:
       - fastapi
     container_name: nginx
-    image: "coco-nginx:0.1.0"
+    image: "mlb-nginx:0.1.0"
     ports:
       - "80:80"
       - "443:443"
