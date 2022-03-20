@@ -29,16 +29,16 @@ credentials_exception = HTTPException(
 def authenticate_by_token(token: str = Depends(oauth2_scheme)):
     try:
         payload = decode_token(token)
-        username: str = payload.get("sub")
-        if username is None:
+        email: str = payload.get("sub")
+        if email is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    return username
+    return email
 
 
-def get_current_user(username: str = Depends(authenticate_by_token), db: Session = Depends(get_db)):
-    user = get_user(db, username)
+def get_current_user(email: str = Depends(authenticate_by_token), db: Session = Depends(get_db)):
+    user = get_user(db, email)
     if user is None:
         raise credentials_exception
     return user
@@ -47,12 +47,12 @@ def get_current_user(username: str = Depends(authenticate_by_token), db: Session
 def get_current_user_by_refresh_token(refresh_token: RefreshToken, db: Session = Depends(get_db)):
     try:
         payload = decode_token(refresh_token.refresh_token)
-        username: str = payload.get("sub")
-        if username is None:
+        email: str = payload.get("sub")
+        if email is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    user = get_user(db, username)
+    user = get_user(db, email)
     if user is None:
         raise credentials_exception
     return user
