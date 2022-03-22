@@ -110,18 +110,56 @@ def test_check_nickname_failure():
     assert response.status_code == 400
 
 
-# def test_login():
-#     global tokens
-#     response = client.post(
-#         "token",
-#         data={
-#             "email": "user1",
-#             "password": "qwer1234"
-#         }
-#     )
-#     assert response.status_code == 200
-#     assert Token(**response.json())
-#     tokens = response.json()
+def test_login_success():
+    global access_token, refresh_token
+    response = client.post(
+        "login",
+        data={
+            "username": "test@example.com",
+            "password": "qwer1234"
+        }
+    )
+    assert response.status_code == 200
+    assert response.cookies.get("refresh_token")
+    assert Token(**response.json())
+    access_token = response.json().get("access_token")
+    refresh_token = response.cookies.get("refresh_token")
+
+
+def test_login_failure():
+    response = client.post(
+        "login",
+        data={
+            "username": "test@example.com",
+            "password": "1234214234"
+        }
+    )
+    assert response.status_code == 401
+
+
+def test_logout_success():
+    response = client.get(
+        "logout",
+        headers={
+            "Authorization": "Bearer " + access_token
+        },
+        cookies={
+            "refresh_token": refresh_token
+        }
+    )
+    assert response.status_code == 204
+    assert not response.cookies.get("refresh_token")
+
+
+def test_logout_failure():
+    response = client.get(
+        "logout",
+        cookies={
+            "refresh_token": refresh_token
+        }
+    )
+    assert response.status_code == 401
+    assert not response.cookies.get("refresh_token")
 
 
 # def test_refresh_token_success():
