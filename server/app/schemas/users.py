@@ -1,10 +1,9 @@
-from pydantic import BaseModel, constr
+from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
-    username: str 
-    name: str 
     email: str 
+    nickname: str 
 
 
 class UserCreate(UserBase):
@@ -13,10 +12,9 @@ class UserCreate(UserBase):
     class Config:
         schema_extra = {
             "example": {
-                "username": "user1",
+                "email": "coco@example.com",
                 "password": "qwer1234",
-                "name": "kimcoco",
-                "email": "user1@example.com",
+                "nickname": "코코",
             }
         }
 
