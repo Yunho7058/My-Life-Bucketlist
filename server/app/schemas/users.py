@@ -26,10 +26,11 @@ class User(UserBase):
         orm_mode = True
 
 
-class RefreshToken(BaseModel):
-    refresh_token: str
+class UserLogin(BaseModel):
+    email: str
+    password: str
 
 
-class Token(RefreshToken):
+class Token(BaseModel):
     access_token: str
     token_type: str

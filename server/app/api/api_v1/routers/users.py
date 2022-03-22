@@ -11,16 +11,16 @@ from sqlalchemy.orm import Session
 
 from app.api.dependencies import (
     get_db,
-    get_current_user, 
-    get_current_user_by_refresh_token
+    get_current_user
 )
-from app.schemas.users import User, UserCreate, Token
+from app.schemas.users import User, UserCreate, Token, UserLogin
 from app.crud.users import (
     create_user, 
     authenticate, 
     get_user, 
     get_user_by_nickname
 )
+from app.core.config import settings
 from app.core.security import (
     create_token, 
     get_kakao_token, 
@@ -70,16 +70,30 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     return
 
 
-# @router.post("/token", response_model=Token)
-# def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-#     user = authenticate(db=db, username=form_data.username, password=form_data.password)
-#     if not user:
-#         raise HTTPException(
-#             status_code=401,
-#             detail="Incorrect username or password",
-#             headers={"WWW-Authenticate": "Bearer"},
-#         )
-#     return create_token(user.username)
+@router.post("/login", response_model=Token, responses={401: {}})
+def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = authenticate(db=db, email=form_data.username, password=form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    token = create_token(user.email)
+    refresh_token = token.pop("refresh_token")
+    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
+    return token
+
+
+@router.get("/logout", status_code=204, response_class=Response, responses={401: {}})
+def logout(response: Response, user: User = Depends(get_current_user)):
+    response.delete_cookie("refresh_token")
+    return
+
+
+@router.get("/me", response_model=User)
+def get_current_user_info(user: User = Depends(get_current_user)):
+    return user
 
 
 # @router.post("/token/kakao", response_model=Token)
@@ -98,17 +112,4 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
 #     return 
 
 
-# @router.post("/token/refresh", response_model=Token)
-# def refresh_token(user: User = Depends(get_current_user_by_refresh_token)):
-#     if not user:
-#         raise HTTPException(
-#             status_code=401,
-#             detail="Invalid refresh token",
-#             headers={"WWW-Authenticate": "Bearer"},
-#         )
-#     return create_token(user.username)
 
-
-# @router.get("/me", response_model=User)
-# def get_current_user_info(user: User = Depends(get_current_user)):
-#     return user
