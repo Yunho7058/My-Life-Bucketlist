@@ -13,8 +13,6 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24
 
     ALLOW_ORIGINS: list[str] = [
-        "http://localhost.tiangolo.com",
-        "https://localhost.tiangolo.com",
         "http://localhost",
         "http://localhost:8080",
     ]
@@ -24,6 +22,11 @@ class Settings(BaseSettings):
 
     KAKAO_CLIENT_ID: str
     KAKAO_REDIRECT_URI: str
+
+    NAVER_ID: str 
+    NAVER_PASSWORD: str
+
+    DOMAIN: str
 
     class Config:
         env_file = "app/.env"

@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+
 from app.test.test_database import app
 from app.schemas.users import Token
 
@@ -35,10 +36,11 @@ def test_check_email_success():
     response = client.post(
         "email",
         json={
-            "email": "unique-email@example.com"
+            "email": "kiung22@naver.com"
         }
     )
     assert response.status_code == 204
+    assert response.cookies.get("email_code")
 
 
 def test_check_email_failure():
@@ -46,6 +48,43 @@ def test_check_email_failure():
         "email",
         json={
             "email": "test@example.com"
+        }
+    )
+    assert response.status_code == 400
+    assert not response.cookies.get("email_code")
+
+
+def test_check_email_code_success():
+    response = client.post(
+        "email/code",
+        json={
+            "code": "A1B2C3"
+        },
+        cookies={
+            "email_code": "A1B2C3"
+        }
+    )
+    assert response.status_code == 204
+
+
+def test_check_email_code_failure_1():
+    response = client.post(
+        "email/code",
+        json={
+            "code": "A1B3CD"
+        },
+        cookies={
+            "email_code": "A1B2C3"
+        }
+    )
+    assert response.status_code == 400
+
+
+def test_check_email_code_failure_2():
+    response = client.post(
+        "email/code",
+        json={
+            "code": "A1B3CD"
         }
     )
     assert response.status_code == 400

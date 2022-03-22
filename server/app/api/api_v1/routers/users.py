@@ -1,4 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Body, Response
+from fastapi import (
+    APIRouter, 
+    Depends, 
+    HTTPException, 
+    Body,
+    Response,
+    Cookie
+)
 from fastapi.security import OAuth2PasswordRequestForm 
 from sqlalchemy.orm import Session
 
@@ -8,12 +15,19 @@ from app.api.dependencies import (
     get_current_user_by_refresh_token
 )
 from app.schemas.users import User, UserCreate, Token
-from app.crud.users import create_user, authenticate, get_user, get_user_by_nickname
+from app.crud.users import (
+    create_user, 
+    authenticate, 
+    get_user, 
+    get_user_by_nickname
+)
 from app.core.security import (
     create_token, 
     get_kakao_token, 
     get_kakao_user_email
 )
+from app.utils.send_email import send_email_code
+
 
 
 router = APIRouter(
@@ -22,11 +36,23 @@ router = APIRouter(
 
 
 @router.post("/email", status_code=204, response_class=Response, responses={400: {}})
-def check_email(email: str = Body(..., embed=True), db: Session = Depends(get_db)):
+def check_email(response: Response, email: str = Body(..., embed=True), db: Session = Depends(get_db)):
     if get_user(db, email):
         raise HTTPException(status_code=400)
-    
+    try:
+        code = send_email_code(email)
+        response.set_cookie(key="email_code", value=code, max_age=600, httponly=True)
+    except:
+        raise HTTPException(status_code=400)
     return
+
+
+@router.post("/email/code", status_code=204, response_class=Response, responses={400: {}})
+def check_email_code(response: Response, code: str = Body(..., embed=True), email_code: str | None = Cookie(None)):
+    if code and email_code and code == email_code:
+        response.delete_cookie("email_code")
+        return
+    raise HTTPException(status_code=400)
 
 
 @router.post("/nickname", status_code=204, response_class=Response, responses={400: {}})
