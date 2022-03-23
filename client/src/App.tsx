@@ -1,28 +1,48 @@
+//library
+import styled, { ThemeProvider } from 'styled-components';
+import { Reset } from 'styled-reset';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 //components
 import Main from './page/Main';
+import { light, dark, fontSizes, fontWeights } from './components/style/theme';
+import { Toggle } from './components/toggle';
+import { useDarkMode } from './components/hook/useDarkMode';
+import Login from './page/Login';
+import ReduxTest from './page/ReduxTest';
 
 function App() {
+  const [themeMode, toggleTheme] = useDarkMode();
+  const theme =
+    themeMode === 'light'
+      ? { mode: light, fontSizes, fontWeights }
+      : { mode: dark, fontSizes, fontWeights };
+
   return (
-    <div className="App">
-      <Main></Main>
-    </div>
+    <>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Reset />
+          <Toggle themeMode={themeMode} toggleTheme={toggleTheme} />
+          <Backgound>
+            <Routes>
+              <Route path="/" element={<Main />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/reduxtest" element={<ReduxTest />} />
+            </Routes>
+          </Backgound>
+        </BrowserRouter>
+      </ThemeProvider>
+    </>
   );
 }
 
-/*
-prop에 오브젝트 형식으로{name : '윤호'} 들어옴 타입지정하기
-const Good = (prop:{name:string}) =>{
-  return(
-    <div>
-      하위 컴포넌트! 안녕 난 {prop.name}
-    </div>
-  )
-}
-let 박스:JSX.IntrinsicElements['h4'] = <div>안녕</div>
-let 박스1:JSX.Element = <div>안녕2</div>
-useState 타입 지정법
-알아서 타입 지정 해준다 만약 저 'kim'에 문자,숫자 들어온다면
-거의 그럴일은 없지만 강제로 let [song,setSong] = useState<string | number>('kim') 제네링 기법
-*/
+//추가 수정 필요(다크모드) global style로 구분하기?
+const Backgound = styled.div`
+  background-color: ${({ theme }) => theme.mode.mainBackground};
+  color: ${({ theme }) => theme.mode.primaryText};
+  font-family: 'IBM Plex Sans KR', sans-serif;
+  transition: 500ms;
+`;
 
 export default App;
