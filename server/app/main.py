@@ -12,7 +12,8 @@ base.Base.metadata.create_all(bind=engine)
 app = FastAPI(
     docs_url="/api/docs", 
     redoc_url=None, 
-    openapi_url="/api/openapi.json"
+    openapi_url="/api/openapi.json",
+    title="MLB",
 )
 
 app.include_router(router)
