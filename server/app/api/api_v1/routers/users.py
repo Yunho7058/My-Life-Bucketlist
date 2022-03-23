@@ -6,7 +6,7 @@ from fastapi import (
     Response,
     Cookie
 )
-from fastapi.security import OAuth2PasswordRequestForm 
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import (
@@ -14,9 +14,9 @@ from app.api.dependencies import (
     get_current_user
 )
 from app.schemas.users import User, UserCreate, Token, UserLogin
+from app.schemas.common import HTTPError
 from app.crud.users import (
     create_user, 
-    authenticate, 
     get_user, 
     get_user_by_nickname
 )
@@ -24,7 +24,8 @@ from app.core.config import settings
 from app.core.security import (
     create_token, 
     get_kakao_token, 
-    get_kakao_user_email
+    get_kakao_user_email,
+    verify_password
 )
 from app.utils.send_email import send_email_code
 
@@ -70,14 +71,18 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     return
 
 
-@router.post("/login", response_model=Token, responses={401: {}})
+@router.post("/login", response_model=Token, responses={400: {"model": HTTPError}})
 def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = authenticate(db=db, email=form_data.username, password=form_data.password)
+    user = get_user(db, form_data.username)
     if not user:
         raise HTTPException(
-            status_code=401,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
+            status_code=400,
+            detail="email",
+        )
+    if not verify_password(form_data.password, user.password):
+        raise HTTPException(
+            status_code=400,
+            detail="password",
         )
     token = create_token(user.email)
     refresh_token = token.pop("refresh_token")
