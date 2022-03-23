@@ -9,7 +9,8 @@ import { light, dark, fontSizes, fontWeights } from './components/style/theme';
 import { Toggle } from './components/toggle';
 import { useDarkMode } from './components/hook/useDarkMode';
 import Login from './page/Login';
-import ReduxTest from './page/ReduxTest';
+// import ReduxTest from './page/ReduxTest';
+import Signup from './page/Signup';
 
 function App() {
   const [themeMode, toggleTheme] = useDarkMode();
@@ -28,7 +29,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Main />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/reduxtest" element={<ReduxTest />} />
+              <Route path="/signup" element={<Signup />} />
+              {/* <Route path="/reduxtest" element={<ReduxTest />} /> */}
             </Routes>
           </Backgound>
         </BrowserRouter>
