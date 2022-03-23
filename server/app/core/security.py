@@ -32,12 +32,12 @@ def create_refresh_token(data: dict):
     return create_access_token(data, timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES))
 
 
-def create_token(username: str):
+def create_token(email: str):
     access_token = create_access_token(
-        data={"sub": username}
+        data={"sub": email}
     )
     refresh_token = create_refresh_token(
-        data={"sub": username}
+        data={"sub": email}
     )
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 

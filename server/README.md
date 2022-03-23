@@ -5,7 +5,7 @@
 - 가상환경 생성
 
 ```bash
-$ python -m venv/venv
+$ python -m venv venv
 ```
 
 
