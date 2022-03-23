@@ -20,7 +20,7 @@ class UserCreate(UserBase):
 
 
 class User(UserBase):
-    id: int 
+    id: int
 
     class Config:
         orm_mode = True
