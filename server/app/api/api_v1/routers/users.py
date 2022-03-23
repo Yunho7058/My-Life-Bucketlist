@@ -71,7 +71,30 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     return
 
 
-@router.post("/login", response_model=Token, responses={400: {"model": HTTPError}})
+@router.post(
+    "/login", 
+    response_model=Token, 
+    responses={
+        400: {
+            "model": HTTPError,
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "이메일이 틀렸을 때": {
+                            "value": {
+                                "detail": "email"
+                            }
+                        },
+                        "비밀번호가 틀렸을 때": {
+                            "value": {
+                                "detail": "password"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    })
 def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = get_user(db, form_data.username)
     if not user:
