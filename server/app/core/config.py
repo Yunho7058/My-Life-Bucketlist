@@ -13,8 +13,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24
 
     ALLOW_ORIGINS: list[str] = [
-        "http://localhost",
-        "http://localhost:8080",
+        "http://localhost:3000",
     ]
     ALLOW_CREDENTIALS: bool = True
     ALLOW_METHODS: list[str] = ["*"]
