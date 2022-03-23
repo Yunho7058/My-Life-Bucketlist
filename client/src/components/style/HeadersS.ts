@@ -24,5 +24,3 @@ export const LoginBtn = styled.div`
     background-color: red;
   }
 `;
-
-export {};
