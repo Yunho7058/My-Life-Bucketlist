@@ -27,7 +27,7 @@ from app.core.security import (
     get_kakao_user_email,
     verify_password
 )
-from app.utils.send_email import send_email_code
+from app.utils import send_email_code
 
 
 
