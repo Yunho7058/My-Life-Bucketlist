@@ -126,7 +126,7 @@ def test_login_success():
     refresh_token = response.cookies.get("refresh_token")
 
 
-def test_login_failure():
+def test_login_failure_1():
     response = client.post(
         "login",
         data={
@@ -134,7 +134,20 @@ def test_login_failure():
             "password": "1234214234"
         }
     )
-    assert response.status_code == 401
+    assert response.status_code == 400
+    assert response.json().get("detail") == "password"
+
+
+def test_login_failure_2():
+    response = client.post(
+        "login",
+        data={
+            "username": "tttt@example.com",
+            "password": "qwer1234"
+        }
+    )
+    assert response.status_code == 400
+    assert response.json().get("detail") == "email"
 
 
 def test_logout_success():

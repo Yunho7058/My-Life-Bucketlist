@@ -26,12 +26,3 @@ def get_user(db: Session, email: str):
 def get_user_by_nickname(db: Session, nickname: str):
     user = db.query(User).filter(User.nickname == nickname).first()
     return user
-
-
-def authenticate(db: Session, email: str, password: str):
-    user = get_user(db, email)
-    if not user:
-        return False
-    if not verify_password(password, user.password):
-        return False
-    return user
