@@ -7,8 +7,6 @@ services:
     ports:
       - "8000:8000"
     restart: always
-    environment:
-      - LANG=ko_KR.utf8
     env_file:
       - ./server/app/.env
   
