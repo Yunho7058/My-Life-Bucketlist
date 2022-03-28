@@ -67,6 +67,8 @@ def check_nickname(nickname: str = Body(..., embed=True), db: Session = Depends(
 def signup(user: UserCreate, db: Session = Depends(get_db)):
     if get_user(db, user.email):
         raise HTTPException(status_code=400)
+    if get_user_by_nickname(db, user.nickname):
+        raise HTTPException(status_code=400)
     create_user(db, user)
     return
 
