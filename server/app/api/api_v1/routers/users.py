@@ -20,14 +20,16 @@ from app.crud.users import (
     get_user, 
     get_user_by_nickname
 )
+from app.crud.posts import create_post
 from app.core.config import settings
 from app.core.security import (
     create_token, 
     get_kakao_token, 
     get_kakao_user_email,
-    verify_password
+    verify_password,
+    decode_token
 )
-from app.utils.send_email import send_email_code
+from app.utils import send_email_code
 
 
 
@@ -69,7 +71,8 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400)
     if get_user_by_nickname(db, user.nickname):
         raise HTTPException(status_code=400)
-    create_user(db, user)
+    user = create_user(db, user)
+    create_post(db, user.id)
     return
 
 
@@ -115,13 +118,26 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
     return token
 
 
+@router.get("/refresh", response_model=Token, responses={400: {}})
+def refresh_token(response: Response, refresh_token: str | None = Cookie(None), db: Session = Depends(get_db)):
+    print(refresh_token)
+    email = decode_token(refresh_token)
+    user = get_user(db, email)
+    if user is None:
+        raise HTTPException(400)
+    token = create_token(user.email)
+    refresh_token = token.pop("refresh_token")
+    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
+    return token
+
+
 @router.get("/logout", status_code=204, response_class=Response, responses={401: {}})
 def logout(response: Response, user: User = Depends(get_current_user)):
     response.delete_cookie("refresh_token")
     return
 
 
-@router.get("/me", response_model=User)
+@router.get("/me", response_model=User, responses={401: {}})
 def get_current_user_info(user: User = Depends(get_current_user)):
     return user
 

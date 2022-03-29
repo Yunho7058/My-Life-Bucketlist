@@ -15,28 +15,23 @@ def get_db():
         db.close()
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login", auto_error=False)
 
 
 credentials_exception = HTTPException(
     status_code=401,
-    detail="Could not validate credentials",
+    detail="Not authenticated",
     headers={"WWW-Authenticate": "Bearer"},
 )
 
 
 def authenticate_by_token(token: str = Depends(oauth2_scheme)):
-    try:
-        payload = decode_token(token)
-        email: str = payload.get("sub")
-        if email is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    return email
+    return decode_token(token)
 
 
 def get_current_user(email: str = Depends(authenticate_by_token), db: Session = Depends(get_db)):
+    if not email:
+        raise credentials_exception
     user = get_user(db, email)
     if user is None:
         raise credentials_exception

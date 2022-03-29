@@ -2,12 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import router
-from app.db import base
+from app.db.base import Base
 from app.db.database import engine
 from app.core.config import settings
 
 
-base.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     docs_url="/api/docs", 

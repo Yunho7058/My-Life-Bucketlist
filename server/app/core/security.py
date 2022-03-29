@@ -43,7 +43,14 @@ def create_token(email: str):
 
 
 def decode_token(token: str):
-    return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    if not token:
+        return ""
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        email: str = payload.get("sub")
+    except JWTError:
+        return ""
+    return email
 
 
 def get_kakao_token(code):
