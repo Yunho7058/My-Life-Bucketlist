@@ -8,6 +8,10 @@ client = TestClient(app)
 client.base_url += "/api/"
 
 
+access_token = ""
+refresh_token = ""
+
+
 def test_signup_success():
     response = client.post(
         "signup",
@@ -175,44 +179,49 @@ def test_logout_failure():
     assert not response.cookies.get("refresh_token")
 
 
-# def test_refresh_token_success():
-#     response = client.post(
-#         "token/refresh",
-#         json={"refresh_token": tokens["refresh_token"]}
-#     )
-#     assert response.status_code == 200
-#     assert Token(**response.json())
+def test_refresh_token_success():
+    response = client.get(
+        "refresh",
+        cookies={
+            "refresh_token": refresh_token
+        }
+    )
+    assert response.status_code == 200
+    assert response.cookies.get("refresh_token")
+    assert Token(**response.json())
 
 
-# def test_refresh_token_failure():
-#     response = client.post(
-#         "token/refresh",
-#         json={"refresh_token": "invalid token"}
-#     )
-#     assert response.status_code == 401
+def test_refresh_token_failure():
+    response = client.get(
+        "refresh",
+        cookies={
+            "refresh_token": ""
+        }
+    )
+    assert response.status_code == 400
 
 
-# def test_get_user_info_success():
-#     response = client.get(
-#         "me",
-#         headers={
-#             "Authorization": "Bearer " + tokens["access_token"]
-#         }
-#     )
-#     assert response.status_code == 200
-#     assert response.json() == {
-#         "username": "user1",
-#         "name": "kimcoco",
-#         "email": "user1@example.com",
-#         "id": 1
-#     }
+def test_get_user_info_success():
+    response = client.get(
+        "me",
+        headers={
+            "Authorization": "Bearer " + access_token
+        }
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "email": "test@example.com",
+        "nickname": "테스트",
+        "domain": None
+    }
 
 
-# def test_get_user_info_failure():
-#     response = client.get(
-#         "me",
-#         headers={
-#             "Authorization": "Bearer "
-#         }
-#     )
-#     assert response.status_code == 401
+def test_get_user_info_failure():
+    response = client.get(
+        "me",
+        headers={
+            "Authorization": "Bearer "
+        }
+    )
+    assert response.status_code == 401

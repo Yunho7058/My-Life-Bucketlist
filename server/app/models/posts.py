@@ -56,8 +56,8 @@ class Comment(Base):
 class Like(Base):
     __tablename__ = "likes"
 
-    user_id = Column(Integer, primary_key=True)
-    post_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    post_id = Column(Integer, ForeignKey("posts.id"), primary_key=True)
     state = Column(Boolean)
 
     user = relationship("User", back_populates="likes")
@@ -67,8 +67,8 @@ class Like(Base):
 class Bookmark(Base):
     __tablename__ = "bookmarks"
 
-    user_id = Column(Integer, primary_key=True)
-    post_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    post_id = Column(Integer, ForeignKey("posts.id"), primary_key=True)
     state = Column(Boolean)
 
     user = relationship("User", back_populates="bookmarks")

@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from app.test.test_database import app
 from app.schemas.users import Token
 
-from .test_users import access_token
+from app.test.test_01_users import access_token
 
 
 client = TestClient(app)
@@ -19,7 +19,8 @@ def test_get_post_list():
             "nickname": "테스트",
             "title": None,
             "like_count": 0,
-            "bucketlist": []
+            "bucketlist": [],
+            "updated_at": None
         }
     ]
 
@@ -28,6 +29,8 @@ def test_get_post_detail_success():
     response = client.get("post/1")
     assert response.status_code == 200
     assert response.json() == {
+        "id": 1,
+        "nickname": "테스트",
         "owner": False,
         "bookmark": False,
         "like": False,

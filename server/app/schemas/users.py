@@ -4,6 +4,7 @@ from pydantic import BaseModel
 class UserBase(BaseModel):
     email: str 
     nickname: str 
+    domain: str | None = None
 
 
 class UserCreate(UserBase):
