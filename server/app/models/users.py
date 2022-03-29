@@ -14,3 +14,6 @@ class User(Base):
     domain = Column(String(30))
 
     post = relationship("Post", back_populates="user", cascade="all, delete-orphan", uselist=False)
+    comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")
+    likes = relationship("Like", back_populates="user", cascade="all, delete-orphan")
+    bookmarks = relationship("Bookmark", back_populates="user", cascade="all, delete-orphan")
