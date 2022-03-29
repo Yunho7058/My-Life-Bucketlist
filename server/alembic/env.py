@@ -50,7 +50,6 @@ def run_migrations_offline():
     url = get_url()
     if not url:
         url = config.get_main_option("sqlalchemy.url")
-    print("offline migration url: ", url)
     context.configure(
         url=url,
         target_metadata=target_metadata,

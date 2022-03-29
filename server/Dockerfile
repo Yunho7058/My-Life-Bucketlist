@@ -14,12 +14,13 @@ RUN pip install --no-cache-dir -r /server/requirements.txt
 # mysqlclient 설치 후 build-deps 삭제
 RUN apk del build-deps
 
-# fastapi app
-COPY ./app /server/app
-
 # alembic
 COPY ./alembic /server/alembic
 COPY ./alembic.ini /server/alembic.ini
-RUN alembic upgrade head
 
-CMD ["uvicorn", "app.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]
+# fastapi app
+COPY ./app /server/app
+
+COPY ./docker-cmd.sh /server/docker-cmd.sh
+
+CMD ["docker-cmd.sh"]
