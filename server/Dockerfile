@@ -23,4 +23,4 @@ COPY ./app /server/app
 
 COPY ./docker-cmd.sh /server/docker-cmd.sh
 
-CMD ["/bin/sh"]
+CMD ["sh", "docker-cmd.sh"]
