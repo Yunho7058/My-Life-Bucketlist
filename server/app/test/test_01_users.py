@@ -1,15 +1,11 @@
 from fastapi.testclient import TestClient
 
-from app.test.test_database import app
+from app.test.test_init import app
 from app.schemas.users import Token
 
 
 client = TestClient(app)
 client.base_url += "/api/"
-
-
-access_token = ""
-refresh_token = ""
 
 
 def test_signup_success():
@@ -115,7 +111,7 @@ def test_check_nickname_failure():
 
 
 def test_login_success():
-    global access_token, refresh_token
+    global refresh_token
     response = client.post(
         "login",
         data={
@@ -124,10 +120,9 @@ def test_login_success():
         }
     )
     assert response.status_code == 200
-    assert response.cookies.get("refresh_token")
-    assert Token(**response.json())
-    access_token = response.json().get("access_token")
     refresh_token = response.cookies.get("refresh_token")
+    assert refresh_token
+    assert Token(**response.json())
 
 
 def test_login_failure_1():
@@ -158,7 +153,7 @@ def test_logout_success():
     response = client.get(
         "logout",
         headers={
-            "Authorization": "Bearer " + access_token
+            "Authorization": "Bearer"
         },
         cookies={
             "refresh_token": refresh_token
@@ -205,7 +200,7 @@ def test_get_user_info_success():
     response = client.get(
         "me",
         headers={
-            "Authorization": "Bearer " + access_token
+            "Authorization": "Bearer"
         }
     )
     assert response.status_code == 200
@@ -220,8 +215,5 @@ def test_get_user_info_success():
 def test_get_user_info_failure():
     response = client.get(
         "me",
-        headers={
-            "Authorization": "Bearer "
-        }
     )
     assert response.status_code == 401

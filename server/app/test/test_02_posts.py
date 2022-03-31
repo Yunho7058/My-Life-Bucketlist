@@ -1,9 +1,8 @@
 from fastapi.testclient import TestClient
 
-from app.test.test_database import app
+from app.test.test_init import app
 from app.schemas.users import Token
 
-from app.test.test_01_users import access_token
 
 
 client = TestClient(app)
@@ -45,22 +44,15 @@ def test_create_bucketlist_success():
     response = client.put(
         "bucketlist",
         headers={
-            "Authorization": "Bearer " + access_token
+            "Authorization": "Bearer"
         },
-        data={
+        json={
             "title": "테스트의 버킷리스트",
             "bucketlist": [
                 {
-                    "id": 1,
                     "content": "서핑하기",
                     "date": "2022-06-20",
                     "image_path": "images/image1.jpg"
-                },
-                {
-                    "id": 2,
-                    "content": "등산하기",
-                    "date": "2022-08-25",
-                    "image_path": "images/image2.jpg"
                 },
                 {
                     "content": "미국 여행가기"
@@ -74,23 +66,13 @@ def test_create_bucketlist_success():
 def test_create_bucketlist_failure():
     response = client.put(
         "bucketlist",
-        headers={
-            "Authorization": "Bearer "
-        },
-        data={
+        json={
             "title": "테스트의 버킷리스트",
             "bucketlist": [
                 {
-                    "id": 1,
                     "content": "서핑하기",
                     "date": "2022-06-20",
                     "image_path": "images/image1.jpg"
-                },
-                {
-                    "id": 2,
-                    "content": "등산하기",
-                    "date": "2022-08-25",
-                    "image_path": "images/image2.jpg"
                 },
                 {
                     "content": "미국 여행가기"
@@ -101,11 +83,35 @@ def test_create_bucketlist_failure():
     assert response.status_code == 401
 
 
+def test_update_bucketlist_success():
+    response = client.put(
+        "bucketlist",
+        headers={
+            "Authorization": "Bearer"
+        },
+        json={
+            "title": "테스트의 버킷리스트",
+            "bucketlist": [
+                {
+                    "id": 1,
+                    "content": "서핑하기",
+                    "date": "2023-06-20",
+                    "image_path": "images/image1.jpg"
+                },
+                {
+                    "content": "한라산 등산하기"
+                },
+            ]
+        }
+    )
+    assert response.status_code == 204
+
+
 def test_delete_bucketlist_success():
     response = client.delete(
         "bucketlist/1",
         headers={
-            "Authorization": "Bearer " + access_token
+            "Authorization": "Bearer"
         }
     )
     assert response.status_code == 204
@@ -113,10 +119,7 @@ def test_delete_bucketlist_success():
 
 def test_delete_bucketlist_failure_1():
     response = client.delete(
-        "bucketlist/1",
-        headers={
-            "Authorization": "Bearer "
-        }
+        "bucketlist/2",
     )
     assert response.status_code == 401
 
@@ -125,7 +128,7 @@ def test_delete_bucketlist_failure_2():
     response = client.delete(
         "bucketlist/100",
         headers={
-            "Authorization": "Bearer " + access_token
+            "Authorization": "Bearer"
         }
     )
     assert response.status_code == 404

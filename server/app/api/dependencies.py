@@ -1,8 +1,8 @@
-from app.db.database import SessionLocal
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import HTTPException, Depends
-from jose import JWTError
 from sqlalchemy.orm import Session
+
+from app.db.database import SessionLocal
 from app.crud.users import get_user
 from app.core.security import decode_token
 

@@ -38,7 +38,7 @@ router = APIRouter(
 )
 
 
-@router.post("/email", status_code=204, response_class=Response, responses={400: {}})
+@router.post("/email", status_code=204, responses={400: {}})
 def check_email(response: Response, email: str = Body(..., embed=True), db: Session = Depends(get_db)):
     if get_user(db, email):
         raise HTTPException(status_code=400)
@@ -50,7 +50,7 @@ def check_email(response: Response, email: str = Body(..., embed=True), db: Sess
     return
 
 
-@router.post("/email/code", status_code=204, response_class=Response, responses={400: {}})
+@router.post("/email/code", status_code=204, responses={400: {}})
 def check_email_code(response: Response, code: str = Body(..., embed=True), email_code: str | None = Cookie(None)):
     if code and email_code and code == email_code:
         response.delete_cookie("email_code")
@@ -58,7 +58,7 @@ def check_email_code(response: Response, code: str = Body(..., embed=True), emai
     raise HTTPException(status_code=400)
 
 
-@router.post("/nickname", status_code=204, response_class=Response, responses={400: {}})
+@router.post("/nickname", status_code=204, responses={400: {}})
 def check_nickname(nickname: str = Body(..., embed=True), db: Session = Depends(get_db)):
     if get_user_by_nickname(db, nickname):
         raise HTTPException(status_code=400)
