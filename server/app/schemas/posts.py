@@ -25,7 +25,7 @@ class Bucketlist(BaseModel):
 
 class PostBase(BaseModel):
     title: str | None = None
-    bucketlist: list[Bucketlist]
+    bucketlist: list[Bucketlist] = []
 
 
 class Post(PostBase):

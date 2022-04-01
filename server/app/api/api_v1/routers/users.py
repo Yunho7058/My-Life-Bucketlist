@@ -38,7 +38,7 @@ router = APIRouter(
 )
 
 
-@router.post("/email", status_code=204, responses={400: {}})
+@router.post("/email", status_code=204, responses={400: {}}, summary="이메일 중복확인 및 인증메일 전송")
 def check_email(response: Response, email: str = Body(..., embed=True), db: Session = Depends(get_db)):
     if get_user(db, email):
         raise HTTPException(status_code=400)
@@ -50,22 +50,29 @@ def check_email(response: Response, email: str = Body(..., embed=True), db: Sess
     return
 
 
-@router.post("/email/code", status_code=204, responses={400: {}})
+@router.post("/email/code", status_code=204, responses={400: {}}, summary="이메일 인증코드 확인")
 def check_email_code(response: Response, code: str = Body(..., embed=True), email_code: str | None = Cookie(None)):
+    """
+    **Cookie**
+    - email_code: 이메일로 보내진 인증코드가 담겨져 있는 쿠키로 서버에서 인증 메일을 보낼 때 set-cookie함.
+
+    **Body**
+    - code: 사용자가 입력한 인증코드
+    """
     if code and email_code and code == email_code:
         response.delete_cookie("email_code")
         return
     raise HTTPException(status_code=400)
 
 
-@router.post("/nickname", status_code=204, responses={400: {}})
+@router.post("/nickname", status_code=204, responses={400: {}}, summary="닉네임 중복확인")
 def check_nickname(nickname: str = Body(..., embed=True), db: Session = Depends(get_db)):
     if get_user_by_nickname(db, nickname):
         raise HTTPException(status_code=400)
     return
 
 
-@router.post("/signup", status_code=201, response_class=Response, responses={400: {}})
+@router.post("/signup", status_code=201, response_class=Response, responses={400: {}}, summary="회원가입")
 def signup(user: UserCreate, db: Session = Depends(get_db)):
     if get_user(db, user.email):
         raise HTTPException(status_code=400)
@@ -99,8 +106,15 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
                 }
             }
         }
-    })
+    },
+    summary="로그인"
+)
 def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """
+    **Body**
+    - username: 이메일
+    - password: 비밀번호
+    """
     user = get_user(db, form_data.username)
     if not user:
         raise HTTPException(
@@ -118,7 +132,7 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
     return token
 
 
-@router.get("/refresh", response_model=Token, responses={400: {}})
+@router.get("/refresh", response_model=Token, responses={400: {}}, summary="토큰 갱신")
 def refresh_token(response: Response, refresh_token: str | None = Cookie(None), db: Session = Depends(get_db)):
     print(refresh_token)
     email = decode_token(refresh_token)
@@ -131,13 +145,13 @@ def refresh_token(response: Response, refresh_token: str | None = Cookie(None), 
     return token
 
 
-@router.get("/logout", status_code=204, response_class=Response, responses={401: {}})
+@router.get("/logout", status_code=204, response_class=Response, responses={401: {}}, summary="로그아웃")
 def logout(response: Response, user: User = Depends(get_current_user)):
     response.delete_cookie("refresh_token")
     return
 
 
-@router.get("/me", response_model=User, responses={401: {}})
+@router.get("/me", response_model=User, responses={401: {}}, summary="현재 유저 정보 조회")
 def get_current_user_info(user: User = Depends(get_current_user)):
     return user
 
