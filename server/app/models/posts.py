@@ -10,6 +10,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
+from app.utils import get_now
 
 
 class Post(Base):
@@ -17,7 +18,7 @@ class Post(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True)
-    updated_at = Column(DateTime(timezone=True))
+    updated_at = Column(DateTime(timezone=True), onupdate=get_now)
     title = Column(String(100))
 
     user = relationship("User", back_populates="post")
@@ -47,7 +48,7 @@ class Comment(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     post_id = Column(Integer, ForeignKey("posts.id"))
     content = Column(String(300))
-    updated_at = Column(DateTime(timezone=True))
+    updated_at = Column(DateTime(timezone=True), default=get_now, onupdate=get_now)
 
     post = relationship("Post", back_populates="comments")
     user = relationship("User", back_populates="comments")

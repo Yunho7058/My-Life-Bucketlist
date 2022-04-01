@@ -1,8 +1,6 @@
 from sqlalchemy.orm import Session
-from datetime import datetime
-from pytz import timezone
 
-from app.models.posts import Post, Bucketlist
+from app.models.posts import Post, Bucketlist, Comment
 from app.schemas import posts as schemas
 
 
@@ -25,7 +23,6 @@ def create_post(db: Session, user_id: int):
 def update_post(db: Session, post_id: int, title: str):
     db_post = db.get(Post, post_id)
     db_post.title = title 
-    db_post.updated_at = datetime.now(timezone("Asia/Seoul"))
     db.commit()
     return
 
@@ -56,5 +53,36 @@ def update_bucketlist(db: Session, db_bucketlist: Bucketlist, bucketlist: schema
 
 def delete_bucketlist(db: Session, bucketlist: Bucketlist):
     db.delete(bucketlist)
+    db.commit()
+    return
+
+
+def get_comment(db: Session, comment_id: int):
+    return db.get(Comment, comment_id)
+
+
+def get_comment_list(db: Session, post_id: int, page: int):
+    return db.query(Comment).filter_by(post_id = post_id).offset(20 * (page-1)).limit(20).all()
+
+
+def create_comment(db: Session, content: str, user_id: int, post_id: int):
+    comment = Comment(
+        content=content,
+        user_id=user_id,
+        post_id=post_id
+    )
+    db.add(comment)
+    db.commit()
+    return
+
+
+def update_comment(db: Session, content: str, db_comment: Comment):
+    db_comment.content = content
+    db.commit()
+    return
+
+
+def delete_comment(db: Session, db_comment: Comment):
+    db.delete(db_comment)
     db.commit()
     return
