@@ -2,6 +2,17 @@ from pydantic import BaseModel
 import datetime
 
 
+
+class Comment(BaseModel):
+    id: int
+    nickname: str 
+    content: str 
+    updated_at: datetime.datetime
+
+    class Config:
+        orm_mode = True
+
+
 class Bucketlist(BaseModel):
     id: int | None = None
     content: str 

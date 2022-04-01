@@ -132,3 +132,115 @@ def test_delete_bucketlist_failure_2():
         }
     )
     assert response.status_code == 404
+
+
+def test_create_comment_success():
+    response = client.post(
+        "comment/1",
+        headers={
+            "Authorization": "Bearer"
+        },
+        json={
+            "content": "잘 봤습니다~"
+        }
+    )
+    assert response.status_code == 201
+
+
+def test_create_comment_failure_1():
+    response = client.post(
+        "comment/1",
+        json={
+            "content": "잘 봤습니다~"
+        }
+    )
+    assert response.status_code == 401
+
+
+def test_create_comment_failure_2():
+    response = client.post(
+        "comment/1",
+        headers={
+            "Authorization": "Bearer"
+        },
+        json={
+            "content": ""
+        }
+    )
+    assert response.status_code == 400
+
+
+def test_get_comment_list_success():
+    response = client.get(
+        "comment/1"
+    )
+    assert response.status_code == 200
+
+
+def test_update_comment_success():
+    response = client.patch(
+        "comment/1",
+        headers={
+            "Authorization": "Bearer"
+        },
+        json={
+            "content": "좋아요~"
+        }
+    )
+    assert response.status_code == 204
+
+
+def test_update_comment_failure_1():
+    response = client.patch(
+        "comment/1",
+        json={
+            "content": "좋아요~"
+        }
+    )
+    assert response.status_code == 401
+
+
+def test_update_comment_failure_2():
+    response = client.patch(
+        "comment/1",
+        headers={
+            "Authorization": "Bearer"
+        },
+        json={
+            "content": ""
+        }
+    )
+    assert response.status_code == 400
+
+
+def test_update_comment_failure_3():
+    response = client.patch(
+        "comment/5",
+        headers={
+            "Authorization": "Bearer"
+        },
+        json={
+            "content": "좋아요~"
+        }
+    )
+    assert response.status_code == 404
+
+
+def test_delete_comment_success():
+    response = client.delete(
+        "comment/1",
+        headers={
+            "Authorization": "Bearer"
+        }
+    )
+    assert response.status_code == 204
+
+
+def test_delete_comment_failure():
+    response = client.delete(
+        "comment/1",
+        headers={
+            "Authorization": ""
+        }
+    )
+    assert response.status_code == 401

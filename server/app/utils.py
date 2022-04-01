@@ -3,7 +3,14 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import random
 import string
+from datetime import datetime
+from pytz import timezone
+
 from app.core.config import settings
+
+
+def get_now():
+    return datetime.now(timezone("Asia/Seoul"))
 
 
 def generate_email_code():
