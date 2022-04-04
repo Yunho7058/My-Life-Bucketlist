@@ -22,6 +22,9 @@ const dark = {
   borderBox: 'rgba(20, 20, 20,0.7)',
   BGInput: 'rgb(43, 44, 40)',
   FCInput: 'hsl(230, 4%, 90%)',
+  fontColor: '#DCDCDC',
+  stepIconBackColor: 'white',
+  stepIconColor: '#00fa9a',
 };
 
 const light = {
@@ -45,6 +48,9 @@ const light = {
   borderBox: '#d1d5da',
   BGInput: '#E0E0E0',
   FCInput: 'black',
+  fontColor: 'black',
+  stepIconBackColor: 'rgb(0,0,0,0.35)',
+  stepIconColor: '',
 };
 
 //! 왜 폰트 사이즈마다 다를까?

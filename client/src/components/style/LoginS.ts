@@ -26,11 +26,11 @@ export const LoginBox = styled.div`
 export const LoginInputBox = styled.div`
   text-align: center;
   position: relative;
+
   > svg {
     top: 35px;
     right: 8px;
     position: absolute;
-    cursor: pointer;
   }
   > svg.loginIcon {
     left: 5px;

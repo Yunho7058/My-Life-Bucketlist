@@ -2,7 +2,8 @@ import styled from 'styled-components';
 
 export const HeaderBack = styled.div`
   width: 100%;
-  height: 100px;
+  min-width: 400px;
+  height: 50px;
   position: fixed;
   right: 0px;
   top: 0px;

@@ -11,11 +11,15 @@ function Headers() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  //! useEffect 더 공부해보기
+  //참고 링크 https://www.rinae.dev/posts/a-complete-guide-to-useeffect-ko
+  //useReducer, useCallback, useMemo 배우기
   useEffect(() => {
     if (window.localStorage.getItem('accessToken')) {
       //redux로 이메일 유지
       dispatch(isLogin());
     }
+    return;
   }, []);
 
   return (
