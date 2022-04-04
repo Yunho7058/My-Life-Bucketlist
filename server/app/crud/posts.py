@@ -132,4 +132,4 @@ def update_bookmark(db: Session, db_bookmark: Bookmark):
 
 
 def get_bookmarked_post_list(db: Session, user: User):
-    return db.query(Post).select_from(user.bookmarks.filter_by(state=True)).join(Bookmark.post).all()
+    return db.query(Post).select_from(user.bookmarks.filter_by(state=True).subquery()).join(Bookmark.post).all()

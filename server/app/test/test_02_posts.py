@@ -311,6 +311,17 @@ def test_push_bookmark_success():
     assert response.status_code == 204
 
 
+def test_get_bookmarked_post_list_success():
+    response = client.get(
+        "bookmark",
+        headers={
+            "Authorization": "Bearer"
+        }
+    )
+    data = response.json()
+    assert data[0].get("id") == 1    
+
+
 def test_push_bookmark_failure_1():
     response = client.put(
         "bookmark/100",
