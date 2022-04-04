@@ -8,21 +8,19 @@ from app.crud import posts as crud
 from app.schemas import posts as schemas
 
 
-router = APIRouter(
-    tags=["posts"]
-)
+router = APIRouter()
 
 
-@router.get("/post", response_model=list[schemas.Post], summary="게시글 목록 조회")
+@router.get("/post", response_model=list[schemas.Post], summary="게시글 목록 조회", tags=["버킷리스트"])
 def get_post_list(db: Session = Depends(get_db)):
     posts = crud.get_post_list(db)
     for post in posts:
         post.nickname = post.user.nickname
-        post.like_count = len(post.likes)
+        post.like_count = post.likes.count()
     return posts
 
 
-@router.get("/post/{post_id}", response_model=schemas.PostDetail, summary="게시글 상세 조회")
+@router.get("/post/{post_id}", response_model=schemas.PostDetail, summary="게시글 상세 조회", tags=["버킷리스트"])
 def get_post_detail(post_id: int, email: str = Depends(authenticate_by_token), db: Session = Depends(get_db)):
     """
     header에 토큰이 없어도 게시글 상세 조회는 가능하지만 response의 **owner** 값은 false로 응답한다.
@@ -31,11 +29,13 @@ def get_post_detail(post_id: int, email: str = Depends(authenticate_by_token), d
     if post is None:
         raise HTTPException(404)
     post.nickname = post.user.nickname
-    post.like_count = len(post.likes)
+    post.like_count = len(post.likes.filter_by(state=True).all())
     user = get_user(db, email)
     if user:
-        post.like = user.id in post.likes
-        post.bookmark = user.id in post.bookmarks
+        like = crud.get_like(db, post.id, user.id)
+        post.like = like.state if like else False
+        bookmark = crud.get_bookmark(db, post.id, user.id)
+        post.bookmark = bookmark.state if bookmark else False
         post.owner = user.id == post.user.id
     else:
         post.like = False
@@ -44,7 +44,7 @@ def get_post_detail(post_id: int, email: str = Depends(authenticate_by_token), d
     return post
 
 
-@router.put("/bucketlist", status_code=204, responses={400: {}, 401: {}, 403: {}}, summary="버킷리스트 추가 및 수정")
+@router.put("/bucketlist", status_code=204, responses={400: {}, 401: {}, 403: {}}, summary="버킷리스트 추가 및 수정", tags=["버킷리스트"])
 def put_bucketlist(
     post : schemas.PostBase = Body(
         ...,
@@ -111,7 +111,7 @@ def put_bucketlist(
     return
 
 
-@router.delete("/bucketlist/{bucketlist_id}", status_code=204, responses={401: {}, 403: {}, 404: {}}, summary="버킷리스트 삭제")
+@router.delete("/bucketlist/{bucketlist_id}", status_code=204, responses={401: {}, 403: {}, 404: {}}, summary="버킷리스트 삭제", tags=["버킷리스트"])
 def delete_bucketlist(bucketlist_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     bucketlist = crud.get_bucketlist(db, bucketlist_id)
     if bucketlist is None:
@@ -122,7 +122,7 @@ def delete_bucketlist(bucketlist_id: int, user: User = Depends(get_current_user)
     return
 
 
-@router.get("/comment/{post_id}", response_model=list[schemas.Comment], summary="댓글 목록 조회")
+@router.get("/comment/{post_id}", response_model=list[schemas.Comment], summary="댓글 목록 조회", tags=["댓글"])
 def get_comment_list(post_id: int, page: int = 1, db: Session = Depends(get_db)):
     """
     **설명**
@@ -141,7 +141,7 @@ def get_comment_list(post_id: int, page: int = 1, db: Session = Depends(get_db))
     return comments
 
 
-@router.post("/comment/{post_id}", status_code=201, response_class=Response, responses={400: {}, 401: {}, 404: {}}, summary="댓글 생성")
+@router.post("/comment/{post_id}", status_code=201, response_class=Response, responses={400: {}, 401: {}, 404: {}}, summary="댓글 생성", tags=["댓글"])
 def create_comment(post_id: int, content: str = Body(..., embed=True), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not content:
         raise HTTPException(400)
@@ -152,7 +152,7 @@ def create_comment(post_id: int, content: str = Body(..., embed=True), user: Use
     return
 
 
-@router.patch("/comment/{comment_id}", status_code=204, responses={400: {}, 401: {}, 403: {}, 404: {}}, summary="댓글 수정")
+@router.patch("/comment/{comment_id}", status_code=204, responses={400: {}, 401: {}, 403: {}, 404: {}}, summary="댓글 수정", tags=["댓글"])
 def update_comment(comment_id: int, content: str = Body(..., embed=True), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not content:
         raise HTTPException(400)
@@ -165,7 +165,7 @@ def update_comment(comment_id: int, content: str = Body(..., embed=True), user: 
     return
 
 
-@router.delete("/comment/{comment_id}", status_code=204, responses={401: {}, 403: {}, 404: {}}, summary="댓글 삭제")
+@router.delete("/comment/{comment_id}", status_code=204, responses={401: {}, 403: {}, 404: {}}, summary="댓글 삭제", tags=["댓글"])
 def delete_comment(comment_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     comment = crud.get_comment(db, comment_id)
     if comment is None:
@@ -174,3 +174,38 @@ def delete_comment(comment_id: int, user: User = Depends(get_current_user), db: 
         raise HTTPException(403)
     crud.delete_comment(db, comment)
     return
+
+
+@router.put("/like/{post_id}", status_code=204, responses={401: {}, 404: {}}, summary="좋아요 상태 변경", tags=["좋아요"])
+def push_like(post_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    post = crud.get_post_detail(db, post_id)
+    if post is None:
+        raise HTTPException(404)
+    like = crud.get_like(db, post_id, user.id)
+    if like is None:
+        crud.create_like(db, post_id, user.id)
+    else:
+        crud.update_like(db, like)
+    return
+
+
+@router.put("/bookmark/{post_id}", status_code=204, responses={401: {}, 404: {}}, summary="북마크 상태 변경", tags=["북마크"])
+def push_bookmark(post_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    post = crud.get_post_detail(db, post_id)
+    if post is None:
+        raise HTTPException(404)
+    bookmark = crud.get_bookmark(db, post.id, user.id)
+    if bookmark is None:
+        crud.create_bookmark(db, post.id, user.id)
+    else:
+        crud.update_bookmark(db, bookmark)
+    return 
+
+
+@router.get("/bookmark", response_model=list[schemas.Post], summary="북마크한 게시글 목록 조회", tags=["북마크"])
+def get_bookmarked_post_list(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    bookmarked_posts = crud.get_bookmarked_post_list(db, user)
+    for post in bookmarked_posts:
+        post.nickname = post.user.nickname
+        post.like_count = post.likes.count()
+    return bookmarked_posts

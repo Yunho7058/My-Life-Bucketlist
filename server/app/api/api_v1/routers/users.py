@@ -34,7 +34,7 @@ from app.utils import send_email_code
 
 
 router = APIRouter(
-    tags=["users"],
+    tags=["유저"],
 )
 
 

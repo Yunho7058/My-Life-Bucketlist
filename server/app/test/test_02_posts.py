@@ -244,3 +244,109 @@ def test_delete_comment_failure():
         }
     )
     assert response.status_code == 401
+
+
+def test_push_like_success():
+    response = client.put(
+        "like/1",
+        headers={
+            "Authorization": "Bearer"
+        }
+    )
+    assert response.status_code == 204
+
+
+def test_push_like_failure_1():
+    response = client.put(
+        "like/1",
+    )
+    assert response.status_code == 401
+
+
+def test_push_like_failure_2():
+    response = client.put(
+        "like/100",
+        headers={
+            "Authorization": "Bearer"
+        }
+    )
+    assert response.status_code == 404
+
+
+def test_like_count():
+    response = client.get(
+        "post/1",
+        headers={
+            "Authorization": "Bearer"
+        }
+    )
+    data = response.json()
+    assert data.get("like_count") == 1
+    assert data.get("like") == True
+    response = client.put(
+        "like/1",
+        headers={
+            "Authorization": "Bearer"
+        }
+    )
+    assert response.status_code == 204
+    response = client.get(
+        "post/1",
+        headers={
+            "Authorization": "Bearer"
+        }
+    )
+    data = response.json()
+    assert data.get("like_count") == 0
+    assert data.get("like") == False
+
+
+def test_push_bookmark_success():
+    response = client.put(
+        "bookmark/1",
+        headers={
+            "Authorization": "Bearer"
+        }
+    )
+    assert response.status_code == 204
+
+
+def test_push_bookmark_failure_1():
+    response = client.put(
+        "bookmark/100",
+        headers={
+            "Authorization": "Bearer"
+        }
+    )
+    assert response.status_code == 404
+
+
+def test_push_bookmark_failure_2():
+    response = client.put(
+        "bookmark/1",
+    )
+    assert response.status_code == 401
+
+
+def test_update_bookmark():
+    response = client.get(
+        "post/1",
+        headers={
+            "Authorization": "Bearer"
+        }
+    )
+    assert response.json().get("bookmark") == True
+    response = client.put(
+        "bookmark/1",
+        headers={
+            "Authorization": "Bearer"
+        }
+    )
+    assert response.status_code == 204
+    response = client.get(
+        "post/1",
+        headers={
+            "Authorization": "Bearer"
+        }
+    )
+    assert response.json().get("bookmark") == False
