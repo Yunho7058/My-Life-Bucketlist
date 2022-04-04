@@ -1,12 +1,12 @@
 //library
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import {
   AiFillCloseCircle,
   AiFillLock,
   AiOutlineDoubleRight,
 } from 'react-icons/ai';
 import { MdAlternateEmail } from 'react-icons/md';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import qs from 'qs';
@@ -39,40 +39,41 @@ function Login() {
   });
   //input 삭제 버튼
   const [removeIcon, setRemoveIcon] = useState({
-    emailIcon: false,
+    usernamelIcon: false,
     passwordIcon: false,
   });
   //입력창
   const handleInput = (key: string) => (e: { target: HTMLInputElement }) => {
     setUserInfo({ ...userInfo, [key]: e.target.value.toLowerCase() });
-    // console.log(userInfo);
+    //console.log(key);
+
+    //input 창 삭제 아이콘 관리
+    if (e.target.value.length >= 1) {
+      if (key === 'username') {
+        setRemoveIcon({ ...removeIcon, usernamelIcon: true });
+      } else {
+        setRemoveIcon({ ...removeIcon, passwordIcon: true });
+      }
+    } else {
+      if (key === 'username') {
+        setRemoveIcon({ ...removeIcon, usernamelIcon: false });
+      } else {
+        setRemoveIcon({ ...removeIcon, passwordIcon: false });
+      }
+    }
   };
   //삭제 버튼 클릭시 input창 정보 삭제
   const handleInputRemove = (value: string) => {
     setUserInfo({ ...userInfo, [value]: '' });
-  };
-  //로그인 상태
-  // const stateIsLogin = useSelector((state: TypeRootReducer) => {
-  //   return state.isLoginReducer;
-  // });
-  //console.log(stateIsLogin, '로그인 성공');
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  //삭제 버튼 상태관리
-  useEffect(() => {
-    if (userInfo.username.length >= 1) {
-      setRemoveIcon({ ...removeIcon, emailIcon: true });
-    } else {
-      setRemoveIcon({ ...removeIcon, emailIcon: false });
-    }
-  }, [userInfo.username]);
-  useEffect(() => {
-    if (userInfo.password.length >= 1) {
-      setRemoveIcon({ ...removeIcon, passwordIcon: true });
+    if (value === 'username') {
+      setRemoveIcon({ ...removeIcon, usernamelIcon: false });
     } else {
       setRemoveIcon({ ...removeIcon, passwordIcon: false });
     }
-  }, [userInfo.password]);
+  };
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   //로그인 요청
   const handleLogin = () => {
@@ -130,7 +131,7 @@ function Login() {
               value={userInfo.username}
               onChange={handleInput('username')}
             />
-            {removeIcon.emailIcon && (
+            {removeIcon.usernamelIcon && (
               <AiFillCloseCircle
                 size={18}
                 onClick={() => handleInputRemove('username')}
