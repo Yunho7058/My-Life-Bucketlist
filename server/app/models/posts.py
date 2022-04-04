@@ -24,9 +24,8 @@ class Post(Base):
     user = relationship("User", back_populates="post")
     bucketlist = relationship("Bucketlist", back_populates="post", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
-    likes = relationship("Like", back_populates="post", cascade="all, delete-orphan")
+    likes = relationship("Like", back_populates="post", cascade="all, delete-orphan", lazy="dynamic")
     bookmarks = relationship("Bookmark", back_populates="post", cascade="all, delete-orphan")
-
 
 
 class Bucketlist(Base):
