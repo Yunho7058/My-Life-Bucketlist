@@ -15,7 +15,7 @@ export const HeaderBack = styled.div`
 `;
 
 export const LoginBtn = styled.div`
-  width: 50px;
+  width: 100px;
   height: 50px;
   border: 1px solid;
   text-align: center;
