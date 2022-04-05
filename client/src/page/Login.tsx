@@ -117,6 +117,11 @@ function Login() {
         });
     }
   };
+  const enterKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      return handleLogin();
+    }
+  };
 
   return (
     <>
@@ -130,6 +135,7 @@ function Login() {
               type="email"
               value={userInfo.username}
               onChange={handleInput('username')}
+              onKeyPress={enterKey}
             />
             {removeIcon.usernamelIcon && (
               <AiFillCloseCircle
@@ -147,6 +153,7 @@ function Login() {
               type="password"
               value={userInfo.password}
               onChange={handleInput('password')}
+              onKeyPress={enterKey}
             />
             {removeIcon.passwordIcon && (
               <AiFillCloseCircle
