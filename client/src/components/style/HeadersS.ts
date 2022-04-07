@@ -2,7 +2,8 @@ import styled from 'styled-components';
 
 export const HeaderBack = styled.div`
   width: 100%;
-  height: 100px;
+  min-width: 400px;
+  height: 50px;
   position: fixed;
   right: 0px;
   top: 0px;
@@ -14,7 +15,7 @@ export const HeaderBack = styled.div`
 `;
 
 export const LoginBtn = styled.div`
-  width: 50px;
+  width: 100px;
   height: 50px;
   border: 1px solid;
   text-align: center;

@@ -25,6 +25,9 @@ declare module 'styled-components' {
       borderBox: string;
       BGInput: string;
       FCInput: string;
+      fontColor: string;
+      stepIconBackColor: string;
+      stepIconColor: string;
     };
     fontSizes: {
       xsm: string;
