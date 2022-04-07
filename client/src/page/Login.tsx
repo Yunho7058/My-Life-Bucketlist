@@ -7,10 +7,10 @@ import {
 } from 'react-icons/ai';
 import { MdAlternateEmail } from 'react-icons/md';
 import { useState } from 'react';
-import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import qs from 'qs';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import qs from 'qs';
 // 'Content-Type': 'application/x-www-form-urlencoded'
 
 //components

@@ -8,8 +8,9 @@ import {
   MdLock,
 } from 'react-icons/md';
 import { FaUserTag } from 'react-icons/fa';
-import Headers from '../components/Headers';
 import axios from 'axios';
+//
+import Headers from '../components/Headers';
 import { Terms_2 } from '../components/terms/Terms_2';
 import { Terms_1 } from '../components/terms/Terms_1';
 import * as SS from '../components/style/SignupS';
