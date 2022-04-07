@@ -1,9 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import router
 from app.db.base import Base
-from app.db.database import engine
+from app.db.database import engine, SessionLocal
 from app.core.config import settings
 
 
@@ -25,3 +25,13 @@ app.add_middleware(
     allow_methods=settings.ALLOW_METHODS,
     allow_headers=settings.ALLOW_HEADERS,
 )
+
+@app.middleware("http")
+async def db_session_middleware(request: Request, call_next):
+    response = Response("Internal server error", status_code=500)
+    try:
+        request.state.db = SessionLocal()
+        response = await call_next(request)
+    finally:
+        request.state.db.close()
+    return response
