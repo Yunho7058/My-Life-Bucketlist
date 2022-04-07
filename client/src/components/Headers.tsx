@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 //components
 import { TypeRootReducer } from '../store/store';
 import { HeaderBack, LoginBtn } from './style/HeadersS';
-import { isLogin, isLogout } from '../action';
+import { isLogin, isLogout, postAll } from '../action';
 import axios from 'axios';
 
 function Headers() {
@@ -15,13 +15,29 @@ function Headers() {
   const stateIsLogin = useSelector(
     (state: TypeRootReducer) => state.isLoginReducer
   );
+  //! 새로고침
   useEffect(() => {
     if (window.localStorage.getItem('accessToken')) {
-      //redux로 이메일 유지
       dispatch(isLogin());
     }
     return;
-  }, []);
+  }, [dispatch]);
+
+  //! 모든 게시물 불러오기
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_SERVER_URI}/post`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((res) => {
+        dispatch(postAll(res.data));
+      })
+      .catch((err) => {
+        console.log(err, 'Post All err ');
+      });
+  }, [dispatch]);
 
   //! 로그아웃
   const handleLoginLogoutBtn = () => {
@@ -49,7 +65,6 @@ function Headers() {
   //! useEffect 더 공부해보기
   //참고 링크 https://www.rinae.dev/posts/a-complete-guide-to-useeffect-ko
   //useReducer, useCallback, useMemo 배우기
-  //! 새로고침
 
   return (
     <HeaderBack>

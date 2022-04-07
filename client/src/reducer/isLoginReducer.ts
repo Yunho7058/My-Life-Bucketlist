@@ -1,6 +1,10 @@
 import { IS_LOGIN, IS_LOGOUT } from '../action';
 
-const isLoginReducer = (state = false, action: any) => {
+interface TypeAction {
+  type: string;
+}
+
+const isLoginReducer = (state = false, action: TypeAction): boolean => {
   switch (action.type) {
     case IS_LOGIN:
       return (state = true);
@@ -9,6 +13,7 @@ const isLoginReducer = (state = false, action: any) => {
     default:
       return state;
   }
+  
 };
 
 export default isLoginReducer;

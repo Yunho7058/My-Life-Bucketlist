@@ -1,18 +1,5 @@
 import { INCREASE_NUM, DECREASE_NUM } from '../action/testActions';
-
-namespace TypeRedux {
-  export interface TypeDumy {
-    id: number;
-    name: string;
-    quantity: number;
-  }
-  export interface TypeAction {
-    type: string;
-    payload: {
-      id: number;
-    };
-  }
-}
+import TypeRedux from './typeRedux';
 
 const dumy: TypeRedux.TypeDumy[] = [
   {
