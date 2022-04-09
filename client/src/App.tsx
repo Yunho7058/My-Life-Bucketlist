@@ -11,6 +11,7 @@ import { useDarkMode } from './components/hook/useDarkMode';
 import Login from './page/Login';
 import ReduxTest from './page/ReduxTest';
 import Signup from './page/Signup';
+import Post from './page/Post';
 
 function App() {
   const [themeMode, toggleTheme] = useDarkMode();
@@ -30,6 +31,8 @@ function App() {
               <Route path="/" element={<Main />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/reduxtest" element={<ReduxTest />} />
+              <Route path="/createpost" element={<Post />} />
               <Route path="/reduxtest" element={<ReduxTest />} />
             </Routes>
           </Backgound>

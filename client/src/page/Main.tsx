@@ -5,7 +5,6 @@ import Headers from '../components/Headers';
 import { useSelector } from 'react-redux';
 import { TypeRootReducer } from '../store/store';
 import TypeRedux from '../reducer/typeRedux';
-import { Console } from 'console';
 
 export const MainDiv = styled.div`
   background-color: ${({ theme }) => theme.mode.background1};

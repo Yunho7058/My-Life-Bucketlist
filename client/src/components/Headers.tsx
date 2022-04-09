@@ -2,13 +2,33 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-
+import styled from 'styled-components';
+import { MdEditCalendar } from 'react-icons/md';
 //components
 import { TypeRootReducer } from '../store/store';
 import { HeaderBack, LoginBtn } from './style/HeadersS';
 import { isLogin, isLogout, postAll } from '../action';
 import axios from 'axios';
 
+export const CreatePostBtn = styled.div`
+  position: fixed;
+  right: 10px;
+  top: 300px;
+  width: 50px;
+  height: 50px;
+  border-radius: 30px;
+  background-color: ${({ theme }) => theme.mode.background2};
+  box-shadow: 3px 3px 4px 2px ${({ theme }) => theme.mode.borderBox};
+  transition: 500ms;
+  &:hover {
+    transition: 500ms;
+    width: 200px;
+  }
+  cursor: pointer;
+  > svg {
+    padding: 10px;
+  }
+`;
 function Headers() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -77,6 +97,13 @@ function Headers() {
       >
         {stateIsLogin ? '로그아웃' : '로그인'}
       </LoginBtn>
+      <CreatePostBtn
+        onClick={() => {
+          navigate('/createpost');
+        }}
+      >
+        <MdEditCalendar size={30}></MdEditCalendar>
+      </CreatePostBtn>
     </HeaderBack>
   );
 }
