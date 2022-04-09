@@ -12,21 +12,7 @@ namespace TypeRedux {
   }
   export interface TypePosts {
     type: string;
-    payload: {
-      postAlldata: {
-        title: string;
-        bucketlist: {
-          id: number;
-          content: string;
-          data: string;
-          image_path: any;
-        };
-        id: number;
-        nickname: string;
-        updated_at: string;
-        like_count: number;
-      };
-    };
+    payload: { postAlldata: TypePostsData };
   }
   export interface TypePostsData {
     title: string;
@@ -40,6 +26,16 @@ namespace TypeRedux {
       data: any;
       image_path: any;
     }[];
+  }
+
+  export interface TypeUserInfo {
+    id: number;
+    email: string;
+    nickname: string;
+  }
+  export interface TypeUserInfoAction {
+    type: string;
+    payload: { userInfo: TypeUserInfo };
   }
 }
 
