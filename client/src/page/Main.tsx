@@ -1,10 +1,13 @@
 //library
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 //components
 import Headers from '../components/Headers';
-import { useSelector } from 'react-redux';
-import { TypeRootReducer } from '../store/store';
-import TypeRedux from '../reducer/typeRedux';
+import { TypeRootReducer } from '../redux/store/store';
+import TypeRedux from '../redux/reducer/typeRedux';
+import { postEach } from '../redux/action';
 
 export const MainDiv = styled.div`
   background-color: ${({ theme }) => theme.mode.background1};
@@ -107,7 +110,12 @@ function Main() {
   const stateAllPost: TypeRedux.TypePostsData[] = useSelector(
     (state: TypeRootReducer) => state.postsReducer
   );
+  const navigate = useNavigate();
 
+  //! POST 클릭시
+  const handlePostClick = (id: number) => {
+    navigate(`post/${id}`);
+  };
   return (
     <>
       <Headers></Headers>
@@ -116,7 +124,12 @@ function Main() {
         <MainPostBack>
           {stateAllPost.map((el: TypeRedux.TypePostsData) => {
             return (
-              <MainPost key={el.id}>
+              <MainPost
+                key={el.id}
+                onClick={() => {
+                  handlePostClick(el.id);
+                }}
+              >
                 <PostImg />
                 <PostContentBox>
                   {el.title}
@@ -127,7 +140,7 @@ function Main() {
                       })
                       .map((el, idx) => {
                         return (
-                          <div>
+                          <div key={idx}>
                             {idx + 1}. {el.content}
                           </div>
                         );

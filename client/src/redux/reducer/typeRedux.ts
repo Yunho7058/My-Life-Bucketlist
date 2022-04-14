@@ -27,15 +27,31 @@ namespace TypeRedux {
       image_path: any;
     }[];
   }
-
-  export interface TypeUserInfo {
-    id: number;
-    email: string;
-    nickname: string;
+  export interface TypeKeyString {
+    [key: string]: string;
   }
-  export interface TypeUserInfoAction {
+  export interface TypePostData extends TypePostsData {
+    owner: boolean;
+    bookmark: boolean;
+    like: boolean;
+  }
+
+  export interface TypePost {
     type: string;
-    payload: { userInfo: TypeUserInfo };
+    payload: {
+      postEachData: TypePostData;
+      content: TypeKeyString;
+      id: number;
+    };
+  }
+
+  export interface TypeModal {
+    show: boolean;
+    msg: string;
+  }
+  export interface TypedModalAction {
+    type: string;
+    payload: string;
   }
 }
 

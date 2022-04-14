@@ -15,8 +15,8 @@ import qs from 'qs';
 
 //components
 import Headers from '../components/Headers';
-import { isLogin } from '../action';
-import * as LS from '../components/style/LoginS';
+import { isLogin } from '../redux/action';
+import * as LS from './style/LoginS';
 
 export const LoginSNSBack = styled.div`
   width: 200px;
@@ -96,11 +96,11 @@ function Login() {
           let accessToken = res.data.access_token;
           window.localStorage.setItem('accessToken', accessToken);
           dispatch(isLogin());
+          handleGetUserinfo();
           navigate('/');
           //! setCookie(client) 와 headers(server)에 담긴 cookie 차이는?
         })
         .catch((err) => {
-          console.log(err.response.data.detail);
           if (err.response.data.detail === 'email') {
             setMsg({
               ...msg,
@@ -117,6 +117,29 @@ function Login() {
         });
     }
   };
+  //유저정보 저장
+  const handleGetUserinfo = () => {
+    let accessToken = window.localStorage.getItem('accessToken');
+    axios
+      .get(`${process.env.REACT_APP_SERVER_URI}/me`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        window.localStorage.setItem(
+          'user',
+          JSON.stringify({
+            id: res.data.id,
+            email: res.data.email,
+            nickname: res.data.nickname,
+          })
+          //! 읽을때 JSON.part()
+        );
+      })
+      .catch((err) => console.log(err, '로그인 후 해당유저 정보 불러오기'));
+  };
+
   const enterKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
       return handleLogin();

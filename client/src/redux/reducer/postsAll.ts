@@ -19,16 +19,16 @@ const initialization = [
   },
 ];
 
-const postsReducer = (
+const postsAllReducer = (
   state: TypeRedux.TypePostsData[] = initialization,
   action: TypeRedux.TypePosts
 ) => {
   switch (action.type) {
     case POST_ALL:
-      let copy = action.payload.postAlldata;
-      return copy;
+      let allData = action.payload.postAlldata;
+      return allData;
     default:
       return state;
   }
 };
-export default postsReducer;
+export default postsAllReducer;

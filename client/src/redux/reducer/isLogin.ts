@@ -13,7 +13,6 @@ const isLoginReducer = (state = false, action: TypeAction): boolean => {
     default:
       return state;
   }
-  
 };
 
 export default isLoginReducer;
