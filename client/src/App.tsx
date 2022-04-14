@@ -2,16 +2,31 @@
 import styled, { ThemeProvider } from 'styled-components';
 import { Reset } from 'styled-reset';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, {
+  lazy,
+  Suspense,
+  useState,
+  Dispatch,
+  SetStateAction,
+} from 'react';
+import { useSelector } from 'react-redux';
+import { TypeRootReducer } from './redux/store/store';
 
 //components
-import Main from './page/Main';
+//import ReduxTest from './page/ReduxTest';
 import { light, dark, fontSizes, fontWeights } from './components/style/theme';
 import { Toggle } from './components/toggle';
 import { useDarkMode } from './components/hook/useDarkMode';
-import Login from './page/Login';
-import ReduxTest from './page/ReduxTest';
-import Signup from './page/Signup';
-import Post from './page/Post';
+import Modal from './components/Modal';
+//import Main from './page/Main';
+// import Signup from './page/Signup';
+// import Post from './page/Post';
+//import Login from './page/Login';
+let ReduxTest = lazy(() => import('./page/ReduxTest'));
+let Main = lazy(() => import('./page/Main'));
+let Login = lazy(() => import('./page/Login'));
+let Signup = lazy(() => import('./page/Signup'));
+let Post = lazy(() => import('./page/Post'));
 
 function App() {
   const [themeMode, toggleTheme] = useDarkMode();
@@ -19,7 +34,6 @@ function App() {
     themeMode === 'light'
       ? { mode: light, fontSizes, fontWeights }
       : { mode: dark, fontSizes, fontWeights };
-
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -27,14 +41,15 @@ function App() {
           <Reset />
           <Toggle themeMode={themeMode} toggleTheme={toggleTheme} />
           <Backgound>
-            <Routes>
-              <Route path="/" element={<Main />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/reduxtest" element={<ReduxTest />} />
-              <Route path="/createpost" element={<Post />} />
-              <Route path="/reduxtest" element={<ReduxTest />} />
-            </Routes>
+            <Suspense fallback={<div>....로딩중</div>}>
+              <Routes>
+                <Route path="/" element={<Main />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/post/:id" element={<Post />} />
+                <Route path="/reduxtest" element={<ReduxTest />} />
+              </Routes>
+            </Suspense>
           </Backgound>
         </BrowserRouter>
       </ThemeProvider>

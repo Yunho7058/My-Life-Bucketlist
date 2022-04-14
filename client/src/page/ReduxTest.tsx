@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { increaseNum, deceaseNum, is } from '../action/testActions';
-import { TypeRootReducer } from '../store/store';
+import { increaseNum, deceaseNum, is } from '../redux/action/testActions';
+import { TypeRootReducer } from '../redux/store/store';
 
 function ReduxTest() {
   const state = useSelector((state: TypeRootReducer) => state.testReducer);

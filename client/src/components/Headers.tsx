@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { MdEditCalendar } from 'react-icons/md';
 //components
-import { TypeRootReducer } from '../store/store';
+import { TypeRootReducer } from '../redux/store/store';
 import { HeaderBack, LoginBtn } from './style/HeadersS';
-import { isLogin, isLogout, postAll } from '../action';
+import { isLogin, isLogout, postAll } from '../redux/action';
 import axios from 'axios';
 
 export const CreatePostBtn = styled.div`
@@ -57,7 +57,7 @@ function Headers() {
       .catch((err) => {
         console.log(err, 'Post All err ');
       });
-  }, [dispatch]);
+  }, []);
 
   //! 로그아웃
   const handleLoginLogoutBtn = () => {
@@ -71,6 +71,7 @@ function Headers() {
         })
         .then((res) => {
           window.localStorage.removeItem('accessToken');
+          window.localStorage.removeItem('user');
           dispatch(isLogout());
           navigate('/');
         })
@@ -85,6 +86,10 @@ function Headers() {
   //! useEffect 더 공부해보기
   //참고 링크 https://www.rinae.dev/posts/a-complete-guide-to-useeffect-ko
   //useReducer, useCallback, useMemo 배우기
+  const handleMyPostBtn = () => {
+    //로컬에서 해당유저 post id 빼오기
+    //navigate(`post/${}`)
+  };
 
   return (
     <HeaderBack>
@@ -99,7 +104,7 @@ function Headers() {
       </LoginBtn>
       <CreatePostBtn
         onClick={() => {
-          navigate('/createpost');
+          handleMyPostBtn();
         }}
       >
         <MdEditCalendar size={30}></MdEditCalendar>

@@ -2,7 +2,7 @@
 
 const dark = {
   mainBackground: '#292B2E',
-  primaryText: '#fff',
+  primaryText: 'rgb(240,240,240)',
   // secondaryText: 'rgba(255,255,255,0.45)',
   // disable: 'rgba(255,255,255,0.25)',
   border: '#d1d5da',
