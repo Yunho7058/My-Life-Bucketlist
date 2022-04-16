@@ -8,13 +8,25 @@ client = TestClient(app)
 client.base_url += "/api/"
 
 
-def test_signup_success():
+def test_signup_success1():
     response = client.post(
         "signup",
         json={
             "email": "test@example.com",
             "password": "qwer1234",
             "nickname": "테스트",
+        }
+    )
+    assert response.status_code == 201
+
+
+def test_signup_success2():
+    response = client.post(
+        "signup",
+        json={
+            "email": "test2@example.com",
+            "password": "qwer1234",
+            "nickname": "테스트2",
         }
     )
     assert response.status_code == 201
@@ -67,7 +79,7 @@ def test_check_email_code_success():
     assert response.status_code == 204
 
 
-def test_check_email_code_failure_1():
+def test_check_email_code_failure1():
     response = client.post(
         "email/code",
         json={
@@ -80,7 +92,7 @@ def test_check_email_code_failure_1():
     assert response.status_code == 400
 
 
-def test_check_email_code_failure_2():
+def test_check_email_code_failure2():
     response = client.post(
         "email/code",
         json={
@@ -125,7 +137,7 @@ def test_login_success():
     assert Token(**response.json())
 
 
-def test_login_failure_1():
+def test_login_failure1():
     response = client.post(
         "login",
         data={
@@ -137,7 +149,7 @@ def test_login_failure_1():
     assert response.json().get("detail") == "password"
 
 
-def test_login_failure_2():
+def test_login_failure2():
     response = client.post(
         "login",
         data={
@@ -149,12 +161,9 @@ def test_login_failure_2():
     assert response.json().get("detail") == "email"
 
 
-def test_logout_success():
+def test_logout_success1():
     response = client.get(
         "logout",
-        headers={
-            "Authorization": "Bearer"
-        },
         cookies={
             "refresh_token": refresh_token
         }
@@ -163,14 +172,11 @@ def test_logout_success():
     assert not response.cookies.get("refresh_token")
 
 
-def test_logout_failure():
+def test_logout_success2():
     response = client.get(
         "logout",
-        cookies={
-            "refresh_token": refresh_token
-        }
     )
-    assert response.status_code == 401
+    assert response.status_code == 204
     assert not response.cookies.get("refresh_token")
 
 
@@ -200,7 +206,7 @@ def test_get_user_info_success():
     response = client.get(
         "me",
         headers={
-            "Authorization": "Bearer"
+            "Authorization": "test"
         }
     )
     assert response.status_code == 200
@@ -208,7 +214,8 @@ def test_get_user_info_success():
         "id": 1,
         "email": "test@example.com",
         "nickname": "테스트",
-        "domain": None
+        "domain": None,
+        "post_id": 1
     }
 
 
@@ -217,3 +224,20 @@ def test_get_user_info_failure():
         "me",
     )
     assert response.status_code == 401
+
+
+def test_get_post_id_success():
+    response = client.get(
+        "user/1/post"
+    )
+    assert response.json() == {
+        "id": 1,
+        "is_public": True
+    }
+
+
+def test_get_post_id_failure():
+    response = client.get(
+        "user/100/post"
+    )
+    assert response.status_code == 404

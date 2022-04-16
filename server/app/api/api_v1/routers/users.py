@@ -13,12 +13,13 @@ from app.api.dependencies import (
     get_db,
     get_current_user
 )
-from app.schemas.users import User, UserCreate, Token, UserLogin
+from app.schemas.users import User, UserCreate, Token, UserLogin, UserWithPostId, PostId
 from app.schemas.common import HTTPError
 from app.crud.users import (
     create_user, 
     get_user, 
-    get_user_by_nickname
+    get_user_by_nickname,
+    get_user_by_id
 )
 from app.crud.posts import create_post
 from app.core.config import settings
@@ -128,7 +129,7 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
         )
     token = create_token(user.email)
     refresh_token = token.pop("refresh_token")
-    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
+    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60, httponly=True)
     return token
 
 
@@ -138,22 +139,31 @@ def refresh_token(response: Response, refresh_token: str | None = Cookie(None), 
     email = decode_token(refresh_token)
     user = get_user(db, email)
     if user is None:
-        raise HTTPException(400)
+        raise HTTPException(status_code=400)
     token = create_token(user.email)
     refresh_token = token.pop("refresh_token")
-    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
+    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60, httponly=True)
     return token
 
 
-@router.get("/logout", status_code=204, response_class=Response, responses={401: {}}, summary="로그아웃")
-def logout(response: Response, user: User = Depends(get_current_user)):
+@router.get("/logout", status_code=204, summary="로그아웃")
+def logout(response: Response):
     response.delete_cookie("refresh_token")
     return
 
 
-@router.get("/me", response_model=User, responses={401: {}}, summary="현재 유저 정보 조회")
+@router.get("/me", response_model=UserWithPostId, responses={401: {}}, summary="현재 유저 정보 조회")
 def get_current_user_info(user: User = Depends(get_current_user)):
+    user.post_id = user.post.id
     return user
+
+
+@router.get("/user/{user_id}/post", response_model=PostId, responses={404: {}}, summary="유저의 게시글 아이디 및 공개여부 조회")
+def get_post_id(user_id: int, db: Session = Depends(get_db)):
+    user = get_user_by_id(db, user_id)
+    if user is None:
+        raise HTTPException(status_code=404)
+    return user.post
 
 
 # @router.post("/token/kakao", response_model=Token)

@@ -12,6 +12,7 @@ class User(Base):
     nickname = Column(String(30), unique=True, nullable=False)
     password = Column(String(300))
     domain = Column(String(30))
+    image_path = Column(String(300))
 
     post = relationship("Post", back_populates="user", cascade="all, delete-orphan", uselist=False)
     comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")

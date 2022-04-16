@@ -38,8 +38,8 @@ override_oauth2_scheme = OAuth2PasswordBearerTest(tokenUrl="login", auto_error=F
 
 
 def override_authenticate_by_token(token: str = Depends(oauth2_scheme)):
-    if token[:6] == "Bearer":
-        return "test@example.com"
+    if token:
+        return token + "@example.com"
     return ""
 
 

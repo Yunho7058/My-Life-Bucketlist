@@ -5,6 +5,7 @@ import datetime
 
 class Comment(BaseModel):
     id: int
+    user_id: int
     nickname: str 
     content: str 
     updated_at: datetime.datetime
@@ -16,7 +17,7 @@ class Comment(BaseModel):
 class Bucketlist(BaseModel):
     id: int | None = None
     content: str 
-    date: datetime.date | None = None
+    detail:str | None = None
     image_path: str | None = None
 
     class Config:
@@ -42,3 +43,4 @@ class PostDetail(Post):
     owner: bool 
     bookmark: bool 
     like: bool 
+    is_public: bool
