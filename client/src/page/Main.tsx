@@ -19,7 +19,7 @@ export const MainBack = styled.div`
   background-color: ${({ theme }) => theme.mode.background1};
   display: flex;
   justify-content: space-evenly;
-  min-width: 500px;
+  min-width: 200px;
 `;
 export const MainPostBack = styled.div`
   flex-grow: 3;
@@ -75,6 +75,7 @@ export const MainPost = styled.div`
   @media screen and (max-width: 600px) {
     height: 400px;
     width: 360px;
+    min-width: 300px;
   }
 `;
 
@@ -110,6 +111,7 @@ function Main() {
   const stateAllPost: TypeRedux.TypePostsData[] = useSelector(
     (state: TypeRootReducer) => state.postsReducer
   );
+  console.log(stateAllPost, '메인');
   const navigate = useNavigate();
 
   //! POST 클릭시

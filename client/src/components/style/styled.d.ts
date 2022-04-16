@@ -22,7 +22,9 @@ declare module 'styled-components' {
       loginLine: string;
       background1: string;
       background2: string;
+      background3: string;
       borderBox: string;
+
       BGInput: string;
       FCInput: string;
       fontColor: string;
