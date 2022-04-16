@@ -5,6 +5,7 @@ import datetime
 
 class Comment(BaseModel):
     id: int
+    user_id: int
     nickname: str 
     content: str 
     updated_at: datetime.datetime
