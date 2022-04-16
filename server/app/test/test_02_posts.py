@@ -31,6 +31,7 @@ def test_get_post_detail_success():
         "id": 1,
         "nickname": "테스트",
         "owner": False,
+        'is_public': True,
         "bookmark": False,
         "like": False,
         "like_count": 0,

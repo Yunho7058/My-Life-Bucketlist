@@ -12,8 +12,16 @@ router = APIRouter()
 
 
 @router.get("/post", response_model=list[schemas.Post], summary="게시글 목록 조회", tags=["버킷리스트"])
-def get_post_list(db: Session = Depends(get_db)):
-    posts = crud.get_post_list(db)
+def get_post_list(last_id: int | None = None, db: Session = Depends(get_db)):
+    """
+    **설명**
+    - 전체 게시글 중 최근 20개를 응답
+    - last_id가 주어지면 그 다음 20개의 게시글을 응답
+
+    **query**
+    - last_id: 마지막 게시글의 id
+    """
+    posts = crud.get_post_list(db, last_id)
     for post in posts:
         post.nickname = post.user.nickname
         post.like_count = post.likes.count()
@@ -123,19 +131,19 @@ def delete_bucketlist(bucketlist_id: int, user: User = Depends(get_current_user)
 
 
 @router.get("/comment/{post_id}", response_model=list[schemas.Comment], summary="댓글 목록 조회", tags=["댓글"])
-def get_comment_list(post_id: int, page: int = 1, db: Session = Depends(get_db)):
+def get_comment_list(post_id: int, last_id: int | None = None, db: Session = Depends(get_db)):
     """
     **설명**
-    - post_id와 page를 받아 해당 게시글의 댓글 목록을 응답
-    - 페이지당 20개의 댓글 응답
+    - post_id를 받아 해당 게시글의 댓글 20개를 응답
+    - last_id가 주어지면 그 다음 댓글 20개를 응답
 
     **Path**
     - post_id: 댓글목록을 조회하려는 게시글의 id
 
     **query**
-    - page: 댓글 페이지 숫자로 기본값은 1
+    - last_id: 마지막 댓글의 id
     """
-    comments = crud.get_comment_list(db, post_id, page)
+    comments = crud.get_comment_list(db, post_id, last_id)
     for comment in comments:
         comment.nickname = comment.user.nickname
     return comments

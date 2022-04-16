@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 
 from app.models.users import User
 from app.models.posts import Post, Bucketlist, Comment, Like, Bookmark
@@ -6,8 +7,11 @@ from app.schemas import posts as schemas
 
 
 
-def get_post_list(db: Session):
-    return db.query(Post).all()
+def get_post_list(db: Session, last_id: int | None):
+    size = 20
+    if last_id is None:
+        return db.query(Post).filter(Post.is_public == True).order_by(desc(Post.id)).limit(size).all()
+    return db.query(Post).filter(Post.is_public == True, Post.id < last_id).order_by(desc(Post.id)).limit(size).all()
 
 
 def get_post_detail(db: Session, post_id: int):
@@ -62,8 +66,11 @@ def get_comment(db: Session, comment_id: int):
     return db.get(Comment, comment_id)
 
 
-def get_comment_list(db: Session, post_id: int, page: int):
-    return db.query(Comment).filter_by(post_id = post_id).offset(20 * (page-1)).limit(20).all()
+def get_comment_list(db: Session, post_id: int, last_id: int | None):
+    size = 20
+    if last_id is None:
+        return db.query(Comment).filter_by(post_id = post_id).order_by(Comment.id).limit(size).all()
+    return db.query(Comment).filter(Comment.post_id == post_id, Comment.id > last_id).order_by(Comment.id).limit(size).all()
 
 
 def create_comment(db: Session, content: str, user_id: int, post_id: int):

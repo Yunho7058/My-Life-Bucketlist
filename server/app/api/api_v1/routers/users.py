@@ -13,7 +13,7 @@ from app.api.dependencies import (
     get_db,
     get_current_user
 )
-from app.schemas.users import User, UserCreate, Token, UserLogin
+from app.schemas.users import User, UserCreate, Token, UserLogin, UserWithPostId
 from app.schemas.common import HTTPError
 from app.crud.users import (
     create_user, 
@@ -151,8 +151,9 @@ def logout(response: Response, user: User = Depends(get_current_user)):
     return
 
 
-@router.get("/me", response_model=User, responses={401: {}}, summary="현재 유저 정보 조회")
+@router.get("/me", response_model=UserWithPostId, responses={401: {}}, summary="현재 유저 정보 조회")
 def get_current_user_info(user: User = Depends(get_current_user)):
+    user.post_id = user.post.id
     return user
 
 

@@ -20,6 +20,7 @@ class Post(Base):
     user_id = Column(Integer, ForeignKey("users.id"), unique=True)
     updated_at = Column(DateTime(timezone=True), onupdate=get_now)
     title = Column(String(100))
+    is_public = Column(Boolean, default=True)
 
     user = relationship("User", back_populates="post")
     bucketlist = relationship("Bucketlist", back_populates="post", cascade="all, delete-orphan")

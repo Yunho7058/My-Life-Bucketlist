@@ -208,7 +208,8 @@ def test_get_user_info_success():
         "id": 1,
         "email": "test@example.com",
         "nickname": "테스트",
-        "domain": None
+        "domain": None,
+        "post_id": 1
     }
 
 

@@ -42,3 +42,4 @@ class PostDetail(Post):
     owner: bool 
     bookmark: bool 
     like: bool 
+    is_public: bool

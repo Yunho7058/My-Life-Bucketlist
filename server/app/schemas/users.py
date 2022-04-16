@@ -27,6 +27,11 @@ class User(UserBase):
         orm_mode = True
 
 
+class UserWithPostId(User):
+    post_id: int
+    
+
+
 class UserLogin(BaseModel):
     email: str
     password: str
