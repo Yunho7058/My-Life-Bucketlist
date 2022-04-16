@@ -5,7 +5,8 @@ from sqlalchemy import (
     ForeignKey, 
     DateTime, 
     Date,
-    Boolean
+    Boolean,
+    TEXT
 )
 from sqlalchemy.orm import relationship
 
@@ -35,7 +36,7 @@ class Bucketlist(Base):
     id = Column(Integer, primary_key=True, index=True)
     post_id = Column(Integer, ForeignKey("posts.id"))
     content = Column(String(300))
-    date = Column(Date)
+    detail = Column(TEXT)
     image_path = Column(String(300))
 
     post = relationship("Post", back_populates="bucketlist")
@@ -47,7 +48,7 @@ class Comment(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     post_id = Column(Integer, ForeignKey("posts.id"))
-    content = Column(String(300))
+    content = Column(TEXT)
     updated_at = Column(DateTime(timezone=True), default=get_now, onupdate=get_now)
 
     post = relationship("Post", back_populates="comments")

@@ -139,7 +139,7 @@ def refresh_token(response: Response, refresh_token: str | None = Cookie(None), 
     email = decode_token(refresh_token)
     user = get_user(db, email)
     if user is None:
-        raise HTTPException(400)
+        raise HTTPException(status_code=400)
     token = create_token(user.email)
     refresh_token = token.pop("refresh_token")
     response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60, httponly=True)

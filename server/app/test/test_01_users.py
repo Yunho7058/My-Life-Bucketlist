@@ -8,13 +8,25 @@ client = TestClient(app)
 client.base_url += "/api/"
 
 
-def test_signup_success():
+def test_signup_success1():
     response = client.post(
         "signup",
         json={
             "email": "test@example.com",
             "password": "qwer1234",
             "nickname": "테스트",
+        }
+    )
+    assert response.status_code == 201
+
+
+def test_signup_success2():
+    response = client.post(
+        "signup",
+        json={
+            "email": "test2@example.com",
+            "password": "qwer1234",
+            "nickname": "테스트2",
         }
     )
     assert response.status_code == 201
@@ -194,7 +206,7 @@ def test_get_user_info_success():
     response = client.get(
         "me",
         headers={
-            "Authorization": "Bearer"
+            "Authorization": "test"
         }
     )
     assert response.status_code == 200

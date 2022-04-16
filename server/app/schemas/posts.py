@@ -16,7 +16,7 @@ class Comment(BaseModel):
 class Bucketlist(BaseModel):
     id: int | None = None
     content: str 
-    date: datetime.date | None = None
+    detail:str | None = None
     image_path: str | None = None
 
     class Config:

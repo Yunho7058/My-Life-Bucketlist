@@ -48,8 +48,8 @@ def create_bucketlist(db: Session, bucketlist: schemas.Bucketlist, post_id: int)
 
 def update_bucketlist(db: Session, db_bucketlist: Bucketlist, bucketlist: schemas.Bucketlist):
     db_bucketlist.content = bucketlist.content
-    if bucketlist.date:
-        db_bucketlist.date = bucketlist.date
+    if bucketlist.detail:
+        db_bucketlist.detail = bucketlist.detail
     if bucketlist.image_path:
         db_bucketlist.image_path = bucketlist.image_path
     db.commit()
