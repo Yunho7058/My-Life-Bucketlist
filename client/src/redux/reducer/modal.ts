@@ -12,7 +12,11 @@ const modal = (
 ) => {
   switch (action.type) {
     case MODAL_OPEN:
-      let copy = { show: true, msg: action.payload };
+      let copy = {
+        show: true,
+        msg: action.payload.msg,
+        commentId: action.payload.commentId,
+      };
       return copy;
     case MODAL_CLOSE:
       let copy_close = { ...state, show: false };

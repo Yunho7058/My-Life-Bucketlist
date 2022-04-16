@@ -50,10 +50,10 @@ export const postContentEdit = (
   };
 };
 
-export const modalOpen = (msg: string) => {
+export const modalOpen = (msg: string, commentId?: number) => {
   return {
     type: MODAL_OPEN,
-    payload: msg,
+    payload: { msg, commentId },
   };
 };
 

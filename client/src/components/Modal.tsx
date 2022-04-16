@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { TypeRootReducer } from '../redux/store/store';
 import { modalClose } from '../redux/action';
+import axios from 'axios';
 
 export const ModalBack = styled.div`
   position: fixed;
@@ -52,6 +53,11 @@ export const ModalBtn = styled.div`
   &:hover {
     background-color: #6495ed;
   }
+  &.commentDel {
+    &:hover {
+      background-color: #c77171;
+    }
+  }
 `;
 
 //모달창 구현시 참고
@@ -63,6 +69,20 @@ const Modal = () => {
   const handleClose = () => {
     dispatch(modalClose());
   };
+  //!모달 open 후 댓글 삭제
+  const handleCommentDelete = (commentId?: number) => {
+    let accessToken = window.localStorage.getItem('accessToken');
+    axios
+      .delete(`${process.env.REACT_APP_SEVER_URI}/comment/${commentId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+      .then((res) => {
+        //댓글 삭제 후 재랜더링
+      })
+      .catch((err) => {
+        console.log(err, 'modal comment delete err');
+      });
+  };
 
   return (
     <>
@@ -70,9 +90,23 @@ const Modal = () => {
         <ModalBack>
           <ModalBox>
             <ModalText>{stateModal.msg}</ModalText>
-            <ModalBtnBack>
-              <ModalBtn onClick={() => handleClose()}>확인</ModalBtn>
-            </ModalBtnBack>
+            {stateModal.commentId ? (
+              <ModalBtnBack>
+                <ModalBtn onClick={() => handleClose()}>취소</ModalBtn>
+                <ModalBtn
+                  className="commentDel"
+                  onClick={() => {
+                    handleCommentDelete(stateModal.commentId);
+                  }}
+                >
+                  삭제
+                </ModalBtn>
+              </ModalBtnBack>
+            ) : (
+              <ModalBtnBack>
+                <ModalBtn onClick={() => handleClose()}>확인</ModalBtn>
+              </ModalBtnBack>
+            )}
           </ModalBox>
         </ModalBack>
       )}

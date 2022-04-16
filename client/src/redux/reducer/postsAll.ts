@@ -26,6 +26,7 @@ const postsAllReducer = (
   switch (action.type) {
     case POST_ALL:
       let allData = action.payload.postAlldata;
+
       return allData;
     default:
       return state;

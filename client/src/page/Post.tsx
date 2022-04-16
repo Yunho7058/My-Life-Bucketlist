@@ -1,6 +1,7 @@
 //library
 import styled from 'styled-components';
-import { BsPlusCircleDotted } from 'react-icons/bs';
+import { BsPlusCircleDotted, BsBookmarkPlus } from 'react-icons/bs';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
@@ -13,12 +14,30 @@ import { useEffect } from 'react';
 import { postEach, postContentEdit, modalOpen } from '../redux/action';
 import Modal from '../components/Modal';
 import * as PS from './style/PostStyledComponents';
+import Comment from './Comment';
 //import { TypeProps } from '../App';
 
 //편집모드 클릭 시 수정 삭제 추가 버튼 보이게 하기
 //! 만약 로컬 아이디와 포스트 아이디 다르면 편집모드 숨기기
 //
 //
+
+export const Pagination = styled.div``;
+export const BookAndlikeBtn = styled.div`
+  width: 90%;
+  height: 30px;
+  display: flex;
+  margin-top: 20px;
+  column-gap: 20px;
+  align-items: flex-start;
+  align-items: center;
+
+  > svg {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+`;
 function Post() {
   const postURL = useParams();
   const dispatch = useDispatch();
@@ -148,7 +167,7 @@ function Post() {
                   placeholder="제목을 작성해주세요."
                   className="title"
                   defaultValue={statePost.title}
-                />{' '}
+                />
                 <PS.Btn className="simpleCreate">저장</PS.Btn>
               </>
             ) : (
@@ -184,8 +203,6 @@ function Post() {
                       handleIsSimple(idx);
                     }}
                   >
-                    {/* 간략하게 보기,선택 상세보기 */}
-
                     {/* 간략하게 보기,선택 상세보기,편집 on */}
 
                     {isPost.isEditMode ? (
@@ -334,7 +351,7 @@ function Post() {
             </PS.BucketlistBox>
           ) : (
             <PS.BucketlistBox>
-              {/* 이미지 보기,편집 on */}
+              {/* 상세 보기,편집 on */}
               {statePost.bucketlist.map((el, idx) => {
                 return (
                   <PS.BucketlistView key={el.id}>
@@ -380,7 +397,7 @@ function Post() {
                       </>
                     ) : (
                       <>
-                        {/* 이미지 보기,편집 off */}
+                        {/* 상세 보기,편집 off */}
                         <div>
                           <PS.BucketlistImg />
                           {/* //이미지 경로 설정 */}
@@ -439,6 +456,14 @@ function Post() {
               )}
             </PS.BucketlistBox>
           )}
+
+          <Pagination>1~20위 21~40위 41~60위 61~80위 81~100위</Pagination>
+          <BookAndlikeBtn>
+            <BsBookmarkPlus size={25} />
+            {statePost.like ? <FaHeart size={25} /> : <FaRegHeart size={25} />}
+            좋아요 {statePost.like_count}개
+          </BookAndlikeBtn>
+          <Comment />
         </PS.PostBox>
         {/* <input
                     type="file"

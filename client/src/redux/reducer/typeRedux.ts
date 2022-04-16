@@ -48,10 +48,14 @@ namespace TypeRedux {
   export interface TypeModal {
     show: boolean;
     msg: string;
+    commentId?: number;
   }
   export interface TypedModalAction {
     type: string;
-    payload: string;
+    payload: {
+      msg: string;
+      commentId?: number;
+    };
   }
 }
 
