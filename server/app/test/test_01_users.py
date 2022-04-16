@@ -218,3 +218,20 @@ def test_get_user_info_failure():
         "me",
     )
     assert response.status_code == 401
+
+
+def test_get_post_id_success():
+    response = client.get(
+        "user/1/post"
+    )
+    assert response.json() == {
+        "id": 1,
+        "is_public": True
+    }
+
+
+def test_get_post_id_failure():
+    response = client.get(
+        "user/100/post"
+    )
+    assert response.status_code == 404

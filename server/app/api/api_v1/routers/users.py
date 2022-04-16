@@ -13,12 +13,13 @@ from app.api.dependencies import (
     get_db,
     get_current_user
 )
-from app.schemas.users import User, UserCreate, Token, UserLogin, UserWithPostId
+from app.schemas.users import User, UserCreate, Token, UserLogin, UserWithPostId, PostId
 from app.schemas.common import HTTPError
 from app.crud.users import (
     create_user, 
     get_user, 
-    get_user_by_nickname
+    get_user_by_nickname,
+    get_user_by_id
 )
 from app.crud.posts import create_post
 from app.core.config import settings
@@ -155,6 +156,14 @@ def logout(response: Response, user: User = Depends(get_current_user)):
 def get_current_user_info(user: User = Depends(get_current_user)):
     user.post_id = user.post.id
     return user
+
+
+@router.get("/user/{user_id}/post", response_model=PostId, responses={404: {}}, summary="유저의 게시글 아이디 및 공개여부 조회")
+def get_post_id(user_id: int, db: Session = Depends(get_db)):
+    user = get_user_by_id(db, user_id)
+    if user is None:
+        raise HTTPException(status_code=404)
+    return user.post
 
 
 # @router.post("/token/kakao", response_model=Token)
