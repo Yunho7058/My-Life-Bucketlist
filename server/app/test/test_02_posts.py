@@ -118,14 +118,14 @@ def test_delete_bucketlist_success():
     assert response.status_code == 204
 
 
-def test_delete_bucketlist_failure_1():
+def test_delete_bucketlist_failure1():
     response = client.delete(
         "bucketlist/2",
     )
     assert response.status_code == 401
 
 
-def test_delete_bucketlist_failure_2():
+def test_delete_bucketlist_failure2():
     response = client.delete(
         "bucketlist/100",
         headers={
@@ -148,7 +148,7 @@ def test_create_comment_success():
     assert response.status_code == 201
 
 
-def test_create_comment_failure_1():
+def test_create_comment_failure1():
     response = client.post(
         "comment/1",
         json={
@@ -158,7 +158,7 @@ def test_create_comment_failure_1():
     assert response.status_code == 401
 
 
-def test_create_comment_failure_2():
+def test_create_comment_failure2():
     response = client.post(
         "comment/1",
         headers={
@@ -191,7 +191,7 @@ def test_update_comment_success():
     assert response.status_code == 204
 
 
-def test_update_comment_failure_1():
+def test_update_comment_failure1():
     response = client.patch(
         "comment/1",
         json={
@@ -201,7 +201,7 @@ def test_update_comment_failure_1():
     assert response.status_code == 401
 
 
-def test_update_comment_failure_2():
+def test_update_comment_failure2():
     response = client.patch(
         "comment/1",
         headers={
@@ -214,7 +214,7 @@ def test_update_comment_failure_2():
     assert response.status_code == 400
 
 
-def test_update_comment_failure_3():
+def test_update_comment_failure3():
     response = client.patch(
         "comment/5",
         headers={
@@ -257,14 +257,14 @@ def test_push_like_success():
     assert response.status_code == 204
 
 
-def test_push_like_failure_1():
+def test_push_like_failure1():
     response = client.put(
         "like/1",
     )
     assert response.status_code == 401
 
 
-def test_push_like_failure_2():
+def test_push_like_failure2():
     response = client.put(
         "like/100",
         headers={
@@ -323,7 +323,7 @@ def test_get_bookmarked_post_list_success():
     assert data[0].get("id") == 1    
 
 
-def test_push_bookmark_failure_1():
+def test_push_bookmark_failure1():
     response = client.put(
         "bookmark/100",
         headers={
@@ -333,7 +333,7 @@ def test_push_bookmark_failure_1():
     assert response.status_code == 404
 
 
-def test_push_bookmark_failure_2():
+def test_push_bookmark_failure2():
     response = client.put(
         "bookmark/1",
     )
