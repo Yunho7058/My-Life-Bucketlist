@@ -15,7 +15,8 @@ const modal = (
       let copy = {
         show: true,
         msg: action.payload.msg,
-        commentId: action.payload.commentId,
+        id: action.payload.id,
+        item: action.payload.item,
       };
       return copy;
     case MODAL_CLOSE:

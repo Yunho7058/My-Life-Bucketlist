@@ -19,7 +19,7 @@ const dark = {
   loginLine: '#fff',
   background1: 'rgba(20, 20, 20,0.7)',
   background2: 'rgb(43, 44, 49)',
-  background3: 'rgba(0, 0, 0,0.4)',
+  background3: 'rgba(0, 0, 0,0.6)',
   borderBox: 'rgba(20, 20, 20,0.7)',
   BGInput: 'rgb(43, 44, 40)',
   FCInput: 'hsl(230, 4%, 90%)',

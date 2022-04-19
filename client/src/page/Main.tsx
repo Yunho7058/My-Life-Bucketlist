@@ -111,7 +111,7 @@ function Main() {
   const stateAllPost: TypeRedux.TypePostsData[] = useSelector(
     (state: TypeRootReducer) => state.postsReducer
   );
-  console.log(stateAllPost, '메인');
+
   const navigate = useNavigate();
 
   //! POST 클릭시

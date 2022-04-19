@@ -23,7 +23,7 @@ namespace TypeRedux {
     bucketlist: {
       id: number;
       content: string;
-      data: any;
+      detail?: string;
       image_path: any;
     }[];
   }
@@ -40,21 +40,25 @@ namespace TypeRedux {
     type: string;
     payload: {
       postEachData: TypePostData;
-      content: TypeKeyString;
       id: number;
+      data: TypeKeyString;
+      content: string;
+      detail: string;
     };
   }
 
   export interface TypeModal {
     show: boolean;
     msg: string;
-    commentId?: number;
+    id?: number;
+    item?: string;
   }
   export interface TypedModalAction {
     type: string;
     payload: {
       msg: string;
-      commentId?: number;
+      id?: number;
+      item?: string;
     };
   }
 }

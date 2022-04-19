@@ -2,217 +2,277 @@ import styled from 'styled-components';
 import { FaUserCircle, FaTrashAlt } from 'react-icons/fa';
 import { MdModeEdit } from 'react-icons/md';
 import { BiDotsVerticalRounded } from 'react-icons/bi';
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { modalOpen } from '../redux/action';
-export const CommentBox = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 15px;
-`;
-export const CommentCreateBox = styled.div`
-  padding: 10px;
+import axios from 'axios';
+import TypeRedux from '../redux/reducer/typeRedux';
+import { TypeRootReducer } from '../redux/store/store';
+import * as CS from './style/CommentStyledComponents';
 
-  width: 95%;
-  height: 130px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-`;
-export const CommentListBox = styled.div`
-  padding: 10px;
-
-  width: 95%;
-  height: 65%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  row-gap: 5px;
-`;
-export const CommentList = styled.div`
-  padding: 10px;
-  width: 95%;
-  height: 30%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-`;
-export const CommentProfile = styled.div`
-  width: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  > svg.my {
-    margin-bottom: 20px;
-  }
-  &.list {
-    width: 150px;
-    justify-content: flex-start;
-    > div {
-      margin-left: 5px;
-      width: 100%;
-    }
-  }
-`;
-export const CommentTextArea = styled.textarea`
-  width: 95%;
-  height: 60px;
-  border-radius: 10px;
-  border: 1px solid #696969;
-  padding: 10px;
-  resize: none;
-  background-color: ${({ theme }) => theme.mode.BGInput};
-  color: ${({ theme }) => theme.mode.FCInput};
-  outline: none;
-`;
-export const CommentTextAreaBox = styled.div`
-  flex-grow: 5;
-  height: 120px;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-`;
-export const CommentListProfile = styled.div`
-  flex-grow: 0.5;
-`;
-export const CommentListBody = styled.div`
-  flex-grow: 1;
-  position: relative;
-  padding: 5px;
-  height: 60px;
-  > div.date {
-    position: absolute;
-    bottom: -15px;
-    left: 0px;
-  }
-`;
-export const CommentListBtn = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 15px;
-  margin-top: 18px;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.4);
-  }
-`;
-
-export const CommentCreateBtn = styled.div`
-  width: 50px;
-  padding: 10px;
-  height: 5px;
-  border: 1px solid;
-  text-align: center;
-  line-height: 5px;
-  margin: 5px;
-  cursor: pointer;
-  border-radius: 5px;
-  &:hover {
-    background-color: #6495ed;
-  }
-`;
-export const CommentBtnBack = styled.div`
-  width: 100px;
-  padding: 10px;
-  height: 80px;
-  top: 33px;
-  right: 5px;
-  row-gap: 15px;
-  border-radius: 10px;
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  background-color: ${({ theme }) => theme.mode.background3};
-  box-shadow: 2px 3px 3px 3px rgba(0, 0, 0, 0.2);
-`;
-//댓글 작성한 유저:작성,삭제,수정
-//다른유저:신고,해당게시물 유저:삭제
 const Comment = () => {
-  //클릭시 수정,삭제
-  //삭제 버튼 클릭 시 모달 오픈
-  const [isBtn, setIsBtn] = useState(false);
   const dispatch = useDispatch();
-  const handleClickBtn = () => {
-    setIsBtn(!isBtn);
-  };
+  const accessToken = window.localStorage.getItem('accessToken');
+  //해당유저가 작성한 댓글 관리시 필요한 데이타(수성,삭제)
+  let parseUserId = window.localStorage.getItem('user');
+  let parse_user_id: number;
+  if (parseUserId !== null) {
+    parse_user_id = Number(JSON.parse(parseUserId).id);
+  }
+  const statePost: TypeRedux.TypePostData = useSelector(
+    (state: TypeRootReducer) => state.postReducer
+  );
+  const [allComment, setAllComment] = useState([
+    {
+      id: 0,
+      user_id: 0,
+      nickname: '',
+      content: '',
+      update_ad: '',
+    },
+  ]);
+  //신규 생성 state
+  const [newComment, setNewComment] = useState({
+    content: '',
+  });
+  //수정 state
+  const [editComment, setEditComment] = useState({
+    content: '',
+    comment_id: 0,
+  });
+  //!댓글 불러오기
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_SERVER_URI}/comment/${statePost.id}`)
+      .then((res) => {
+        console.log('실행');
+        setAllComment([...res.data]);
+      })
+      .catch((err) => console.log(err, 'comment get err'));
+  }, []);
+
+  //!댓글 삭제
   const handleDelete = (commentId: number) => {
-    dispatch(modalOpen('정말 삭제하시겠습니까?', commentId));
+    axios
+      .delete(`${process.env.REACT_APP_SERVER_URI}/comment/${commentId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        setAllComment(
+          allComment.filter((el) => {
+            return el.id !== commentId;
+          })
+        );
+        setSelectId2(0);
+        setSelectId(0);
+        dispatch(modalOpen('댓글이 삭제되었습니다.'));
+      })
+      .catch((err) => {
+        console.log(err, 'comment delete err');
+      });
   };
+
+  //! 댓글 수정
+  const handleTextCommentEdit = () => {
+    axios
+      .patch(
+        `${process.env.REACT_APP_SERVER_URI}/comment/${editComment.comment_id}`,
+        { content: editComment.content },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        setAllComment(
+          allComment.map((el) => {
+            return el.id === editComment.comment_id
+              ? { ...el, content: editComment.content }
+              : { ...el };
+          })
+        );
+        setSelectId2(0);
+      })
+      .catch((err) => {
+        console.log(err, 'comment edit err');
+      });
+  };
+  //!댓글 수정 text 창 관리
+  const handleInputEditComment =
+    (key: string) => (e: { target: HTMLTextAreaElement }) => {
+      const comment_id = Number(e.target.id);
+      setEditComment({
+        ...editComment,
+        [key]: e.target.value,
+        comment_id: comment_id,
+      });
+    };
+  //!댓글 신규 text 창 관리
+  const handleInputNewComment =
+    (key: string) => (e: { target: HTMLTextAreaElement }) => {
+      setNewComment({ ...newComment, [key]: e.target.value });
+    };
+  //!댓글 신규 post 요청(댓글 게시)
+  const handleCommentClick = () => {
+    if (!newComment.content.length) {
+      dispatch(modalOpen('내용을 입력해주세요.'));
+    } else {
+      const accessToken = window.localStorage.getItem('accessToken');
+      axios
+        .post(
+          `${process.env.REACT_APP_SERVER_URI}/comment/${statePost.id}`,
+          newComment,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          //댓글 아이디 받기,만든 날짜
+          setAllComment({ ...allComment });
+          // setAllComment(
+          //   allComment.map((el) => {
+          //     return el.id !== res.data.id
+          //       ? el
+          //       : {
+          //           id: res.data.id,
+          //           content: newComment.content,
+          //           nickname: 로컬,
+          //           update_ad: res.data.update_at,
+          //         };
+          //   })
+          // );
+        })
+        .catch((err) => {
+          console.log(err, 'comment create err');
+        });
+    }
+  };
+
+  //!댓글 수정,삭제 버튼 관리 state 및 함수
+  const [selectId, setSelectId] = useState(0);
+  const [selectId2, setSelectId2] = useState(0);
+  const handleCommentEdit = (id: number) => {
+    if (selectId2 === id) {
+      setSelectId2(0);
+    } else {
+      setSelectId2(id);
+    }
+    setSelectId(0);
+  };
+  const handleClickBtn = (id: number) => {
+    if (selectId === id) {
+      setSelectId(0);
+    } else {
+      setSelectId(id);
+    }
+  };
+
   return (
-    <CommentBox>
-      <CommentCreateBox>
-        <CommentProfile>
+    <CS.CommentBox>
+      <CS.CommentCreateBox>
+        <CS.CommentProfile>
           <FaUserCircle className="my" size={50}></FaUserCircle>
-        </CommentProfile>
-        <CommentTextAreaBox>
-          <CommentTextArea>댓글 내용 작성</CommentTextArea>
-          <CommentCreateBtn>게시</CommentCreateBtn>
-        </CommentTextAreaBox>
-      </CommentCreateBox>
-      <CommentListBox>
-        <CommentList>
-          <CommentProfile className="list">
-            <FaUserCircle size={30}></FaUserCircle>
-            <div>닉네임암거나</div>
-          </CommentProfile>
-          <CommentListBody>
-            잘보고 가요~
-            <div className="date">2022-04-15</div>
-          </CommentListBody>
-          <CommentListBtn>
-            <BiDotsVerticalRounded
-              size={30}
-              onClick={() => handleClickBtn()}
-            ></BiDotsVerticalRounded>
-            {/* comment에 유저아이디와 로컬유저 아이디와 맞을때 버튼 보이기 */}
-            {isBtn && (
-              <CommentBtnBack>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    columnGap: '10px',
-                  }}
-                  onClick={() => {
-                    handleDelete(1);
-                  }}
-                >
-                  <FaTrashAlt size={20} />
-                  삭제
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    columnGap: '10px',
-                  }}
-                >
-                  <MdModeEdit size={20} />
-                  수정
-                </div>
-              </CommentBtnBack>
-            )}
-          </CommentListBtn>
-        </CommentList>
-        <CommentList>
-          <CommentProfile className="list">
-            <FaUserCircle size={30}></FaUserCircle>
-            <div>닉네임암거나</div>
-          </CommentProfile>
-          <CommentListBody>잘보고 가요~</CommentListBody>
-        </CommentList>
-      </CommentListBox>
-    </CommentBox>
+        </CS.CommentProfile>
+        <CS.CommentTextAreaBox>
+          <CS.CommentTextArea
+            maxLength={200}
+            onChange={handleInputNewComment('content')}
+            placeholder=" 댓글 내용 작성"
+            name={newComment.content}
+            defaultValue={newComment.content}
+          />
+          <CS.CommentCreateBtn
+            onClick={() => {
+              handleCommentClick();
+            }}
+          >
+            게시
+          </CS.CommentCreateBtn>
+        </CS.CommentTextAreaBox>
+      </CS.CommentCreateBox>
+      <CS.CommentListBox>
+        {allComment.map((el) => {
+          return (
+            <CS.CommentList key={el.id}>
+              <CS.CommentProfile className="list">
+                <FaUserCircle size={30}></FaUserCircle>
+                <div>{el.nickname}</div>
+              </CS.CommentProfile>
+              {el.id === selectId2 ? (
+                <CS.CommentEditBox>
+                  <CS.CommentTextArea
+                    onChange={handleInputEditComment('content')}
+                    name={el.content}
+                    id={`${el.id}`}
+                    defaultValue={el.content}
+                  />
+                  <CS.CommentEditBtn>
+                    <div onClick={() => setSelectId2(0)}>취소</div>
+                    <div
+                      className="edit"
+                      onClick={() => {
+                        handleTextCommentEdit();
+                      }}
+                    >
+                      수정
+                    </div>
+                  </CS.CommentEditBtn>
+                </CS.CommentEditBox>
+              ) : (
+                <CS.CommentListBody>
+                  {el.content}
+                  <div className="date">{el.update_ad}</div>
+                </CS.CommentListBody>
+              )}
+
+              {el.user_id === parse_user_id && (
+                <CS.CommentListBtn>
+                  <BiDotsVerticalRounded
+                    size={30}
+                    onClick={() => handleClickBtn(el.id)}
+                  ></BiDotsVerticalRounded>
+                  {el.id === selectId && (
+                    <CS.CommentBtnBack>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          columnGap: '10px',
+                        }}
+                        onClick={() => {
+                          handleDelete(el.id);
+                        }}
+                      >
+                        <FaTrashAlt size={20} />
+                        삭제
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          columnGap: '10px',
+                        }}
+                        onClick={() => handleCommentEdit(el.id)}
+                      >
+                        <MdModeEdit size={20} />
+                        수정
+                      </div>
+                    </CS.CommentBtnBack>
+                  )}
+                </CS.CommentListBtn>
+              )}
+            </CS.CommentList>
+          );
+        })}
+      </CS.CommentListBox>
+    </CS.CommentBox>
   );
 };
 

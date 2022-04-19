@@ -12,7 +12,7 @@ const initialization = [
       {
         id: 0,
         content: '',
-        data: '',
+        detaile: '',
         image_path: '',
       },
     ],

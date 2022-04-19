@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { TypeRootReducer } from '../redux/store/store';
-import { modalClose } from '../redux/action';
+import { modalClose, modalOpen, postBucketlistDelete } from '../redux/action';
 import axios from 'axios';
 
 export const ModalBack = styled.div`
@@ -12,11 +12,11 @@ export const ModalBack = styled.div`
   right: 0;
   display: grid;
   place-items: center;
-  z-index: 000;
+  z-index: 5;
   background-color: rgba(0, 0, 0, 0.4);
 `;
 export const ModalBox = styled.div`
-  width: 300px;
+  z-index: 10;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
   height: 200px;
@@ -69,19 +69,32 @@ const Modal = () => {
   const handleClose = () => {
     dispatch(modalClose());
   };
-  //!모달 open 후 댓글 삭제
-  const handleCommentDelete = (commentId?: number) => {
+  //!모달 open 후 버킷리스트 항목,댓글 삭제
+  const handleCommentDelete = (item?: string, id?: number) => {
     let accessToken = window.localStorage.getItem('accessToken');
-    axios
-      .delete(`${process.env.REACT_APP_SEVER_URI}/comment/${commentId}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      })
-      .then((res) => {
-        //댓글 삭제 후 재랜더링
-      })
-      .catch((err) => {
-        console.log(err, 'modal comment delete err');
-      });
+    console.log(item, '여기는 삭제 모달');
+    if (item === 'comment' && id) {
+      axios
+        .delete(`${process.env.REACT_APP_SERVER_URI}/comment/${id}`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        .then((res) => {
+          dispatch(modalOpen('삭제되었습니다.'));
+        })
+        .catch((err) => {
+          console.log(err, 'modal comment delete err');
+        });
+    } else if (item === 'bucketlist' && id) {
+      axios
+        .delete(`${process.env.REACT_APP_SERVER_URI}/bucketlist/${id}`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        .then((res) => {
+          dispatch(modalOpen('삭제되었습니다.'));
+          dispatch(postBucketlistDelete(id));
+        })
+        .catch((err) => console.log(err, '게시물 삭제 err'));
+    }
   };
 
   return (
@@ -90,13 +103,13 @@ const Modal = () => {
         <ModalBack>
           <ModalBox>
             <ModalText>{stateModal.msg}</ModalText>
-            {stateModal.commentId ? (
+            {stateModal.id ? (
               <ModalBtnBack>
                 <ModalBtn onClick={() => handleClose()}>취소</ModalBtn>
                 <ModalBtn
                   className="commentDel"
                   onClick={() => {
-                    handleCommentDelete(stateModal.commentId);
+                    handleCommentDelete(stateModal.item, stateModal.id);
                   }}
                 >
                   삭제

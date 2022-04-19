@@ -1,6 +1,6 @@
 //library
 import styled from 'styled-components';
-import { BsPlusCircleDotted, BsBookmarkPlus } from 'react-icons/bs';
+import { BsBookmarkPlus, BsBookmarkPlusFill } from 'react-icons/bs';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -11,10 +11,19 @@ import Headers from '../components/Headers';
 import { TypeRootReducer } from '../redux/store/store';
 import TypeRedux from '../redux/reducer/typeRedux';
 import { useEffect } from 'react';
-import { postEach, postContentEdit, modalOpen } from '../redux/action';
+import {
+  postEach,
+  postBucketlistEdit,
+  modalOpen,
+  postBucketlistNew,
+  postEachLike,
+  postEachBookMark,
+} from '../redux/action';
 import Modal from '../components/Modal';
 import * as PS from './style/PostStyledComponents';
 import Comment from './Comment';
+import SimpleMode from './PostPage/SimpleMode';
+import DetailMode from './PostPage/DetailMode';
 //import { TypeProps } from '../App';
 
 //편집모드 클릭 시 수정 삭제 추가 버튼 보이게 하기
@@ -31,7 +40,6 @@ export const BookAndlikeBtn = styled.div`
   column-gap: 20px;
   align-items: flex-start;
   align-items: center;
-
   > svg {
     &:hover {
       cursor: pointer;
@@ -44,15 +52,13 @@ function Post() {
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
   );
-
   const [isPost, setIsPost] = useState({
     isEditMode: false,
     isSimple: false,
     isCreate: false,
   });
-  const [eventPost, setEnevtPost] = useState<number[]>([]);
-  //! 게시물 불러오기
   let accessToken = window.localStorage.getItem('accessToken');
+  //! 게시물 불러오기
   useEffect(() => {
     let id = postURL.id;
     axios
@@ -67,8 +73,7 @@ function Post() {
       })
       .catch((err) => console.log(err, '각 게시물 클릭 err'));
   }, []);
-
-  //네이바 옵션 버튼
+  //사이드바 옵션 버튼
   const handleIsPost = (value: string) => {
     console.log(value);
     switch (value) {
@@ -80,20 +85,6 @@ function Post() {
         return;
     }
   };
-
-  //! 수정버튼 클릭시
-  const handleIsSimple = (idx: number) => {
-    if (eventPost.includes(idx)) {
-      setEnevtPost(
-        eventPost.filter((el) => {
-          return el !== idx;
-        })
-      );
-    } else {
-      setEnevtPost([...eventPost, idx]);
-    }
-  };
-
   //!사진 올리기
   // const [imgFile, setImgFile] = useState<any>('');
   // const handlePoto = (event: any) => {
@@ -105,55 +96,133 @@ function Post() {
   //   console.log(file);
   //   setImgFile(file);
   // };
-
-  //! 편집 on content
-  const handleInputContent =
-    (key: string) => (e: { target: HTMLInputElement }) => {
+  //! 편집 on Input(content,detail) 입력
+  const handleInputItem =
+    (key: string) =>
+    (e: { target: HTMLInputElement | HTMLTextAreaElement }) => {
       let id = Number(e.target.id);
-      dispatch(postContentEdit({ key: e.target.value }, id));
-      //key 별로 조건문으로 나눠서 content, detail 수정 하기
-      console.log(statePost, '여기는 post');
+      dispatch(postBucketlistEdit(id, { [key]: e.target.value }));
     };
-  //! 수정 클릭
+  //! 저장(수정) 클릭
   const handleEdit = (id: number) => {
-    console.log('수정하기 버튼 클릭', id);
+    //let accessToken = window.localStorage.getItem('accessToken')
+    let data = statePost.bucketlist.filter((el) => el.id === id);
+    console.log('수정하기 버튼 클릭', data);
+    axios
+      .put(`${process.env.REACT_APP_SERVER_URI}/bucketlist/${id}`, data[0], {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        dispatch(modalOpen('수정이 완료되었습니다.'));
+      })
+      .catch((err) => {
+        console.log(err, 'bucketlist edit err');
+      });
+    console.log(data[0]);
   };
-  //! 생성
+  //생성('버킷리스트를 추가해주세요',+) 버튼 클릭시
   const handleBucketlistCreate = () => {
     if (isPost.isCreate) {
-      //모달 open
-      dispatch(modalOpen('추가한 버킷리스트를 저장 후 생성해주세요.'));
+      dispatch(modalOpen('추가한 버킷리스트를 생성 후 클릭해주세요.'));
     } else {
       setIsPost({ ...isPost, isCreate: true });
     }
   };
-  //! 삭제
-  const handleDelete = (idx: number) => {
-    console.log('삭제');
-    axios
-      .delete(`${process.env.REACT_APP_SERVER_URI}/bucketlist/${idx}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      })
-      .then((res) => {
-        //dispatch 로 게시물 아이디 같이 보내 삭제
-        //문구 띄우기
-      })
-      .catch((err) => console.log(err, '게시물 삭제 err'));
+  const [newBucketlist, setNewBucketlist] = useState({
+    content: '',
+    detail: '',
+    image_path: '',
+  });
+  //! 생성 (내용 입력시 state 저장)
+  const handleInputNewItem =
+    (key: string) =>
+    (e: { target: HTMLInputElement | HTMLTextAreaElement }) => {
+      setNewBucketlist({ ...newBucketlist, [key]: e.target.value });
+    };
+  //! bucketlist 생성 버튼
+  const handleNewBucketlist = () => {
+    if (!newBucketlist.content.length) {
+      dispatch(modalOpen('버킷리스트를 작성해주세요.'));
+    } else {
+      axios
+        .post(`${process.env.REACT_APP_SERVER_URI}/bucketlist`, newBucketlist, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => {
+          dispatch(
+            postBucketlistNew(
+              res.data.id,
+              newBucketlist.content,
+              newBucketlist.detail
+            )
+          );
+          dispatch(modalOpen('생성되었습니다.'));
+          setIsPost({ ...isPost, isCreate: false });
+          setNewBucketlist({
+            content: '',
+            detail: '',
+            image_path: '',
+          });
+        })
+        .catch((err) => {
+          console.log(err, 'new bucketlist create err');
+        });
+    }
   };
-  let ex = {
-    bookmark: false,
-    bucketlist: [{}, {}, {}],
-    id: 0,
-    like: false,
-    like_count: 0,
-    nickname: '',
-    owner: false,
-    title: '',
-    updated_at: '',
+  //! 삭제
+  const handleDelete = (id: number) => {
+    console.log('삭제');
+    dispatch(modalOpen('정말 삭제하시겠습니까?', 'bucketlist', id));
+  };
+  const handleLikeClick = () => {
+    let post_id = statePost.id;
+    axios
+      .put(
+        `${process.env.REACT_APP_SERVER_URI}/like/${post_id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        dispatch(postEachLike());
+      })
+      .catch((err) => {
+        console.log(err, 'like click err');
+      });
+  };
+  const handleBookClick = () => {
+    let post_id = statePost.id;
+    console.log(post_id);
+    axios
+      .put(
+        `${process.env.REACT_APP_SERVER_URI}/bookmark/${post_id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      )
+      .then((res) => {
+        dispatch(postEachBookMark());
+        if (statePost.bookmark) {
+          dispatch(modalOpen('북마크를 취소하였습니다.'));
+        } else {
+          dispatch(modalOpen('북마크를 추가하였습니다.'));
+        }
+      })
+      .catch((err) => {
+        console.log(err, 'book click err');
+      });
   };
 
-  //const [postData, setPostData] = useState();
-  console.log(statePost.owner);
   return (
     <>
       <Headers></Headers>
@@ -161,18 +230,20 @@ function Post() {
       <PS.PostBack>
         <PS.PostBox>
           <PS.PostTitle>
-            {isPost.isEditMode ? (
+            <div>{statePost.title}</div>
+            {/* {isPost.isEditMode ? (
               <>
                 <PS.InputBox
                   placeholder="제목을 작성해주세요."
                   className="title"
+                  name={statePost.title}
                   defaultValue={statePost.title}
                 />
                 <PS.Btn className="simpleCreate">저장</PS.Btn>
               </>
             ) : (
               statePost.title
-            )}
+            )} */}
             <PS.PostTitleSide>
               {statePost.owner && (
                 <div
@@ -194,273 +265,61 @@ function Post() {
             </PS.PostTitleSide>
           </PS.PostTitle>
           {isPost.isSimple ? (
-            <PS.BucketlistBox>
-              {statePost.bucketlist.map((el, idx) => {
-                return eventPost.includes(idx) ? (
-                  <PS.BucketlistView
-                    key={idx}
-                    onClick={() => {
-                      handleIsSimple(idx);
-                    }}
-                  >
-                    {/* 간략하게 보기,선택 상세보기,편집 on */}
-
-                    {isPost.isEditMode ? (
-                      <>
-                        <div>
-                          <PS.BucketlistImg />
-                          <PS.BucketlistContent>
-                            <PS.InputBox
-                              id={`${el.id}`}
-                              placeholder="버킷리스트를 작성해주세요"
-                              defaultValue={el.content}
-                              onChange={handleInputContent('content')}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
-                            />
-                            <PS.TextArea
-                              placeholder="내용을 작성해주세요. 100이내로 작성해주세요."
-                              maxLength={100}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
-                            >
-                              {el.content}
-                            </PS.TextArea>
-                          </PS.BucketlistContent>
-                        </div>
-                        <div>
-                          <PS.Btn
-                            className="delete"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(idx);
-                            }}
-                          >
-                            삭제
-                          </PS.Btn>
-                          <PS.Btn
-                            className="modify"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEdit(el.id);
-                            }}
-                          >
-                            저장
-                          </PS.Btn>
-                        </div>
-                      </>
-                    ) : (
-                      <div>
-                        <PS.BucketlistImg />
-                        {/* //이미지 경로 설정 */}
-                        <PS.BucketlistContent>
-                          <div className="content">
-                            {idx + 1}. {el.content}
-                          </div>
-                          <div>
-                            365일 기계처럼 일하는 내 인생 언젠간 서핑만은
-                            해보고싶다!!
-                          </div>
-                        </PS.BucketlistContent>
-                      </div>
-                    )}
-                  </PS.BucketlistView>
-                ) : (
-                  <PS.BucketlistContent
-                    onClick={() => {
-                      handleIsSimple(idx);
-                    }}
-                    key={idx}
-                    className="simple"
-                  >
-                    {/* 간략하게 보기,편집 on */}
-
-                    {isPost.isEditMode ? (
-                      <div className="content">
-                        <PS.InputBox
-                          id={`${el.id}`}
-                          className="simple"
-                          placeholder="버킷리스트를 작성해주세요"
-                          defaultValue={el.content}
-                          onChange={handleInputContent('content')}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
-                        ></PS.InputBox>
-                        <div>
-                          <PS.Btn
-                            className="delete Simple"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(idx);
-                            }}
-                          >
-                            삭제
-                          </PS.Btn>
-                          <PS.Btn
-                            className="modify Simple"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEdit(el.id);
-                            }}
-                          >
-                            저장
-                          </PS.Btn>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="content">
-                        {idx + 1}. {el.content}
-                      </div>
-                    )}
-                  </PS.BucketlistContent>
-                );
-              })}
-              {isPost.isCreate && isPost.isEditMode && (
-                <PS.BucketlistContent className="simple">
-                  {/* 간략하게 보기,편집 on */}
-                  <div className="content">
-                    <PS.InputBox
-                      className="simple"
-                      placeholder="버킷리스트를 작성해주세요"
-                      onChange={handleInputContent('content')}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                    ></PS.InputBox>
-                    <div>
-                      <PS.Btn className="simpleCreate">생성</PS.Btn>
-                    </div>
-                  </div>
-                </PS.BucketlistContent>
-              )}
-              {/* 간략하게 보기,생성 버튼 */}
-              {isPost.isEditMode && (
-                <PS.BucketlistCreate
-                  onClick={() => {
-                    handleBucketlistCreate();
-                  }}
-                >
-                  <PS.Btn className="create createSimple">
-                    <BsPlusCircleDotted size={30} />
-                  </PS.Btn>
-                </PS.BucketlistCreate>
-              )}
-            </PS.BucketlistBox>
+            <SimpleMode
+              isPost={isPost}
+              handleInputItem={handleInputItem}
+              handleDelete={handleDelete}
+              handleEdit={handleEdit}
+              handleBucketlistCreate={handleBucketlistCreate}
+              handleInputNewItem={handleInputNewItem}
+              newBucketlist={newBucketlist}
+              handleNewBucketlist={handleNewBucketlist}
+            ></SimpleMode>
           ) : (
-            <PS.BucketlistBox>
-              {/* 상세 보기,편집 on */}
-              {statePost.bucketlist.map((el, idx) => {
-                return (
-                  <PS.BucketlistView key={el.id}>
-                    {isPost.isEditMode ? (
-                      <>
-                        <div>
-                          <PS.BucketlistImg />
-                          <PS.BucketlistContent>
-                            <PS.InputBox
-                              id={`${el.id}`}
-                              placeholder="버킷리스트를 작성해주세요"
-                              defaultValue={el.content}
-                              onChange={handleInputContent('content')}
-                            />
-                            <PS.TextArea
-                              placeholder="내용을 작성해주세요. 100이내로 작성해주세요."
-                              maxLength={100}
-                            >
-                              {el.content}
-                            </PS.TextArea>
-                          </PS.BucketlistContent>
-                        </div>
-                        <div>
-                          <PS.Btn
-                            className="delete"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(idx);
-                            }}
-                          >
-                            삭제
-                          </PS.Btn>
-                          <PS.Btn
-                            className="modify"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEdit(el.id);
-                            }}
-                          >
-                            저장
-                          </PS.Btn>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        {/* 상세 보기,편집 off */}
-                        <div>
-                          <PS.BucketlistImg />
-                          {/* //이미지 경로 설정 */}
-                          <PS.BucketlistContent>
-                            <div className="content">
-                              {idx + 1}. {el.content}
-                            </div>
-                            <div>
-                              365일 기계처럼 일하는 내 인생 언젠간 서핑만은
-                              해보고싶다!!
-                            </div>
-                          </PS.BucketlistContent>
-                        </div>
-                      </>
-                    )}
-                  </PS.BucketlistView>
-                );
-              })}
-              {/* 생성 박스 */}
-              {isPost.isCreate && isPost.isEditMode && (
-                <>
-                  <PS.BucketlistView>
-                    <div>
-                      <PS.BucketlistImg />
-                      <PS.BucketlistContent>
-                        <PS.InputBox
-                          placeholder="버킷리스트를 작성해주세요"
-                          onChange={handleInputContent('content')}
-                        />
-                        <PS.TextArea
-                          placeholder="내용을 작성해주세요. 100이내로 작성해주세요."
-                          maxLength={100}
-                        ></PS.TextArea>
-                      </PS.BucketlistContent>
-                    </div>
-                    <div>
-                      <PS.Btn className="createBtn" onClick={() => {}}>
-                        생성
-                      </PS.Btn>
-                    </div>
-                  </PS.BucketlistView>
-                </>
-              )}
-              {/* 생성 버튼 */}
-              {isPost.isEditMode && (
-                <PS.BucketlistCreate
-                  onClick={() => {
-                    handleBucketlistCreate();
-                  }}
-                >
-                  <PS.Btn className="create">
-                    <div>버킷리스트 추가</div>
-                    <BsPlusCircleDotted size={40} />
-                  </PS.Btn>
-                </PS.BucketlistCreate>
-              )}
-            </PS.BucketlistBox>
+            <DetailMode
+              isPost={isPost}
+              handleInputItem={handleInputItem}
+              handleDelete={handleDelete}
+              handleEdit={handleEdit}
+              handleBucketlistCreate={handleBucketlistCreate}
+              handleInputNewItem={handleInputNewItem}
+              newBucketlist={newBucketlist}
+              handleNewBucketlist={handleNewBucketlist}
+            ></DetailMode>
           )}
 
           <Pagination>1~20위 21~40위 41~60위 61~80위 81~100위</Pagination>
           <BookAndlikeBtn>
-            <BsBookmarkPlus size={25} />
-            {statePost.like ? <FaHeart size={25} /> : <FaRegHeart size={25} />}
+            {statePost.bookmark ? (
+              <BsBookmarkPlusFill
+                size={25}
+                onClick={() => {
+                  handleBookClick();
+                }}
+              />
+            ) : (
+              <BsBookmarkPlus
+                size={25}
+                onClick={() => {
+                  handleBookClick();
+                }}
+              />
+            )}
+            {statePost.like ? (
+              <FaHeart
+                size={25}
+                onClick={() => {
+                  handleLikeClick();
+                }}
+              />
+            ) : (
+              <FaRegHeart
+                size={25}
+                onClick={() => {
+                  handleLikeClick();
+                }}
+              />
+            )}
             좋아요 {statePost.like_count}개
           </BookAndlikeBtn>
           <Comment />

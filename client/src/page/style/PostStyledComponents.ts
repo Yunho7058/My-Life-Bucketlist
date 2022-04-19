@@ -163,6 +163,7 @@ export const Btn = styled.div`
     justify-content: center;
     > svg {
       width: 100%;
+      z-index: 0;
       opacity: 0.6;
     }
     &:hover {
@@ -174,8 +175,8 @@ export const Btn = styled.div`
     font-size: 12px;
     margin: 10px;
     width: 50px;
-    height: 20px;
-    line-height: 20px;
+    height: 30px;
+    line-height: 30px;
   }
   &.createSimple {
     height: 50px;
