@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Body, Response
 from sqlalchemy.orm import Session
+import requests
+from base64 import b64encode
 
 from app.api.dependencies import get_db, authenticate_by_token, get_current_user
+from app.core.config import settings
 from app.models.users import User
 from app.crud.users import get_user
 from app.crud import posts as crud
@@ -234,3 +237,15 @@ def get_bookmarked_post_list(user: User = Depends(get_current_user), db: Session
         post.nickname = post.user.nickname
         post.like_count = post.likes.count()
     return bookmarked_posts
+
+
+@router.get("/presigned-post", summary="S3 이미지 업로드를 위한 Presigned POST 요청", tags=["버킷리스트"])
+def get_presigned_post(file_name: str, user: User = Depends(get_current_user)):
+    response = requests.post(
+        f"{settings.AWS_API_GATEWAY_URL}/presigned-post",
+        headers={"Authorization": settings.AWS_AUTH_KEY},
+        json={"name": file_name}
+    ).json()
+    if response.get("error"):
+        return response.get("message")
+    return response.get("data")

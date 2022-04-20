@@ -20,11 +20,14 @@ def verify_password(plain_password, hashed_password):
 
 def create_access_token(data: dict, expire_delta: timedelta | None = None):
     to_encode = data.copy()
+    now = datetime.utcnow()
     if expire_delta:
-        expire = datetime.utcnow() + expire_delta
+        expire = now + expire_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
+    to_encode.update({"iat": now})
+    to_encode.update({"nbf": now})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
@@ -34,11 +37,16 @@ def create_refresh_token(data: dict):
 
 
 def create_token(email: str):
+    data = {
+        "sub": email,
+        "iss": settings.ISSUER,
+        "aud": settings.AUDIENCE,
+    }
     access_token = create_access_token(
-        data={"sub": email}
+        data=data
     )
     refresh_token = create_refresh_token(
-        data={"sub": email}
+        data=data
     )
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
@@ -47,7 +55,7 @@ def decode_token(token: str):
     if not token:
         return ""
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM], issuer=settings.ISSUER, audience=settings.AUDIENCE)
         email: str = payload.get("sub")
     except JWTError:
         return ""

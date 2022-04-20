@@ -27,6 +27,12 @@ class Settings(BaseSettings):
 
     DOMAIN: str
 
+    ISSUER: str
+    AUDIENCE: str 
+
+    AWS_API_GATEWAY_URL: str
+    AWS_AUTH_KEY: str
+
     class Config:
         env_file = "app/.env"
 
