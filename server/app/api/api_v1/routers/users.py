@@ -129,20 +129,20 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
         )
     token = create_token(user.email)
     refresh_token = token.pop("refresh_token")
-    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60, httponly=True)
+    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
     return token
 
 
 @router.get("/refresh", response_model=Token, responses={400: {}}, summary="토큰 갱신")
 def refresh_token(response: Response, refresh_token: str | None = Cookie(None), db: Session = Depends(get_db)):
-    print(refresh_token)
+    print(f"refresh token: {refresh_token}")
     email = decode_token(refresh_token)
     user = get_user(db, email)
     if user is None:
         raise HTTPException(status_code=400)
     token = create_token(user.email)
     refresh_token = token.pop("refresh_token")
-    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60, httponly=True)
+    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
     return token
 
 
