@@ -34,7 +34,8 @@ const postReducer = (
   switch (action.type) {
     case POST_EACH:
       let copy = action.payload.postEachData;
-      return copy;
+
+      return { ...copy };
 
     case POST_EACH_LIKE:
       let like_copy = { ...state };

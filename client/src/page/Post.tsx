@@ -4,8 +4,8 @@ import { BsBookmarkPlus, BsBookmarkPlusFill } from 'react-icons/bs';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
+
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 //component
 import Headers from '../components/Headers';
 import { TypeRootReducer } from '../redux/store/store';
@@ -24,6 +24,7 @@ import * as PS from './style/PostStyledComponents';
 import Comment from './Comment';
 import SimpleMode from './PostPage/SimpleMode';
 import DetailMode from './PostPage/DetailMode';
+import axiosInstance from '../components/axios';
 //import { TypeProps } from '../App';
 
 //편집모드 클릭 시 수정 삭제 추가 버튼 보이게 하기
@@ -31,7 +32,6 @@ import DetailMode from './PostPage/DetailMode';
 //
 //
 
-export const Pagination = styled.div``;
 export const BookAndlikeBtn = styled.div`
   width: 90%;
   height: 30px;
@@ -46,8 +46,31 @@ export const BookAndlikeBtn = styled.div`
     }
   }
 `;
+export const Pagination = styled.div`
+  display: flex;
+  width: 65%;
+  justify-content: space-around;
+`;
+
+export const PaginationBtn = styled.div`
+  border: 1px solid;
+  width: 80px;
+  text-align: center;
+  line-height: 30px;
+  height: 30px;
+  border-radius: 15px;
+  cursor: pointer;
+  &:hover {
+    background-color: #6495ed;
+  }
+`;
+
 function Post() {
   const postURL = useParams();
+  const [postId, setPostId] = useState(postURL.id);
+  useEffect(() => {
+    setPostId(postURL.id);
+  }, [postURL.id]);
   const dispatch = useDispatch();
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
@@ -60,20 +83,19 @@ function Post() {
   let accessToken = window.localStorage.getItem('accessToken');
   //! 게시물 불러오기
   useEffect(() => {
-    let id = postURL.id;
-    axios
-      .get(`${process.env.REACT_APP_SERVER_URI}/post/${id}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
+    axiosInstance
+      .get(`/post/${postId}`)
       .then((res) => {
         //setPostData(res.data);
+        console.log('하이');
         dispatch(postEach(res.data));
       })
       .catch((err) => console.log(err, '각 게시물 클릭 err'));
-  }, []);
+  }, [dispatch]);
   //사이드바 옵션 버튼
+  console.log(statePost);
+  console.log('두번');
+
   const handleIsPost = (value: string) => {
     console.log(value);
     switch (value) {
@@ -108,13 +130,8 @@ function Post() {
     //let accessToken = window.localStorage.getItem('accessToken')
     let data = statePost.bucketlist.filter((el) => el.id === id);
     console.log('수정하기 버튼 클릭', data);
-    axios
-      .put(`${process.env.REACT_APP_SERVER_URI}/bucketlist/${id}`, data[0], {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
+    axiosInstance
+      .put(`/bucketlist/${id}`, data[0])
       .then((res) => {
         dispatch(modalOpen('수정이 완료되었습니다.'));
       })
@@ -144,16 +161,12 @@ function Post() {
     };
   //! bucketlist 생성 버튼
   const handleNewBucketlist = () => {
+    //100개 초과시 더이상 버킷리스트를 만들 수 없습니다 문구 띄우기.
     if (!newBucketlist.content.length) {
       dispatch(modalOpen('버킷리스트를 작성해주세요.'));
     } else {
-      axios
-        .post(`${process.env.REACT_APP_SERVER_URI}/bucketlist`, newBucketlist, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
+      axiosInstance
+        .post(`/bucketlist`, newBucketlist)
         .then((res) => {
           dispatch(
             postBucketlistNew(
@@ -182,16 +195,8 @@ function Post() {
   };
   const handleLikeClick = () => {
     let post_id = statePost.id;
-    axios
-      .put(
-        `${process.env.REACT_APP_SERVER_URI}/like/${post_id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
+    axiosInstance
+      .put(`${process.env.REACT_APP_SERVER_URI}/like/${post_id}`, {})
       .then((res) => {
         dispatch(postEachLike());
       })
@@ -202,14 +207,8 @@ function Post() {
   const handleBookClick = () => {
     let post_id = statePost.id;
     console.log(post_id);
-    axios
-      .put(
-        `${process.env.REACT_APP_SERVER_URI}/bookmark/${post_id}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      )
+    axiosInstance
+      .put(`${process.env.REACT_APP_SERVER_URI}/bookmark/${post_id}`, {})
       .then((res) => {
         dispatch(postEachBookMark());
         if (statePost.bookmark) {
@@ -223,6 +222,13 @@ function Post() {
       });
   };
 
+  const [paginationStart, setPaginationStart] = useState(0);
+  const [paginationEnd, setPaginationEnd] = useState(20);
+  const handlePaginationClick = (s: number, e: number) => {
+    console.log(statePost.bucketlist.length);
+    setPaginationStart(s);
+    setPaginationEnd(e);
+  };
   return (
     <>
       <Headers></Headers>
@@ -274,6 +280,8 @@ function Post() {
               handleInputNewItem={handleInputNewItem}
               newBucketlist={newBucketlist}
               handleNewBucketlist={handleNewBucketlist}
+              paginationStart={paginationStart}
+              paginationEnd={paginationEnd}
             ></SimpleMode>
           ) : (
             <DetailMode
@@ -285,10 +293,38 @@ function Post() {
               handleInputNewItem={handleInputNewItem}
               newBucketlist={newBucketlist}
               handleNewBucketlist={handleNewBucketlist}
+              paginationStart={paginationStart}
+              paginationEnd={paginationEnd}
             ></DetailMode>
           )}
 
-          <Pagination>1~20위 21~40위 41~60위 61~80위 81~100위</Pagination>
+          <Pagination>
+            <PaginationBtn onClick={() => handlePaginationClick(0, 20)}>
+              1~20위
+            </PaginationBtn>
+            {statePost.bucketlist.length > 20 && (
+              <PaginationBtn onClick={() => handlePaginationClick(21, 41)}>
+                21~40위
+              </PaginationBtn>
+            )}
+            {statePost.bucketlist.length > 40 && (
+              <PaginationBtn onClick={() => handlePaginationClick(41, 61)}>
+                41~60위
+              </PaginationBtn>
+            )}
+
+            {statePost.bucketlist.length > 60 && (
+              <PaginationBtn onClick={() => handlePaginationClick(61, 81)}>
+                61~80위
+              </PaginationBtn>
+            )}
+
+            {statePost.bucketlist.length > 80 && (
+              <PaginationBtn onClick={() => handlePaginationClick(81, 101)}>
+                81~100위
+              </PaginationBtn>
+            )}
+          </Pagination>
           <BookAndlikeBtn>
             {statePost.bookmark ? (
               <BsBookmarkPlusFill

@@ -52,6 +52,7 @@ export const MainPostSort = styled.div``;
 export const MainPost = styled.div`
   height: 310px;
   width: 270px;
+  z-index: 0px;
   padding: 15px;
   padding-top: 0px;
   background-color: ${({ theme }) => theme.mode.background2};
@@ -67,6 +68,7 @@ export const MainPost = styled.div`
   &:hover {
     transform: translate(0px, -15px);
     transition: 600ms;
+    z-index: 0px;
   }
   @media screen and (max-width: 1170px) {
     height: 270px;
@@ -116,7 +118,7 @@ function Main() {
 
   //! POST 클릭시
   const handlePostClick = (id: number) => {
-    navigate(`post/${id}`);
+    navigate(`/post/${id}`);
   };
   return (
     <>

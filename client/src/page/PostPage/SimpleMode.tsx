@@ -22,6 +22,8 @@ interface TypeProps {
     image_path: string;
   };
   handleNewBucketlist: () => void;
+  paginationStart: number;
+  paginationEnd: number;
 }
 
 const SimpleMode = ({
@@ -33,6 +35,8 @@ const SimpleMode = ({
   handleInputNewItem,
   newBucketlist,
   handleNewBucketlist,
+  paginationStart,
+  paginationEnd,
 }: TypeProps) => {
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
@@ -51,128 +55,136 @@ const SimpleMode = ({
   };
   return (
     <PS.BucketlistBox>
-      {statePost.bucketlist.map((el, idx) => {
-        return eventPost.includes(el.id) ? (
-          <PS.BucketlistView
-            key={el.id}
-            onClick={() => {
-              handleIsSimple(el.id);
-            }}
-          >
-            {/*선택 상세보기,편집 on */}
-            {isPost.isEditMode ? (
-              <>
-                <div>
-                  <PS.BucketlistImg />
-                  <PS.BucketlistContent>
-                    <PS.InputBox
-                      id={`${el.id}`}
-                      placeholder="버킷리스트를 작성해주세요"
-                      defaultValue={el.content}
-                      onChange={handleInputItem('content')}
+      {statePost.bucketlist
+        .slice(paginationStart, paginationEnd)
+        .map((el, idx) => {
+          return eventPost.includes(el.id) ? (
+            <PS.BucketlistView
+              key={el.id}
+              onClick={() => {
+                handleIsSimple(el.id);
+              }}
+            >
+              {/*선택 상세보기,편집 on */}
+              {isPost.isEditMode ? (
+                <>
+                  <div>
+                    <PS.BucketlistImg />
+                    <PS.BucketlistContent>
+                      <PS.InputBox
+                        id={`${el.id}`}
+                        placeholder="버킷리스트를 작성해주세요"
+                        defaultValue={el.content}
+                        onChange={handleInputItem('content')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      />
+                      <PS.TextArea
+                        placeholder="내용을 작성해주세요. 100이내로 작성해주세요."
+                        maxLength={100}
+                        name={el.detail}
+                        value={el.detail}
+                        onChange={() => handleInputItem('detail')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
+                        {el.detail}
+                      </PS.TextArea>
+                    </PS.BucketlistContent>
+                  </div>
+                  <div>
+                    <PS.Btn
+                      className="delete"
                       onClick={(e) => {
                         e.stopPropagation();
-                      }}
-                    />
-                    <PS.TextArea
-                      placeholder="내용을 작성해주세요. 100이내로 작성해주세요."
-                      maxLength={100}
-                      name={el.detail}
-                      value={el.detail}
-                      onChange={() => handleInputItem('detail')}
-                      onClick={(e) => {
-                        e.stopPropagation();
+                        handleDelete(el.id);
                       }}
                     >
-                      {el.detail}
-                    </PS.TextArea>
+                      삭제
+                    </PS.Btn>
+                    <PS.Btn
+                      className="modify"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(el.id);
+                      }}
+                    >
+                      저장
+                    </PS.Btn>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <PS.BucketlistImg />
+                  {/* //이미지 경로 설정 */}
+                  <PS.BucketlistContent>
+                    <div className="content">
+                      {paginationStart >= 0 && paginationStart < 21
+                        ? (paginationStart += 1)
+                        : paginationStart++}
+                      . {el.content}
+                    </div>
+                    <div>{el.detail}</div>
                   </PS.BucketlistContent>
                 </div>
-                <div>
-                  <PS.Btn
-                    className="delete"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(el.id);
-                    }}
-                  >
-                    삭제
-                  </PS.Btn>
-                  <PS.Btn
-                    className="modify"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEdit(el.id);
-                    }}
-                  >
-                    저장
-                  </PS.Btn>
-                </div>
-              </>
-            ) : (
-              <div>
-                <PS.BucketlistImg />
-                {/* //이미지 경로 설정 */}
-                <PS.BucketlistContent>
-                  <div className="content">
-                    {idx + 1}. {el.content}
-                  </div>
-                  <div>{el.detail}</div>
-                </PS.BucketlistContent>
-              </div>
-            )}
-          </PS.BucketlistView>
-        ) : (
-          <PS.BucketlistContent
-            onClick={() => {
-              handleIsSimple(el.id);
-            }}
-            key={el.id}
-            className="simple"
-          >
-            {/*편집 on */}
+              )}
+            </PS.BucketlistView>
+          ) : (
+            <PS.BucketlistContent
+              onClick={() => {
+                handleIsSimple(el.id);
+              }}
+              key={el.id}
+              className="simple"
+            >
+              {/*편집 on */}
 
-            {isPost.isEditMode ? (
-              <div className="content">
-                <PS.InputBox
-                  id={`${el.id}`}
-                  className="simple"
-                  placeholder="버킷리스트를 작성해주세요"
-                  defaultValue={el.content}
-                  onChange={handleInputItem('content')}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                ></PS.InputBox>
-                <div>
-                  <PS.Btn
-                    className="delete Simple"
+              {isPost.isEditMode ? (
+                <div className="content">
+                  <PS.InputBox
+                    id={`${el.id}`}
+                    className="simple"
+                    placeholder="버킷리스트를 작성해주세요"
+                    defaultValue={el.content}
+                    onChange={handleInputItem('content')}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDelete(el.id);
                     }}
-                  >
-                    삭제
-                  </PS.Btn>
-                  <PS.Btn
-                    className="modify Simple"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEdit(el.id);
-                    }}
-                  >
-                    저장
-                  </PS.Btn>
+                  ></PS.InputBox>
+                  <div>
+                    <PS.Btn
+                      className="delete Simple"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(el.id);
+                      }}
+                    >
+                      삭제
+                    </PS.Btn>
+                    <PS.Btn
+                      className="modify Simple"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(el.id);
+                      }}
+                    >
+                      저장
+                    </PS.Btn>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="content">
-                {idx + 1}. {el.content}
-              </div>
-            )}
-          </PS.BucketlistContent>
-        );
-      })}
+              ) : (
+                <div className="content">
+                  {paginationStart >= 0 && paginationStart < 21
+                    ? (paginationStart += 1)
+                    : paginationStart++}
+                  . {el.content}
+                </div>
+              )}
+            </PS.BucketlistContent>
+          );
+        })}
       {isPost.isCreate && isPost.isEditMode && (
         <PS.BucketlistContent className="simple">
           {/* 생성 박스 */}

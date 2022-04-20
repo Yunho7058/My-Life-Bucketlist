@@ -14,6 +14,7 @@ import Headers from '../components/Headers';
 import { Terms_2 } from '../components/terms/Terms_2';
 import { Terms_1 } from '../components/terms/Terms_1';
 import * as SS from './style/SignupS';
+import axiosInstance from '../components/axios';
 
 function Signup() {
   const [isPage, setIsPage] = useState({
@@ -119,16 +120,8 @@ function Signup() {
         isEmail: false,
       });
     } else {
-      axios
-        .post(
-          `${process.env.REACT_APP_SERVER_URI}/email`,
-          { email: signupInfo.email },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        )
+      axiosInstance
+        .post(`/email`, { email: signupInfo.email })
         .then((res) => {
           setValidityCheck({
             ...validityCheck,
@@ -159,16 +152,8 @@ function Signup() {
         isEmail: false,
       });
     } else {
-      axios
-        .post(
-          `${process.env.REACT_APP_SERVER_URI}/email/code`,
-          { code: signupInfo.emailCode },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        )
+      axiosInstance
+        .post(`/email/code`, { code: signupInfo.emailCode })
         .then((res) => {
           setValidityCheck({
             ...validityCheck,
@@ -238,16 +223,12 @@ function Signup() {
       case 'nickname':
         if (validityCheck.isNickname) {
           //! 회원가입 모든 정보 서버로 보내기(마지막 단계)
-          axios
-            .post(
-              `${process.env.REACT_APP_SEVER_URI}/signup`,
-              {
-                email: signupInfo.email,
-                password: signupInfo.password,
-                nickname: signupInfo.nickname,
-              },
-              { headers: { 'Content-Type': 'application/json' } }
-            )
+          axiosInstance
+            .post(`/signup`, {
+              email: signupInfo.email,
+              password: signupInfo.password,
+              nickname: signupInfo.nickname,
+            })
             .then((res) => {
               next();
             })
@@ -302,14 +283,10 @@ function Signup() {
         isNickname: false,
       });
     } else {
-      axios
-        .post(
-          `${process.env.REACT_APP_SERVER_URI}/nickname`,
-          { nickname: signupInfo.nickname },
-          {
-            headers: { 'Content-Type': 'application/json' },
-          }
-        )
+      axiosInstance
+        .post(`${process.env.REACT_APP_SERVER_URI}/nickname`, {
+          nickname: signupInfo.nickname,
+        })
         .then((res) => {
           setValidityCheck({
             ...validityCheck,

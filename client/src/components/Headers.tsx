@@ -7,8 +7,9 @@ import { MdEditCalendar } from 'react-icons/md';
 //components
 import { TypeRootReducer } from '../redux/store/store';
 import { HeaderBack, LoginBtn } from './style/HeadersS';
-import { isLogin, isLogout, postAll } from '../redux/action';
+import { isLogin, isLogout, modalOpen, postAll } from '../redux/action';
 import axios from 'axios';
+import axiosInstance from './axios';
 
 export const CreatePostBtn = styled.div`
   position: fixed;
@@ -45,12 +46,8 @@ function Headers() {
 
   //! 모든 게시물 불러오기
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_SERVER_URI}/post`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+    axiosInstance
+      .get(`/post`)
       .then((res) => {
         dispatch(postAll(res.data));
       })
@@ -63,12 +60,8 @@ function Headers() {
   const handleLoginLogoutBtn = () => {
     if (stateIsLogin) {
       let accessToken = window.localStorage.getItem('accessToken');
-      axios
-        .get(`${process.env.REACT_APP_SERVER_URI}/logout`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
+      axiosInstance
+        .get(`/logout`)
         .then((res) => {
           window.localStorage.removeItem('accessToken');
           window.localStorage.removeItem('user');
@@ -86,9 +79,21 @@ function Headers() {
   //! useEffect 더 공부해보기
   //참고 링크 https://www.rinae.dev/posts/a-complete-guide-to-useeffect-ko
   //useReducer, useCallback, useMemo 배우기
+  let getPostId = window.localStorage.getItem('user');
+  let parse_post_id: number;
+  if (getPostId !== null) {
+    parse_post_id = Number(JSON.parse(getPostId).post_id);
+  }
   const handleMyPostBtn = () => {
-    //로컬에서 해당유저 post id 빼오기
-    //navigate(`post/${}`)
+    if (parse_post_id) {
+      navigate(`/`);
+      setTimeout(() => {
+        navigate(`/post/${parse_post_id}`);
+      }, 10);
+    } else {
+      dispatch(modalOpen('로그인을 먼저 진행해주세요.'));
+      navigate(`/login`);
+    }
   };
 
   return (
