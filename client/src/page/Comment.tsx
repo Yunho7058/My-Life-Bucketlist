@@ -6,19 +6,26 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { modalOpen } from '../redux/action';
 import axios from 'axios';
+
 import TypeRedux from '../redux/reducer/typeRedux';
 import { TypeRootReducer } from '../redux/store/store';
 import * as CS from './style/CommentStyledComponents';
+
+import axiosInstance from '../components/axios';
+import { useParams } from 'react-router-dom';
 
 const Comment = () => {
   const dispatch = useDispatch();
   const accessToken = window.localStorage.getItem('accessToken');
   //해당유저가 작성한 댓글 관리시 필요한 데이타(수성,삭제)
-  let parseUserId = window.localStorage.getItem('user');
+  let getUserId = window.localStorage.getItem('user');
   let parse_user_id: number;
-  if (parseUserId !== null) {
-    parse_user_id = Number(JSON.parse(parseUserId).id);
+  let parse_user_nickname: string = '';
+  if (getUserId !== null) {
+    parse_user_id = Number(JSON.parse(getUserId).post_id);
+    parse_user_nickname = JSON.parse(getUserId).nickname;
   }
+
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
   );
@@ -40,12 +47,13 @@ const Comment = () => {
     content: '',
     comment_id: 0,
   });
+  const postURL = useParams();
+
   //!댓글 불러오기
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_SERVER_URI}/comment/${statePost.id}`)
+    axiosInstance
+      .get(`/comment/${postURL.id}`)
       .then((res) => {
-        console.log('실행');
         setAllComment([...res.data]);
       })
       .catch((err) => console.log(err, 'comment get err'));
@@ -53,12 +61,8 @@ const Comment = () => {
 
   //!댓글 삭제
   const handleDelete = (commentId: number) => {
-    axios
-      .delete(`${process.env.REACT_APP_SERVER_URI}/comment/${commentId}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
+    axiosInstance
+      .delete(`/comment/${commentId}`)
       .then((res) => {
         setAllComment(
           allComment.filter((el) => {
@@ -76,17 +80,10 @@ const Comment = () => {
 
   //! 댓글 수정
   const handleTextCommentEdit = () => {
-    axios
-      .patch(
-        `${process.env.REACT_APP_SERVER_URI}/comment/${editComment.comment_id}`,
-        { content: editComment.content },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
+    axiosInstance
+      .patch(`/comment/${editComment.comment_id}`, {
+        content: editComment.content,
+      })
       .then((res) => {
         setAllComment(
           allComment.map((el) => {
@@ -111,43 +108,35 @@ const Comment = () => {
         comment_id: comment_id,
       });
     };
-  //!댓글 신규 text 창 관리
+  //!댓글 작성 text 창 관리
   const handleInputNewComment =
     (key: string) => (e: { target: HTMLTextAreaElement }) => {
       setNewComment({ ...newComment, [key]: e.target.value });
     };
-  //!댓글 신규 post 요청(댓글 게시)
+  //!댓글 작성
   const handleCommentClick = () => {
     if (!newComment.content.length) {
       dispatch(modalOpen('내용을 입력해주세요.'));
     } else {
       const accessToken = window.localStorage.getItem('accessToken');
-      axios
-        .post(
-          `${process.env.REACT_APP_SERVER_URI}/comment/${statePost.id}`,
-          newComment,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        )
+      axiosInstance
+        .post(`/comment/${statePost.id}`, newComment)
         .then((res) => {
           //댓글 아이디 받기,만든 날짜
           setAllComment({ ...allComment });
-          // setAllComment(
-          //   allComment.map((el) => {
-          //     return el.id !== res.data.id
-          //       ? el
-          //       : {
-          //           id: res.data.id,
-          //           content: newComment.content,
-          //           nickname: 로컬,
-          //           update_ad: res.data.update_at,
-          //         };
-          //   })
-          // );
+          setAllComment(
+            allComment.map((el) => {
+              return el.id !== res.data.id
+                ? { ...el }
+                : {
+                    ...el,
+                    id: res.data.id,
+                    content: newComment.content,
+                    nickname: parse_user_nickname,
+                    update_ad: res.data.update_at,
+                  };
+            })
+          );
         })
         .catch((err) => {
           console.log(err, 'comment create err');

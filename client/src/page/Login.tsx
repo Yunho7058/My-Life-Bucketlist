@@ -17,6 +17,7 @@ import qs from 'qs';
 import Headers from '../components/Headers';
 import { isLogin } from '../redux/action';
 import * as LS from './style/LoginS';
+import axiosInstance from '../components/axios';
 
 export const LoginSNSBack = styled.div`
   width: 200px;
@@ -120,12 +121,8 @@ function Login() {
   //유저정보 저장
   const handleGetUserinfo = () => {
     let accessToken = window.localStorage.getItem('accessToken');
-    axios
-      .get(`${process.env.REACT_APP_SERVER_URI}/me`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
+    axiosInstance
+      .get(`${process.env.REACT_APP_SERVER_URI}/me`)
       .then((res) => {
         window.localStorage.setItem(
           'user',
@@ -133,6 +130,7 @@ function Login() {
             id: res.data.id,
             email: res.data.email,
             nickname: res.data.nickname,
+            post_id: res.data.post_id,
           })
           //! 읽을때 JSON.part()
         );

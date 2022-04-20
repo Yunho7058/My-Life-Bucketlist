@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { TypeRootReducer } from '../redux/store/store';
 import { modalClose, modalOpen, postBucketlistDelete } from '../redux/action';
 import axios from 'axios';
+import axiosInstance from './axios';
 
 export const ModalBack = styled.div`
   position: fixed;
@@ -74,10 +75,8 @@ const Modal = () => {
     let accessToken = window.localStorage.getItem('accessToken');
     console.log(item, '여기는 삭제 모달');
     if (item === 'comment' && id) {
-      axios
-        .delete(`${process.env.REACT_APP_SERVER_URI}/comment/${id}`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        })
+      axiosInstance
+        .delete(`/comment/${id}`)
         .then((res) => {
           dispatch(modalOpen('삭제되었습니다.'));
         })
@@ -85,10 +84,8 @@ const Modal = () => {
           console.log(err, 'modal comment delete err');
         });
     } else if (item === 'bucketlist' && id) {
-      axios
-        .delete(`${process.env.REACT_APP_SERVER_URI}/bucketlist/${id}`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        })
+      axiosInstance
+        .delete(`/bucketlist/${id}`)
         .then((res) => {
           dispatch(modalOpen('삭제되었습니다.'));
           dispatch(postBucketlistDelete(id));

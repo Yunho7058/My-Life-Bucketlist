@@ -7,7 +7,7 @@ export const HeaderBack = styled.div`
   position: fixed;
   right: 0px;
   top: 0px;
-  z-index: 1px;
+  z-index: 999px;
   display: flex;
   justify-content: space-between;
   background-color: ${({ theme }) => theme.mode.background2};
