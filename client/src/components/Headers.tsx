@@ -95,6 +95,9 @@ function Headers() {
       navigate(`/login`);
     }
   };
+  const handleMypageMove = () => {
+    navigate('/mypage');
+  };
 
   return (
     <HeaderBack>
@@ -106,6 +109,13 @@ function Headers() {
         }}
       >
         {stateIsLogin ? '로그아웃' : '로그인'}
+      </LoginBtn>
+      <LoginBtn
+        onClick={() => {
+          handleMypageMove();
+        }}
+      >
+        마이페이지
       </LoginBtn>
       <CreatePostBtn
         onClick={() => {

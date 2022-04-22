@@ -66,7 +66,7 @@ const DetailMode = ({
                         maxLength={100}
                         name={el.detail}
                         id={`${el.id}`}
-                        value={el.detail}
+                        defaultValue={el.detail}
                       >
                         {el.detail}
                       </PS.TextArea>

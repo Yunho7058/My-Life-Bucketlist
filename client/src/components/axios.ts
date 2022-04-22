@@ -5,6 +5,7 @@ const accessToken = window.localStorage.getItem('accessToken');
 
 const axiosInstance = axios.create({
   baseURL,
+  timeout: 100,
   headers: {
     Authorization: `Bearer ${accessToken}`,
     'Content-Type': 'application/json',
@@ -14,7 +15,6 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.response.use(
   function (res) {
-    console.log('성공시');
     return res;
   },
   function (err) {

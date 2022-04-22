@@ -27,6 +27,7 @@ let Main = lazy(() => import('./page/Main'));
 let Login = lazy(() => import('./page/Login'));
 let Signup = lazy(() => import('./page/Signup'));
 let Post = lazy(() => import('./page/Post'));
+let Mypage = lazy(() => import('./page/Mypage'));
 
 function App() {
   const [themeMode, toggleTheme] = useDarkMode();
@@ -47,6 +48,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/post/:id" element={<Post />} />
+                <Route path="/mypage" element={<Mypage />} />
                 <Route path="/reduxtest" element={<ReduxTest />} />
               </Routes>
             </Suspense>
