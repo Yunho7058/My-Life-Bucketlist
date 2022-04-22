@@ -168,6 +168,7 @@ function Post() {
       axiosInstance
         .post(`/bucketlist`, newBucketlist)
         .then((res) => {
+          console.log(res.data);
           dispatch(
             postBucketlistNew(
               res.data.id,
@@ -207,19 +208,22 @@ function Post() {
   const handleBookClick = () => {
     let post_id = statePost.id;
     console.log(post_id);
-    axiosInstance
-      .put(`${process.env.REACT_APP_SERVER_URI}/bookmark/${post_id}`, {})
-      .then((res) => {
-        dispatch(postEachBookMark());
-        if (statePost.bookmark) {
-          dispatch(modalOpen('북마크를 취소하였습니다.'));
-        } else {
-          dispatch(modalOpen('북마크를 추가하였습니다.'));
-        }
-      })
-      .catch((err) => {
-        console.log(err, 'book click err');
-      });
+    if (statePost.owner) {
+    } else {
+      axiosInstance
+        .put(`${process.env.REACT_APP_SERVER_URI}/bookmark/${post_id}`, {})
+        .then((res) => {
+          dispatch(postEachBookMark());
+          if (statePost.bookmark) {
+            dispatch(modalOpen('북마크를 취소하였습니다.'));
+          } else {
+            dispatch(modalOpen('북마크를 추가하였습니다.'));
+          }
+        })
+        .catch((err) => {
+          console.log(err, 'book click err');
+        });
+    }
   };
 
   const [paginationStart, setPaginationStart] = useState(0);

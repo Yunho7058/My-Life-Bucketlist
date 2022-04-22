@@ -120,9 +120,9 @@ function Login() {
   };
   //유저정보 저장
   const handleGetUserinfo = () => {
-    let accessToken = window.localStorage.getItem('accessToken');
+    //let accessToken = window.localStorage.getItem('accessToken');
     axiosInstance
-      .get(`${process.env.REACT_APP_SERVER_URI}/me`)
+      .get(`/me`)
       .then((res) => {
         window.localStorage.setItem(
           'user',
