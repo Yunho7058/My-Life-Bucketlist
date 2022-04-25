@@ -1,17 +1,29 @@
 import axios from 'axios';
-
+console.log(window.localStorage.getItem('accessToken'));
 const baseURL = `${process.env.REACT_APP_SERVER_URI}`;
-const accessToken = window.localStorage.getItem('accessToken');
 
-const axiosInstance = axios.create({
-  baseURL,
-  timeout: 100,
-  headers: {
-    Authorization: `Bearer ${accessToken}`,
-    'Content-Type': 'application/json',
+const axiosInstance = axios.create();
+
+//원래는 create에 속성값 정해줫는데 시작하자마자 로컬에 빈토큰을 헤더에 담아
+//요청시 빈 토큰을 보내 문제가 됨
+//그래서 request 요청보내기전에 속성값을 다시 정해 보내주는 방식으로 변경
+
+//요청 보내기전 headers 속설 및 토큰 전달
+axiosInstance.interceptors.request.use(
+  async (config) => {
+    let accessToken = window.localStorage.getItem('accessToken');
+    config.baseURL = baseURL;
+    config.headers = {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    };
+    config.withCredentials = true;
+    return config;
   },
-  withCredentials: true,
-});
+  (error) => {
+    Promise.reject(error);
+  }
+);
 
 axiosInstance.interceptors.response.use(
   function (res) {
@@ -29,7 +41,6 @@ axiosInstance.interceptors.response.use(
           window.localStorage.setItem('accessToken', res.data.access_token);
         })
         .catch((err) => {
-          console.log(baseURL, accessToken);
           console.log(err, 'refreshToken renewal err');
         });
       return axios(originalRequest);

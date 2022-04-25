@@ -17,11 +17,11 @@ export const HeaderBack = styled.div`
 export const LoginBtn = styled.div`
   width: 100px;
   height: 50px;
-  border: 1px solid;
+  color: ${({ theme }) => theme.mode.fontColor};
   text-align: center;
   line-height: 50px;
   cursor: pointer;
   &:hover {
-    background-color: red;
+    color: ${({ theme }) => theme.mode.primaryText};
   }
 `;

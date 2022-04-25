@@ -111,10 +111,14 @@ const Mypage = () => {
     setList(list);
   };
   const navigate = useNavigate();
-  let getPostId = window.localStorage.getItem('user');
+  let getUserId = window.localStorage.getItem('user');
   let parse_post_id: number;
-  if (getPostId !== null) {
-    parse_post_id = Number(JSON.parse(getPostId).post_id);
+  let parse_user_email: string = '';
+  let parse_user_nickname: string = '';
+  if (getUserId !== null) {
+    parse_post_id = Number(JSON.parse(getUserId).post_id);
+    parse_user_email = JSON.parse(getUserId).email;
+    parse_user_nickname = JSON.parse(getUserId).nickname;
   }
 
   useEffect(() => {
@@ -178,12 +182,12 @@ const Mypage = () => {
             <>
               <ProfilList>
                 <ProfilTilte>닉네임</ProfilTilte>
-                <ProfilContent>코코</ProfilContent>
+                <ProfilContent>{parse_user_nickname}</ProfilContent>
                 <Btn className="change">닉네임 변경</Btn>
               </ProfilList>
               <ProfilList>
                 <ProfilTilte>이메일</ProfilTilte>
-                <ProfilContent>coco@example.com</ProfilContent>
+                <ProfilContent>{parse_user_email}</ProfilContent>
               </ProfilList>
               <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <Btn className="change">비밀번호 변경</Btn>

@@ -89,11 +89,11 @@ const postReducer = (
     case POST_BUCKETLIST_NEW:
       const { id, content, detail } = action.payload;
 
-      let new_copy = state.bucketlist.map((el) => {
-        return el.id !== id
-          ? { id: id, content: content, detail: detail }
-          : { ...el };
-      });
+      let new_copy = [
+        ...state.bucketlist,
+        { id: id, content: content, detail: detail },
+      ];
+
       return {
         ...state,
         bucketlist: new_copy,

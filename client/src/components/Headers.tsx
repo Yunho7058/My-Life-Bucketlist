@@ -1,5 +1,5 @@
 //library
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -30,9 +30,85 @@ export const CreatePostBtn = styled.div`
     padding: 10px;
   }
 `;
+export const LogoTitle = styled.div`
+  text-align: center;
+  padding-left: 15px;
+  height: 50px;
+  line-height: 50px;
+`;
+
+//https://cssarrowplease.com/ 말풍선 커스텀 사이트
+export const TestCss = styled.div`
+  position: absolute;
+  padding: 20px;
+  padding-left: 50px;
+  top: 70px;
+  right: 230px;
+  width: 180px;
+  height: 200px;
+  border-radius: 15px;
+  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  position: absolute;
+  &.arrow_box {
+    position: relative;
+    background-color: ${({ theme }) => theme.mode.background2};
+  }
+  &.arrow_box:after,
+  &.arrow_box:before {
+    bottom: 100%;
+    left: 90%;
+    border: solid transparent;
+    content: '';
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  &.arrow_box:after {
+    border-color: rgba(136, 183, 213, 0);
+    border-bottom-color: ${({ theme }) => theme.mode.background2};
+    border-width: 10px;
+    margin-left: -20px;
+  }
+  &.arrow_box:before {
+    border-color: rgba(194, 225, 245, 0);
+    border-width: 13px;
+    margin-left: -23px;
+  }
+`;
+export const SideId = styled.div`
+  margin-bottom: 20px;
+`;
+export const SideLine = styled.div`
+  position: absolute;
+  top: 80px;
+  left: 0px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  width: 100%;
+`;
+export const SideMenu = styled.div`
+  cursor: pointer;
+  &:hover {
+    transform: scale(1.01);
+    //color: #6495ed;
+  }
+`;
+
 function Headers() {
+  const [isSidebar, setIsSiderbar] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  let getUserId = window.localStorage.getItem('user');
+  let parse_user_email: string = '';
+  let parse_user_nickname: string = '';
+  if (getUserId !== null) {
+    parse_user_email = JSON.parse(getUserId).email;
+    parse_user_nickname = JSON.parse(getUserId).nickname;
+  }
   const stateIsLogin = useSelector(
     (state: TypeRootReducer) => state.isLoginReducer
   );
@@ -98,32 +174,75 @@ function Headers() {
   const handleMypageMove = () => {
     navigate('/mypage');
   };
-
+  const handleIsSidebar = () => {
+    setIsSiderbar(!isSidebar);
+  };
   return (
     <HeaderBack>
-      <div onClick={() => navigate('/')}>여기는 헤더,클릭시 메인페이지로</div>
+      <LogoTitle onClick={() => navigate('/')}>My Life Bucketlist</LogoTitle>
 
-      <LoginBtn
-        onClick={() => {
-          handleLoginLogoutBtn();
-        }}
-      >
-        {stateIsLogin ? '로그아웃' : '로그인'}
-      </LoginBtn>
-      <LoginBtn
-        onClick={() => {
-          handleMypageMove();
-        }}
-      >
-        마이페이지
-      </LoginBtn>
-      <CreatePostBtn
-        onClick={() => {
-          handleMyPostBtn();
-        }}
-      >
-        <MdEditCalendar size={30}></MdEditCalendar>
-      </CreatePostBtn>
+      {stateIsLogin ? (
+        <>
+          <div
+            className="프로필 사진(임시)"
+            style={{
+              width: '40px',
+              height: '40px',
+              backgroundColor: 'white',
+              borderRadius: '20px',
+              position: 'relative',
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              handleIsSidebar();
+            }}
+          >
+            {isSidebar && (
+              <TestCss
+                className="arrow_box"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                <SideId>
+                  {parse_user_nickname}
+                  <div>{parse_user_email}</div>
+                </SideId>
+                <SideLine></SideLine>
+                <SideMenu
+                  onClick={() => {
+                    handleMyPostBtn();
+                  }}
+                >
+                  나의 버킷리스트
+                </SideMenu>
+                <SideMenu
+                  onClick={() => {
+                    handleMypageMove();
+                  }}
+                >
+                  마이페이지
+                </SideMenu>
+                <SideMenu
+                  onClick={() => {
+                    handleLoginLogoutBtn();
+                  }}
+                >
+                  로그아웃
+                </SideMenu>
+              </TestCss>
+            )}
+          </div>
+        </>
+      ) : (
+        <LoginBtn
+          onClick={() => {
+            handleLoginLogoutBtn();
+          }}
+        >
+          로그인
+        </LoginBtn>
+      )}
     </HeaderBack>
   );
 }

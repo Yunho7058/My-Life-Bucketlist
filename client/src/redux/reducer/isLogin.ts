@@ -1,4 +1,5 @@
-import { IS_LOGIN, IS_LOGOUT } from '../action';
+import axiosInstance from '../../components/axios';
+import { GET_USER_INFO, IS_LOGIN, IS_LOGOUT } from '../action';
 
 interface TypeAction {
   type: string;
@@ -10,6 +11,24 @@ const isLoginReducer = (state = false, action: TypeAction): boolean => {
       return (state = true);
     case IS_LOGOUT:
       return (state = false);
+    case GET_USER_INFO:
+      console.log('실행?');
+      axiosInstance
+        .get(`/me`)
+        .then((res) => {
+          window.localStorage.setItem(
+            'user',
+            JSON.stringify({
+              id: res.data.id,
+              email: res.data.email,
+              nickname: res.data.nickname,
+              post_id: res.data.post_id,
+            })
+            //! 읽을때 JSON.part()
+          );
+        })
+        .catch((err) => console.log(err, '로그인 후 해당유저 정보 불러오기'));
+      return state;
     default:
       return state;
   }

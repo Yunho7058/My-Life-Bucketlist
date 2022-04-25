@@ -10,6 +10,7 @@ export const POST_EACH_BOOKMARK = 'POST_EACH_BOOKMARK';
 export const POST_BUCKETLIST_EDIT = 'POST_BUCKETLIST_EDIT';
 export const POST_BUCKETLIST_DELET = 'POST_BUCKETLIST_DELET';
 export const POST_BUCKETLIST_NEW = 'POST_BUCKETLIST_NEW';
+export const GET_USER_INFO = 'GET_USER_INFO';
 
 export const isLogin = () => {
   return {
@@ -103,5 +104,11 @@ export const modalOpen = (msg: string, item?: string, id?: number) => {
 export const modalClose = () => {
   return {
     type: MODAL_CLOSE,
+  };
+};
+
+export const getUserInfo = () => {
+  return {
+    type: GET_USER_INFO,
   };
 };
