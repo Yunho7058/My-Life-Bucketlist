@@ -28,6 +28,9 @@ let Login = lazy(() => import('./page/Login'));
 let Signup = lazy(() => import('./page/Signup'));
 let Post = lazy(() => import('./page/Post'));
 let Mypage = lazy(() => import('./page/Mypage'));
+let Kakao = lazy(() => import('./components/oauth/Kakao'));
+let Google = lazy(() => import('./components/oauth/Google'));
+let Naver = lazy(() => import('./components/oauth/Naver'));
 
 function App() {
   const [themeMode, toggleTheme] = useDarkMode();
@@ -49,6 +52,9 @@ function App() {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/post/:id" element={<Post />} />
                 <Route path="/mypage" element={<Mypage />} />
+                <Route path="/oauth/naver" element={<Naver />} />
+                <Route path="/oauth/kakao" element={<Kakao />} />
+                <Route path="/oauth/google" element={<Google />} />
                 <Route path="/reduxtest" element={<ReduxTest />} />
               </Routes>
             </Suspense>

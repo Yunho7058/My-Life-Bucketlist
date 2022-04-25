@@ -67,9 +67,7 @@ const DetailMode = ({
                         name={el.detail}
                         id={`${el.id}`}
                         defaultValue={el.detail}
-                      >
-                        {el.detail}
-                      </PS.TextArea>
+                      ></PS.TextArea>
                     </PS.BucketlistContent>
                   </div>
                   <div>

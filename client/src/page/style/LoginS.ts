@@ -14,7 +14,7 @@ export const LoginBox = styled.div`
   background-color: ${({ theme }) => theme.mode.background2};
   box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
   width: 300px;
-  height: 380px;
+  height: 410px;
   margin-top: 80px;
   border-radius: 15px;
   padding: 15px;

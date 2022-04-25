@@ -15,17 +15,27 @@ import qs from 'qs';
 
 //components
 import Headers from '../components/Headers';
-import { isLogin } from '../redux/action';
+import { getUserInfo, isLogin } from '../redux/action';
 import * as LS from './style/LoginS';
 import axiosInstance from '../components/axios';
 
 export const LoginSNSBack = styled.div`
-  width: 200px;
-  height: 100px;
-  border: 1px solid;
+  width: 100%;
+  padding: 10px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
 `;
 
-export const LoginSNS = styled.div``;
+export const LoginSNS = styled.div`
+  border: 1px solid;
+  height: 60px;
+  width: 60px;
+  text-align: center;
+  cursor: pointer;
+`;
 
 function Login() {
   //유저정보
@@ -97,7 +107,8 @@ function Login() {
           let accessToken = res.data.access_token;
           window.localStorage.setItem('accessToken', accessToken);
           dispatch(isLogin());
-          handleGetUserinfo();
+          //handleGetUserinfo();
+          dispatch(getUserInfo());
           navigate('/');
           //! setCookie(client) 와 headers(server)에 담긴 cookie 차이는?
         })
@@ -119,29 +130,48 @@ function Login() {
     }
   };
   //유저정보 저장
-  const handleGetUserinfo = () => {
-    //let accessToken = window.localStorage.getItem('accessToken');
-    axiosInstance
-      .get(`/me`)
-      .then((res) => {
-        window.localStorage.setItem(
-          'user',
-          JSON.stringify({
-            id: res.data.id,
-            email: res.data.email,
-            nickname: res.data.nickname,
-            post_id: res.data.post_id,
-          })
-          //! 읽을때 JSON.part()
-        );
-      })
-      .catch((err) => console.log(err, '로그인 후 해당유저 정보 불러오기'));
-  };
+  // const handleGetUserinfo = () => {
+  //   //let accessToken = window.localStorage.getItem('accessToken');
+  //   axiosInstance
+  //     .get(`/me`)
+  //     .then((res) => {
+  //       window.localStorage.setItem(
+  //         'user',
+  //         JSON.stringify({
+  //           id: res.data.id,
+  //           email: res.data.email,
+  //           nickname: res.data.nickname,
+  //           post_id: res.data.post_id,
+  //         })
+  //         //! 읽을때 JSON.part()
+  //       );
+  //     })
+  //     .catch((err) => console.log(err, '로그인 후 해당유저 정보 불러오기'));
+  // };
 
   const enterKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
       return handleLogin();
     }
+  };
+
+  //구글 로그인
+  const handleGoogleLogin = () => {
+    window.location.assign(
+      `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.REACT_APP_GOOGLE_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_GOOGLE_REDIRECT_URI}&response_type=token&scope=https://www.googleapis.com/auth/userinfo.email`
+    );
+  };
+  //카카오 로그인
+  const handleKakaoLogin = () => {
+    window.location.assign(
+      `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REACT_APP_KAKAO_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT_URI}&response_type=code`
+    );
+  };
+  //네이버 로그인
+  const handleNaverLogin = () => {
+    window.location.assign(
+      `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${process.env.REACT_APP_NAVER_CLIENT_ID}&state=${process.env.REACT_APP_NAVER_CLIENT_STATE}&redirect_uri=${process.env.REACT_APP_NAVER_REDIRECT_URI}`
+    );
   };
 
   return (
@@ -189,9 +219,27 @@ function Login() {
           비밀번호 찾기
           <LS.LoginLine>or</LS.LoginLine>
           <LoginSNSBack>
-            SNS 로그인
-            <LoginSNS></LoginSNS>
-            <LoginSNS></LoginSNS>
+            <LoginSNS
+              onClick={() => {
+                handleKakaoLogin();
+              }}
+            >
+              카카오
+            </LoginSNS>
+            <LoginSNS
+              onClick={() => {
+                handleGoogleLogin();
+              }}
+            >
+              구글
+            </LoginSNS>
+            <LoginSNS
+              onClick={() => {
+                handleNaverLogin();
+              }}
+            >
+              네이버
+            </LoginSNS>
           </LoginSNSBack>
         </LS.LoginBox>
         <LS.LoginSignupBtn

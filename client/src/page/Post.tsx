@@ -197,7 +197,7 @@ function Post() {
   const handleLikeClick = () => {
     let post_id = statePost.id;
     axiosInstance
-      .put(`${process.env.REACT_APP_SERVER_URI}/like/${post_id}`, {})
+      .put(`/like/${post_id}`, {})
       .then((res) => {
         dispatch(postEachLike());
       })
@@ -205,13 +205,14 @@ function Post() {
         console.log(err, 'like click err');
       });
   };
+  //! bookmark
   const handleBookClick = () => {
     let post_id = statePost.id;
     console.log(post_id);
     if (statePost.owner) {
     } else {
       axiosInstance
-        .put(`${process.env.REACT_APP_SERVER_URI}/bookmark/${post_id}`, {})
+        .put(`/bookmark/${post_id}`, {})
         .then((res) => {
           dispatch(postEachBookMark());
           if (statePost.bookmark) {

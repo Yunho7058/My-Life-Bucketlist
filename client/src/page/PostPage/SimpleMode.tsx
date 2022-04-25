@@ -89,9 +89,7 @@ const SimpleMode = ({
                         onClick={(e) => {
                           e.stopPropagation();
                         }}
-                      >
-                        {el.detail}
-                      </PS.TextArea>
+                      ></PS.TextArea>
                     </PS.BucketlistContent>
                   </div>
                   <div>

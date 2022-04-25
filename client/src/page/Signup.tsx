@@ -308,7 +308,6 @@ function Signup() {
   return (
     <>
       <Headers></Headers>
-
       <SS.SignupBack>
         <SS.SignupAnyBack>
           <SS.StepIcon

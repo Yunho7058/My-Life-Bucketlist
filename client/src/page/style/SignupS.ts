@@ -214,16 +214,18 @@ export const SignupAnyBack = styled.div`
 
 export const StepIcon = styled.div`
   width: 5px;
-
+  transition: 600ms;
   height: 5px;
   background-color: ${({ theme }) => theme.mode.stepIconBackColor};
   border-radius: 10px;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
   &.current {
     transform: scale(2.5);
+    transition: 600ms;
   }
   &.after {
     transform: scale(2);
+    transition: 600ms;
     background-color: #32cd32;
   }
 `;

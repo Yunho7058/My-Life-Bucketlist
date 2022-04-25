@@ -118,25 +118,22 @@ const Comment = () => {
     if (!newComment.content.length) {
       dispatch(modalOpen('내용을 입력해주세요.'));
     } else {
-      const accessToken = window.localStorage.getItem('accessToken');
       axiosInstance
         .post(`/comment/${statePost.id}`, newComment)
         .then((res) => {
           //댓글 아이디 받기,만든 날짜
-          setAllComment({ ...allComment });
-          setAllComment(
-            allComment.map((el) => {
-              return el.id !== res.data.id
-                ? { ...el }
-                : {
-                    ...el,
-                    id: res.data.id,
-                    content: newComment.content,
-                    nickname: parse_user_nickname,
-                    update_ad: res.data.update_at,
-                  };
-            })
-          );
+          console.log(res.data);
+          //setAllComment({ ...allComment });
+          setAllComment([
+            ...allComment,
+            {
+              id: 35,
+              user_id: parse_user_id,
+              content: newComment.content,
+              nickname: parse_user_nickname,
+              update_ad: '2021',
+            },
+          ]);
         })
         .catch((err) => {
           console.log(err, 'comment create err');
@@ -144,7 +141,7 @@ const Comment = () => {
     }
   };
 
-  //!댓글 수정,삭제 버튼 관리 state 및 함수
+  //!댓글 수정,삭제 모달 버튼 관리 state 및 함수
   const [selectId, setSelectId] = useState(0);
   const [selectId2, setSelectId2] = useState(0);
   const handleCommentEdit = (id: number) => {

@@ -14,6 +14,7 @@ export const MainDiv = styled.div`
   height: 100px;
 `;
 export const MainBack = styled.div`
+  padding: 30px;
   width: 100%;
   height: 100%;
   background-color: ${({ theme }) => theme.mode.background1};
@@ -67,8 +68,8 @@ export const MainPost = styled.div`
   justify-content: space-between;
   &:hover {
     transform: translate(0px, -15px);
-    transition: 600ms;
-    z-index: 0px;
+
+    transition: 500ms;
   }
   @media screen and (max-width: 1170px) {
     height: 270px;
@@ -156,7 +157,7 @@ function Main() {
             );
           })}
         </MainPostBack>
-        <MainRankingBox>랭킹</MainRankingBox>
+        {/* <MainRankingBox>랭킹</MainRankingBox> */}
       </MainBack>
     </>
   );
