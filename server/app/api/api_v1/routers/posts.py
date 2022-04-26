@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Body, Response
+from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.orm import Session
 import requests
 from base64 import b64encode
@@ -27,7 +27,7 @@ def get_post_list(last_id: int | None = None, db: Session = Depends(get_db)):
     posts = crud.get_post_list(db, last_id)
     for post in posts:
         post.nickname = post.user.nickname
-        post.like_count = post.likes.count()
+        post.bucketlist = post.bucketlist[:3]
     return posts
 
 
@@ -40,7 +40,6 @@ def get_post_detail(post_id: int, email: str = Depends(authenticate_by_token), d
     if post is None:
         raise HTTPException(status_code=404)
     post.nickname = post.user.nickname
-    post.like_count = len(post.likes.filter_by(state = True).all())
     user = get_user(db, email)
     if user:
         like = crud.get_like(db, post.id, user.id)
@@ -53,6 +52,20 @@ def get_post_detail(post_id: int, email: str = Depends(authenticate_by_token), d
         post.bookmark = False
         post.owner = False
     return post
+
+
+@router.patch("/post/{post_id}", response_model=schemas.PostBase, responses={400: {}, 401: {}, 403: {}, 404: {}}, summary="게시글 제목 수정", tags=["버킷리스트"])
+def update_post_title(post_id: int, title: str = Body(..., embed=True), user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    title = title.strip()
+    if not title:
+        raise HTTPException(status_code=400)
+    post = crud.get_post_detail(db, post_id)
+    if post is None:
+        raise HTTPException(status_code=404)
+    if post.id != user.post.id:
+        raise HTTPException(status_code=403)
+    db_post = crud.update_post_title(db, post_id, title)
+    return db_post
 
 
 @router.put("/bucketlist", status_code=204, responses={400: {}, 401: {}, 403: {}}, summary="버킷리스트 추가 및 수정", tags=["버킷리스트"], deprecated=True)
@@ -122,14 +135,14 @@ def put_bucketlist(
     return
 
 
-@router.post("/bucketlist", status_code=201, response_class=Response, responses={401: {}}, summary="버킷리스트 생성", tags=["버킷리스트"])
-def create_bucketlist(bucketlist: schemas.Bucketlist, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    crud.create_bucketlist(db, bucketlist, user.post.id)
-    return
+@router.post("/bucketlist", status_code=200, response_model=schemas.BucketlistOut, responses={401: {}}, summary="버킷리스트 생성", tags=["버킷리스트"])
+def create_bucketlist(bucketlist: schemas.BucketlistIn, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    bucketlist = crud.create_bucketlist(db, bucketlist, user.post.id)
+    return {"id": bucketlist.id}
 
 
 @router.put("/bucketlist/{bucketlist_id}", status_code=204, responses={401: {}, 403: {}, 404: {}}, summary="버킷리스트 수정", tags=["버킷리스트"])
-def update_bucketlist(bucketlist_id: int, bucketlist: schemas.Bucketlist, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def update_bucketlist(bucketlist_id: int, bucketlist: schemas.BucketlistIn, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     db_bucketlist = crud.get_bucketlist(db, bucketlist_id)
     if db_bucketlist is None:
         raise HTTPException(status_code=404)
@@ -169,18 +182,18 @@ def get_comment_list(post_id: int, last_id: int | None = None, db: Session = Dep
     return comments
 
 
-@router.post("/comment/{post_id}", status_code=201, response_class=Response, responses={400: {}, 401: {}, 404: {}}, summary="댓글 생성", tags=["댓글"])
+@router.post("/comment/{post_id}", status_code=200, response_model=schemas.CommentOut, responses={400: {}, 401: {}, 404: {}}, summary="댓글 생성", tags=["댓글"])
 def create_comment(post_id: int, content: str = Body(..., embed=True), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not content:
         raise HTTPException(status_code=400)
     post = crud.get_post_detail(db, post_id)
     if post is None:
         raise HTTPException(status_code=404)
-    crud.create_comment(db, content, user.id, post.id)
-    return
+    comment = crud.create_comment(db, content, user.id, post.id)
+    return {"id": comment.id, "updated_at": comment.updated_at}
 
 
-@router.patch("/comment/{comment_id}", status_code=204, responses={400: {}, 401: {}, 403: {}, 404: {}}, summary="댓글 수정", tags=["댓글"])
+@router.patch("/comment/{comment_id}", status_code=200, response_model=schemas.CommentOut, responses={400: {}, 401: {}, 403: {}, 404: {}}, summary="댓글 수정", tags=["댓글"])
 def update_comment(comment_id: int, content: str = Body(..., embed=True), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not content:
         raise HTTPException(status_code=400)
@@ -189,8 +202,8 @@ def update_comment(comment_id: int, content: str = Body(..., embed=True), user: 
         raise HTTPException(status_code=404)
     if comment.user.id != user.id:
         raise HTTPException(status_code=403)
-    crud.update_comment(db, content, comment)
-    return
+    comment = crud.update_comment(db, content, comment)
+    return {"id": comment.id, "updated_at": comment.updated_at}
 
 
 @router.delete("/comment/{comment_id}", status_code=204, responses={401: {}, 403: {}, 404: {}}, summary="댓글 삭제", tags=["댓글"])
@@ -235,7 +248,6 @@ def get_bookmarked_post_list(user: User = Depends(get_current_user), db: Session
     bookmarked_posts = crud.get_bookmarked_post_list(db, user)
     for post in bookmarked_posts:
         post.nickname = post.user.nickname
-        post.like_count = post.likes.count()
     return bookmarked_posts
 
 

@@ -31,3 +31,17 @@ def get_user_by_nickname(db: Session, nickname: str):
 def get_user_by_id(db: Session, user_id: int):
     user = db.get(User, user_id)
     return user
+
+
+def update_user_nickname(db: Session, user_id: int, nickname: str):
+    user = db.get(User, user_id)
+    user.nickname = nickname
+    db.commit()
+    return
+
+
+def update_user_password(db: Session, user_id: int, password: str):
+    user = db.get(User, user_id)
+    user.password = get_password_hash(password)
+    db.commit()
+    return

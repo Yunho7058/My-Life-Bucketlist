@@ -2,20 +2,25 @@ from pydantic import BaseModel
 import datetime
 
 
-
-class Comment(BaseModel):
+class CommentOut(BaseModel):
     id: int
+    updated_at: datetime.datetime
+
+
+class Comment(CommentOut):
     user_id: int
     nickname: str 
     content: str 
-    updated_at: datetime.datetime
 
     class Config:
         orm_mode = True
 
 
-class Bucketlist(BaseModel):
-    id: int | None = None
+class BucketlistOut(BaseModel):
+    id: int
+
+
+class BucketlistIn(BaseModel):
     content: str 
     detail:str | None = None
     image_path: str | None = None
@@ -23,20 +28,24 @@ class Bucketlist(BaseModel):
     class Config:
         orm_mode = True
 
+    
+class Bucketlist(BucketlistIn, BucketlistOut):
+    pass
+
 
 class PostBase(BaseModel):
     title: str | None = None
-    bucketlist: list[Bucketlist] = []
+    updated_at: datetime.datetime | None = None
+
+    class Config:
+        orm_mode = True
 
 
 class Post(PostBase):
     id: int 
     nickname: str 
-    updated_at: datetime.datetime | None = None
+    bucketlist: list[Bucketlist] = []
     like_count: int 
-
-    class Config:
-        orm_mode = True
 
 
 class PostDetail(Post):

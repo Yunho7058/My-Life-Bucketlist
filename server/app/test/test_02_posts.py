@@ -49,6 +49,69 @@ def test_get_post_detail_success():
     }
 
 
+def test_update_post_title_success():
+    response = client.patch(
+        "post/1",
+        headers={
+            "Authorization": "test"
+        },
+        json={
+            "title": "테스트의 버킷리스트"
+        }
+    )
+    assert response.status_code == 200
+    assert response.json().get("title") == "테스트의 버킷리스트"
+
+
+def test_update_post_title_failure1():
+    response = client.patch(
+        "post/100",
+        headers={
+            "Authorization": "test"
+        },
+        json={
+            "title": "테스트의 버킷리스트"
+        }
+    )
+    assert response.status_code == 404
+
+
+def test_update_post_title_failure2():
+    response = client.patch(
+        "post/1",
+        headers={
+            "Authorization": "test2"
+        },
+        json={
+            "title": "테스트의 버킷리스트"
+        }
+    )
+    assert response.status_code == 403
+
+
+def test_update_post_title_failure3():
+    response = client.patch(
+        "post/1",
+        json={
+            "title": "테스트의 버킷리스트"
+        }
+    )
+    assert response.status_code == 401
+
+
+def test_update_post_title_failure4():
+    response = client.patch(
+        "post/1",
+        headers={
+            "Authorization": "test"
+        },
+        json={
+            "title": "    "
+        }
+    )
+    assert response.status_code == 400
+
+
 def test_create_bucketlist_success():
     response = client.post(
         "bucketlist",
@@ -59,7 +122,8 @@ def test_create_bucketlist_success():
             "content": "서핑하기"
         }
     )
-    assert response.status_code == 201
+    assert response.status_code == 200
+    assert response.json() == {"id": 1}
 
 
 def test_create_bucketlist_failure():
@@ -155,7 +219,10 @@ def test_create_comment_success():
             "content": "잘 봤습니다~"
         }
     )
-    assert response.status_code == 201
+    assert response.status_code == 200
+    data = response.json()
+    assert data.get("id") == 1
+    assert data.get("updated_at")
 
 
 def test_create_comment_failure1():
@@ -198,7 +265,7 @@ def test_update_comment_success():
             "content": "좋아요~"
         }
     )
-    assert response.status_code == 204
+    assert response.status_code == 200
 
 
 def test_update_comment_failure1():

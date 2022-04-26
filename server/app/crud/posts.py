@@ -25,11 +25,12 @@ def create_post(db: Session, user_id: int):
     return
 
 
-def update_post(db: Session, post_id: int, title: str):
+def update_post_title(db: Session, post_id: int, title: str):
     db_post = db.get(Post, post_id)
     db_post.title = title 
     db.commit()
-    return
+    db.refresh(db_post)
+    return db_post
 
 
 def get_bucketlist(db: Session, bucketlist_id: int):
@@ -43,7 +44,8 @@ def create_bucketlist(db: Session, bucketlist: schemas.Bucketlist, post_id: int)
     )
     db.add(db_bucketlist)
     db.commit()
-    return
+    db.refresh(db_bucketlist)
+    return db_bucketlist
 
 
 def update_bucketlist(db: Session, db_bucketlist: Bucketlist, bucketlist: schemas.Bucketlist):
@@ -81,13 +83,15 @@ def create_comment(db: Session, content: str, user_id: int, post_id: int):
     )
     db.add(comment)
     db.commit()
-    return
+    db.refresh(comment)
+    return comment
 
 
 def update_comment(db: Session, content: str, db_comment: Comment):
     db_comment.content = content
     db.commit()
-    return
+    db.refresh(db_comment)
+    return db_comment
 
 
 def delete_comment(db: Session, db_comment: Comment):
