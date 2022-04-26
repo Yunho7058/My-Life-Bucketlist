@@ -256,7 +256,7 @@ def get_presigned_post(file_name: str, user: User = Depends(get_current_user)):
     response = requests.post(
         f"{settings.AWS_API_GATEWAY_URL}/presigned-post",
         headers={"Authorization": settings.AWS_AUTH_KEY},
-        json={"name": file_name}
+        json={"name": file_name, "post_id": user.post.id}
     ).json()
     if response.get("error"):
         return response.get("message")
