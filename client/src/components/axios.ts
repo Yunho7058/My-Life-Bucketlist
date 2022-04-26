@@ -8,7 +8,7 @@ const axiosInstance = axios.create();
 //요청시 빈 토큰을 보내 문제가 됨
 //그래서 request 요청보내기전에 속성값을 다시 정해 보내주는 방식으로 변경
 
-//요청 보내기전 headers 속설 및 토큰 전달
+//요청 보내기전 headers 속성 및 토큰 전달
 axiosInstance.interceptors.request.use(
   async (config) => {
     let accessToken = window.localStorage.getItem('accessToken');
@@ -38,7 +38,9 @@ axiosInstance.interceptors.response.use(
         .then((res) => {
           console.log('토큰 새로 발급 받았어');
           originalRequest._retry = true;
-          window.localStorage.setItem('accessToken', res.data.access_token);
+          let accessToken = res.data.access_token;
+          window.localStorage.setItem('accessToken', accessToken);
+          originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
         })
         .catch((err) => {
           console.log(err, 'refreshToken renewal err');
