@@ -241,3 +241,78 @@ def test_get_post_id_failure():
         "user/100/post"
     )
     assert response.status_code == 404
+
+
+def test_update_nickname_success():
+    response = client.patch(
+        "nickname",
+        headers={
+            "Authorization": "test"
+        },
+        json={
+            "nickname": "테스트"
+        }
+    )
+    assert response.status_code == 204
+
+
+def test_update_nickname_failure1():
+    response = client.patch(
+        "nickname",
+        headers={
+            "Authorization": "test"
+        },
+        json={
+            "nickname": "   "
+        }
+    )
+    assert response.status_code == 400
+
+
+def test_update_nickname_failure2():
+    response = client.patch(
+        "nickname",
+        json={
+            "nickname": "테스트"
+        }
+    )
+    assert response.status_code == 401
+
+
+def test_update_password_success():
+    response = client.patch(
+        "password",
+        headers={
+            "Authorization": "test"
+        },
+        json={
+            "password": "test1234"
+        }
+    )
+    assert response.status_code == 204
+
+
+def test_update_password_failure1():
+    response = client.patch(
+        "password",
+        headers={
+            "Authorization": ""
+        },
+        json={
+            "password": "test1234"
+        }
+    )
+    assert response.status_code == 401
+
+
+def test_update_password_failure2():
+    response = client.patch(
+        "password",
+        headers={
+            "Authorization": "test"
+        },
+        json={
+            "password": "     "
+        }
+    )
+    assert response.status_code == 400

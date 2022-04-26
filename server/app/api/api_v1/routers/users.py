@@ -19,7 +19,9 @@ from app.crud.users import (
     create_user, 
     get_user, 
     get_user_by_nickname,
-    get_user_by_id
+    get_user_by_id,
+    update_user_nickname,
+    update_user_password
 )
 from app.crud.posts import create_post
 from app.core.config import settings
@@ -34,12 +36,10 @@ from app.utils import send_email_code
 
 
 
-router = APIRouter(
-    tags=["유저"],
-)
+router = APIRouter()
 
 
-@router.post("/email", status_code=204, responses={400: {}}, summary="이메일 중복확인 및 인증메일 전송")
+@router.post("/email", status_code=204, responses={400: {}}, summary="이메일 중복확인 및 인증메일 전송", tags=["유저"])
 def check_email(response: Response, email: str = Body(..., embed=True), db: Session = Depends(get_db)):
     if get_user(db, email):
         raise HTTPException(status_code=400)
@@ -51,7 +51,7 @@ def check_email(response: Response, email: str = Body(..., embed=True), db: Sess
     return
 
 
-@router.post("/email/code", status_code=204, responses={400: {}}, summary="이메일 인증코드 확인")
+@router.post("/email/code", status_code=204, responses={400: {}}, summary="이메일 인증코드 확인", tags=["유저"])
 def check_email_code(response: Response, code: str = Body(..., embed=True), email_code: str | None = Cookie(None)):
     """
     **Cookie**
@@ -66,14 +66,14 @@ def check_email_code(response: Response, code: str = Body(..., embed=True), emai
     raise HTTPException(status_code=400)
 
 
-@router.post("/nickname", status_code=204, responses={400: {}}, summary="닉네임 중복확인")
+@router.post("/nickname", status_code=204, responses={400: {}}, summary="닉네임 중복확인", tags=["유저"])
 def check_nickname(nickname: str = Body(..., embed=True), db: Session = Depends(get_db)):
     if get_user_by_nickname(db, nickname):
         raise HTTPException(status_code=400)
     return
 
 
-@router.post("/signup", status_code=201, response_class=Response, responses={400: {}}, summary="회원가입")
+@router.post("/signup", status_code=201, response_class=Response, responses={400: {}}, summary="회원가입", tags=["유저"])
 def signup(user: UserCreate, db: Session = Depends(get_db)):
     if get_user(db, user.email):
         raise HTTPException(status_code=400)
@@ -108,7 +108,8 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
             }
         }
     },
-    summary="로그인"
+    summary="로그인",
+    tags=["유저"]
 )
 def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """
@@ -133,7 +134,7 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
     return token
 
 
-@router.get("/refresh", response_model=Token, responses={400: {}}, summary="토큰 갱신")
+@router.get("/refresh", response_model=Token, responses={400: {}}, summary="토큰 갱신", tags=["유저"])
 def refresh_token(response: Response, refresh_token: str | None = Cookie(None), db: Session = Depends(get_db)):
     print(f"refresh token: {refresh_token}")
     email = decode_token(refresh_token)
@@ -146,24 +147,42 @@ def refresh_token(response: Response, refresh_token: str | None = Cookie(None), 
     return token
 
 
-@router.get("/logout", status_code=204, summary="로그아웃")
+@router.get("/logout", status_code=204, summary="로그아웃", tags=["유저"])
 def logout(response: Response):
     response.delete_cookie("refresh_token")
     return
 
 
-@router.get("/me", response_model=UserWithPostId, responses={401: {}}, summary="현재 유저 정보 조회")
+@router.get("/me", response_model=UserWithPostId, responses={401: {}}, summary="현재 유저 정보 조회", tags=["유저"])
 def get_current_user_info(user: User = Depends(get_current_user)):
     user.post_id = user.post.id
     return user
 
 
-@router.get("/user/{user_id}/post", response_model=PostId, responses={404: {}}, summary="유저의 게시글 아이디 및 공개여부 조회")
+@router.get("/user/{user_id}/post", response_model=PostId, responses={404: {}}, summary="유저의 게시글 아이디 및 공개여부 조회", tags=["유저"])
 def get_post_id(user_id: int, db: Session = Depends(get_db)):
     user = get_user_by_id(db, user_id)
     if user is None:
         raise HTTPException(status_code=404)
     return user.post
+
+
+@router.patch("/nickname", status_code=204, responses={400: {}, 401: {}}, summary="닉네임 수정", tags=["마이페이지"])
+def update_nickname(nickname: str = Body(..., embed=True), user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    nickname = nickname.strip()
+    if not nickname:
+        raise HTTPException(status_code=400)
+    update_user_nickname(db, user.id, nickname)
+    return
+
+
+@router.patch("/password", status_code=204, responses={400: {}, 401: {}}, summary="비밀번호 수정", tags=["마이페이지"])
+def update_password(password: str = Body(..., embed=True), user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    password = password.strip()
+    if len(password) < 8:
+        raise HTTPException(status_code=400)
+    update_user_password(db, user.id, password)
+    return
 
 
 # @router.post("/token/kakao", response_model=Token)
@@ -180,6 +199,4 @@ def get_post_id(user_id: int, db: Session = Depends(get_db)):
 #     print(data)
 #     print(response.status_code)
 #     return 
-
-
 

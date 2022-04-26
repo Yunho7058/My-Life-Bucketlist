@@ -9,6 +9,7 @@ from sqlalchemy import (
     TEXT
 )
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from app.db.database import Base
 from app.utils import get_now
@@ -24,10 +25,14 @@ class Post(Base):
     is_public = Column(Boolean, default=True)
 
     user = relationship("User", back_populates="post")
-    bucketlist = relationship("Bucketlist", back_populates="post", cascade="all, delete-orphan")
+    bucketlist = relationship("Bucketlist", back_populates="post", cascade="all, delete-orphan", lazy="joined")
     comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
     likes = relationship("Like", back_populates="post", cascade="all, delete-orphan", lazy="dynamic")
     bookmarks = relationship("Bookmark", back_populates="post", cascade="all, delete-orphan")
+
+    @hybrid_property
+    def like_count(self):
+        return self.likes.filter_by(state = True).count()
 
 
 class Bucketlist(Base):
