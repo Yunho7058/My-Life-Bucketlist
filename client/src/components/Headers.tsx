@@ -10,6 +10,7 @@ import { HeaderBack, LoginBtn } from './style/HeadersS';
 import { isLogin, isLogout, modalOpen, postAll } from '../redux/action';
 import axios from 'axios';
 import axiosInstance from './axios';
+import ScrollTopBtn from '../utils/scrollTopBtn';
 
 export const CreatePostBtn = styled.div`
   position: fixed;
@@ -179,6 +180,7 @@ function Headers() {
   };
   return (
     <HeaderBack>
+      <ScrollTopBtn></ScrollTopBtn>
       <LogoTitle onClick={() => navigate('/')}>My Life Bucketlist</LogoTitle>
 
       {stateIsLogin ? (

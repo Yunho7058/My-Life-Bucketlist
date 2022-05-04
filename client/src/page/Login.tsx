@@ -18,6 +18,7 @@ import Headers from '../components/Headers';
 import { getUserInfo, isLogin } from '../redux/action';
 import * as LS from './style/LoginS';
 import axiosInstance from '../components/axios';
+import Modal from '../components/Modal';
 
 export const LoginSNSBack = styled.div`
   width: 100%;
@@ -251,6 +252,7 @@ function Login() {
           <AiOutlineDoubleRight size={23} />
         </LS.LoginSignupBtn>
       </LS.LoginBack>
+    
     </>
   );
 }

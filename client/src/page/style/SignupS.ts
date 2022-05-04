@@ -45,7 +45,6 @@ export const SignupInput = styled.input`
   border: 1px solid #696969;
   padding-left: 30px;
   padding-right: 30px;
-
   background-color: ${({ theme }) => theme.mode.BGInput};
   color: ${({ theme }) => theme.mode.FCInput};
   outline: none;

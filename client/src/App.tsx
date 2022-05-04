@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 import { TypeRootReducer } from './redux/store/store';
+import ScrollToTop from './utils/scrollTopFix';
 
 //components
 //import ReduxTest from './page/ReduxTest';
@@ -42,6 +43,7 @@ function App() {
     <>
       <ThemeProvider theme={theme}>
         <BrowserRouter>
+          <ScrollToTop />
           <Reset />
           <Toggle themeMode={themeMode} toggleTheme={toggleTheme} />
           <Backgound>

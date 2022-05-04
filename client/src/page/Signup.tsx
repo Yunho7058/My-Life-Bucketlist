@@ -15,6 +15,7 @@ import { Terms_2 } from '../components/terms/Terms_2';
 import { Terms_1 } from '../components/terms/Terms_1';
 import * as SS from './style/SignupS';
 import axiosInstance from '../components/axios';
+import Modal from '../components/Modal';
 
 function Signup() {
   const [isPage, setIsPage] = useState({
@@ -152,6 +153,7 @@ function Signup() {
         isEmail: false,
       });
     } else {
+      console.log(signupInfo.emailCode);
       axiosInstance
         .post(`/email/code`, { code: signupInfo.emailCode })
         .then((res) => {
@@ -284,7 +286,7 @@ function Signup() {
       });
     } else {
       axiosInstance
-        .post(`${process.env.REACT_APP_SERVER_URI}/nickname`, {
+        .post(`/nickname`, {
           nickname: signupInfo.nickname,
         })
         .then((res) => {
@@ -546,14 +548,14 @@ function Signup() {
             </SS.SignupStepBox>
           )}
         </SS.SignupBox>
-        //! 테스트용
+        {/* //! 테스트용
         <button
           onClick={() => {
             next();
           }}
         >
           다음으로
-        </button>
+        </button> */}
       </SS.SignupBack>
     </>
   );

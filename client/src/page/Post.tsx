@@ -18,6 +18,7 @@ import {
   postBucketlistNew,
   postEachLike,
   postEachBookMark,
+  postBucketlistImgUpload,
 } from '../redux/action';
 import Modal from '../components/Modal';
 import * as PS from './style/PostStyledComponents';
@@ -25,6 +26,7 @@ import Comment from './Comment';
 import SimpleMode from './PostPage/SimpleMode';
 import DetailMode from './PostPage/DetailMode';
 import axiosInstance from '../components/axios';
+import axios from 'axios';
 //import { TypeProps } from '../App';
 
 //편집모드 클릭 시 수정 삭제 추가 버튼 보이게 하기
@@ -93,8 +95,8 @@ function Post() {
       .catch((err) => console.log(err, '각 게시물 클릭 err'));
   }, [dispatch]);
   //사이드바 옵션 버튼
-  console.log(statePost);
-  console.log('두번');
+  // console.log(statePost);
+  // console.log('두번');
 
   const handleIsPost = (value: string) => {
     console.log(value);
@@ -108,16 +110,7 @@ function Post() {
     }
   };
   //!사진 올리기
-  // const [imgFile, setImgFile] = useState<any>('');
-  // const handlePoto = (event: any) => {
-  //   event.preventDefault();
-  //   const formData = new FormData();
-  // };
-  // const onLoadFile = (e: { target: HTMLInputElement }) => {
-  //   const file = e.target.files;
-  //   console.log(file);
-  //   setImgFile(file);
-  // };
+
   //! 편집 on Input(content,detail) 입력
   const handleInputItem =
     (key: string) =>
@@ -138,7 +131,7 @@ function Post() {
       .catch((err) => {
         console.log(err, 'bucketlist edit err');
       });
-    console.log(data[0]);
+    //console.log(data[0]);
   };
   //생성('버킷리스트를 추가해주세요',+) 버튼 클릭시
   const handleBucketlistCreate = () => {
@@ -168,7 +161,6 @@ function Post() {
       axiosInstance
         .post(`/bucketlist`, newBucketlist)
         .then((res) => {
-          console.log(res.data);
           dispatch(
             postBucketlistNew(
               res.data.id,
@@ -191,7 +183,7 @@ function Post() {
   };
   //! 삭제
   const handleDelete = (id: number) => {
-    console.log('삭제');
+    //console.log('삭제');
     dispatch(modalOpen('정말 삭제하시겠습니까?', 'bucketlist', id));
   };
   const handleLikeClick = () => {
@@ -205,6 +197,7 @@ function Post() {
         console.log(err, 'like click err');
       });
   };
+  console.log(statePost.bucketlist);
   //! bookmark
   const handleBookClick = () => {
     let post_id = statePost.id;
@@ -227,10 +220,77 @@ function Post() {
     }
   };
 
+  const [file, setFile] = useState<FileList | undefined>();
+  const [fileName, setFileName] = useState<string>('');
+  const [presignedPost, setPresignedPost] = useState<TypePresignedPost>();
+
+  interface TypePresignedPost {
+    url: string;
+    fields: {
+      Policy: string;
+      'X-Amz-Algorithm': string;
+      'X-Amz-Credential': string;
+      'X-Amz-Date': string;
+      'X-Amz-Security-Token': string;
+      'X-Amz-Signature': string;
+      bucket: string;
+      key: string;
+    };
+  }
+  //Poto 선택시
+  const onLoadFile = (e: { target: HTMLInputElement }) => {
+    const fileList = e.target.files;
+    const id = Number(e.target.id);
+    if (fileList !== null) {
+      let imgUrl = URL.createObjectURL(fileList[0]);
+      dispatch(postBucketlistImgUpload(id, imgUrl));
+      setFile(fileList);
+      setFileName(fileList[0].name);
+    }
+  };
+  //server로부터 key get
+  useEffect(() => {
+    axiosInstance(`/presigned-post?file_name일부로오타=${fileName}`)
+      .then((res) => {
+        setPresignedPost(res.data);
+      })
+      .catch((err) => {
+        console.log('poto err');
+      });
+  }, [fileName]);
+
+  const handleImgDelete = (id: number) => {
+    dispatch(postBucketlistImgUpload(id, ''));
+  };
+
+  //formdata 새로 생성후 s3전송
+  //! 생성 or 저장 버튼 클릭 시 변경?
+  //! 아니면 올리자마자 바로 저장
+  useEffect(() => {
+    const formData = new FormData();
+    if (presignedPost && file) {
+      Object.entries(presignedPost.fields).forEach((entry) => {
+        const [key, value] = entry;
+        formData.append(key, value);
+      });
+      formData.append('file', file[0]);
+      axios
+        .post(presignedPost.url, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        .then((res) => {
+          console.log(res, '요청완료');
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [presignedPost]);
+
   const [paginationStart, setPaginationStart] = useState(0);
   const [paginationEnd, setPaginationEnd] = useState(20);
   const handlePaginationClick = (s: number, e: number) => {
-    console.log(statePost.bucketlist.length);
+    //console.log(statePost.bucketlist.length);
     setPaginationStart(s);
     setPaginationEnd(e);
   };
@@ -287,6 +347,8 @@ function Post() {
               handleNewBucketlist={handleNewBucketlist}
               paginationStart={paginationStart}
               paginationEnd={paginationEnd}
+              onLoadFile={onLoadFile}
+              handleImgDelete={handleImgDelete}
             ></SimpleMode>
           ) : (
             <DetailMode
@@ -300,6 +362,8 @@ function Post() {
               handleNewBucketlist={handleNewBucketlist}
               paginationStart={paginationStart}
               paginationEnd={paginationEnd}
+              onLoadFile={onLoadFile}
+              handleImgDelete={handleImgDelete}
             ></DetailMode>
           )}
 
@@ -363,22 +427,9 @@ function Post() {
             )}
             좋아요 {statePost.like_count}개
           </BookAndlikeBtn>
+
           <Comment />
         </PS.PostBox>
-        {/* <input
-                    type="file"
-                    accept="image/*"
-                    name="file"
-                    id="bucketlistImg"
-                    onChange={onLoadFile}
-                  />
-                  <button
-                  // onClick={() => {
-                  //   handlePoto();
-                  // }}
-                  >
-                    사진 올리기
-                  </button> */}
       </PS.PostBack>
     </>
   );

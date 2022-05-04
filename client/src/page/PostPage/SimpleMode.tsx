@@ -24,6 +24,8 @@ interface TypeProps {
   handleNewBucketlist: () => void;
   paginationStart: number;
   paginationEnd: number;
+  onLoadFile: (e: { target: HTMLInputElement }) => void;
+  handleImgDelete: (id: number) => void;
 }
 
 const SimpleMode = ({
@@ -37,6 +39,8 @@ const SimpleMode = ({
   handleNewBucketlist,
   paginationStart,
   paginationEnd,
+  onLoadFile,
+  handleImgDelete,
 }: TypeProps) => {
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
@@ -69,7 +73,11 @@ const SimpleMode = ({
               {isPost.isEditMode ? (
                 <>
                   <div>
-                    <PS.BucketlistImg />
+                    {el.image_path ? (
+                      <PS.PostPoto alt="sample" src={el.image_path} />
+                    ) : (
+                      <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
+                    )}
                     <PS.BucketlistContent>
                       <PS.InputBox
                         id={`${el.id}`}
@@ -84,13 +92,41 @@ const SimpleMode = ({
                         placeholder="내용을 작성해주세요. 100이내로 작성해주세요."
                         maxLength={100}
                         name={el.detail}
-                        value={el.detail}
+                        defaultValue={el.detail}
                         onChange={() => handleInputItem('detail')}
                         onClick={(e) => {
                           e.stopPropagation();
                         }}
                       ></PS.TextArea>
                     </PS.BucketlistContent>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      width: '80%',
+                      justifyContent: 'flex-start',
+                    }}
+                  >
+                    <PS.ImgUploadBack>
+                      <PS.ImgDelete
+                        onClick={(e) => {
+                          handleImgDelete(el.id);
+                          e.stopPropagation();
+                        }}
+                      >
+                        삭제
+                      </PS.ImgDelete>
+                      <PS.ImgInput
+                        type="file"
+                        accept="image/*"
+                        name="file"
+                        id={`${el.id}`}
+                        onChange={onLoadFile}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      />
+                    </PS.ImgUploadBack>
                   </div>
                   <div>
                     <PS.Btn
@@ -115,8 +151,15 @@ const SimpleMode = ({
                 </>
               ) : (
                 <div>
-                  <PS.BucketlistImg />
-                  {/* //이미지 경로 설정 */}
+                  {el.image_path ? (
+                    <PS.PostPoto
+                      alt="sample"
+                      src={el.image_path}
+                      style={{ margin: 'auto' }}
+                    />
+                  ) : (
+                    <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
+                  )}
                   <PS.BucketlistContent>
                     <div className="content">
                       {paginationStart >= 0 && paginationStart < 21

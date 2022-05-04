@@ -24,7 +24,7 @@ namespace TypeRedux {
       id: number;
       content: string;
       detail?: string;
-      image_path: any;
+      image_path?: string;
     }[];
   }
   export interface TypeKeyString {
@@ -44,6 +44,7 @@ namespace TypeRedux {
       data: TypeKeyString;
       content: string;
       detail: string;
+      image_path: string;
     };
   }
 
