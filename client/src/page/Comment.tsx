@@ -35,7 +35,7 @@ const Comment = () => {
       user_id: 0,
       nickname: '',
       content: '',
-      update_ad: '',
+      updated_at: '',
     },
   ]);
   //신규 생성 state
@@ -54,6 +54,7 @@ const Comment = () => {
     axiosInstance
       .get(`/comment/${postURL.id}`)
       .then((res) => {
+        console.log(res.data);
         setAllComment([...res.data]);
       })
       .catch((err) => console.log(err, 'comment get err'));
@@ -127,11 +128,11 @@ const Comment = () => {
           setAllComment([
             ...allComment,
             {
-              id: 35,
+              id: res.data.id,
               user_id: parse_user_id,
               content: newComment.content,
               nickname: parse_user_nickname,
-              update_ad: '2021',
+              updated_at: res.data.updated_at,
             },
           ]);
         })
@@ -214,7 +215,7 @@ const Comment = () => {
               ) : (
                 <CS.CommentListBody>
                   {el.content}
-                  <div className="date">{el.update_ad}</div>
+                  <div className="date">{el.updated_at}</div>
                 </CS.CommentListBody>
               )}
 

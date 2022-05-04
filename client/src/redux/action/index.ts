@@ -11,6 +11,7 @@ export const POST_BUCKETLIST_EDIT = 'POST_BUCKETLIST_EDIT';
 export const POST_BUCKETLIST_DELET = 'POST_BUCKETLIST_DELET';
 export const POST_BUCKETLIST_NEW = 'POST_BUCKETLIST_NEW';
 export const GET_USER_INFO = 'GET_USER_INFO';
+export const POST_BUCKETLIST_POTO_UPLOAD = 'POST_BUCKETLIST_POTO_UPLOAD';
 
 export const isLogin = () => {
   return {
@@ -51,6 +52,13 @@ export const postEachLike = () => {
 export const postEachBookMark = () => {
   return {
     type: POST_EACH_BOOKMARK,
+  };
+};
+
+export const postBucketlistImgUpload = (id: number, img: string) => {
+  return {
+    type: POST_BUCKETLIST_POTO_UPLOAD,
+    payload: { id: id, image_path: img },
   };
 };
 

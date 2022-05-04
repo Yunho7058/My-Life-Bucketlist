@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axiosInstance from '../components/axios';
 import Headers from '../components/Headers';
+import Modal from '../components/Modal';
+import { getUserInfo, modalOpen } from '../redux/action';
 
 export const MypageBack = styled.div`
   width: 100%;
@@ -80,53 +83,92 @@ export const ProfilList = styled.div`
   justify-content: flex-start;
   column-gap: 70px;
 `;
-export const ProfilTilte = styled.div``;
-export const ProfilContent = styled.div``;
+export const ProfilTilte = styled.div`
+  text-align: center;
+  width: 80px;
+`;
+export const ProfilContent = styled.div`
+  padding: 8px;
+  width: 120px;
+  height: 40px;
+`;
+export const ProfilContentInput = styled.input`
+  width: 140px;
+  height: 35px;
+  margin-right: -29px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  border: 1px solid #696969;
+  padding-left: 10px;
+  background-color: ${({ theme }) => theme.mode.BGInput};
+  color: ${({ theme }) => theme.mode.FCInput};
+  outline: none;
+  &:hover {
+    border: 1px solid rgb(100, 100, 255);
+  }
+  &:focus {
+    border: 1px solid #4169e1;
+    background-color: ${({ theme }) => theme.mode.background2};
+  }
+`;
 export const Btn = styled.div`
   border-radius: 10px;
+  height: 30px;
+  line-height: 30px;
   text-align: center;
   padding: 5px;
   border: 1px solid rgba(0, 0, 0, 0.4);
   cursor: pointer;
-  width: 100px;
+  width: 70px;
   &.delete {
     background-color: #cd5c5c;
-
+    width: 20%;
     &:hover {
       background-color: #c77171;
     }
   }
   &.change {
+    width: 40%;
     width: 100px;
     &:hover {
       background-color: #6495ed;
     }
   }
+  &:hover {
+    background-color: #6495ed;
+  }
 `;
 type bookBucketlistInfo = { title: string; id: number }[];
 const Mypage = () => {
+  const dispatch = useDispatch();
   const [list, setList] = useState(0);
   const [bookBucketlist, setBookBucketlist] = useState<bookBucketlistInfo>();
   const handleListChange = (list: number) => {
     setList(list);
   };
   const navigate = useNavigate();
-  let getUserId = window.localStorage.getItem('user');
-  let parse_post_id: number;
-  let parse_user_email: string = '';
-  let parse_user_nickname: string = '';
-  if (getUserId !== null) {
-    parse_post_id = Number(JSON.parse(getUserId).post_id);
-    parse_user_email = JSON.parse(getUserId).email;
-    parse_user_nickname = JSON.parse(getUserId).nickname;
-  }
+  let getUser = window.localStorage.getItem('user');
+  const [userInfo, setUserInfo] = useState({
+    parse_post_id: 0,
+    parse_user_email: '',
+    parse_user_nickname: '',
+  });
+  useEffect(() => {
+    if (getUser !== null) {
+      console.log(getUser);
+      setUserInfo({
+        parse_user_email: JSON.parse(getUser).email,
+        parse_post_id: Number(JSON.parse(getUser).post_id),
+        parse_user_nickname: JSON.parse(getUser).nickname,
+      });
+    }
+  }, []);
 
   useEffect(() => {
     axiosInstance
       .get('/bookmark')
       .then((res) => {
         //가져온 게시물들 관리
-
         //let {title, id} = res.data
         setBookBucketlist(
           res.data.map((el: { title: string; id: number }) => {
@@ -138,11 +180,56 @@ const Mypage = () => {
         console.log(err, 'bookmark get err');
       });
   }, []);
-  console.log(bookBucketlist);
+  const [nicknameChange, setNicknameChange] = useState({
+    is: false,
+    isNickNameCheck: false,
+    nickname: '',
+  });
+  const handleNicknameInput =
+    (key: string) => (e: { target: HTMLInputElement }) => {
+      console.log(key);
+      setNicknameChange({ ...nicknameChange, [key]: e.target.value });
+    };
+  const handleNicknameEdit = () => {
+    if (nicknameChange.nickname.length < 1) {
+      dispatch(modalOpen('닉네임을 입력해주세요.'));
+    } else {
+      axiosInstance
+        .post(`/nickname`, {
+          nickname: nicknameChange.nickname,
+        })
+        .then((res) => {
+          setNicknameChange({ ...nicknameChange, isNickNameCheck: true });
+        })
+        .catch((err) => {
+          dispatch(modalOpen('중복된 닉네임입니다.'));
+          console.log(err, 'nickname check err');
+        });
+    }
+  };
+  useEffect(() => {
+    axiosInstance
+      .patch('/nickname', { nickname: nicknameChange.nickname })
+      .then((res) => {
+        dispatch(modalOpen('닉네임이 변경되었습니다.'));
+        setNicknameChange({ ...nicknameChange, is: false });
+        dispatch(getUserInfo());
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      })
+      .catch((err) => {
+        console.log(err, 'nickname edit err');
+      });
+  }, [nicknameChange.isNickNameCheck]);
 
+  const handlePasswordEdit = () => {
+    dispatch(modalOpen('password'));
+  };
   return (
     <>
       <Headers></Headers>
+      <Modal></Modal>
       <MypageBack>
         <ListBox>
           <ListTitle onClick={() => handleListChange(0)}>
@@ -155,7 +242,7 @@ const Mypage = () => {
             <>
               <MyBucketlist
                 onClick={() => {
-                  navigate(`/post/${parse_post_id}`);
+                  navigate(`/post/${userInfo.parse_post_id}`);
                 }}
               >
                 나의 버킷리스트 바로가기
@@ -181,16 +268,62 @@ const Mypage = () => {
           {list === 1 && (
             <>
               <ProfilList>
+                <ProfilTilte>사진</ProfilTilte>
+              </ProfilList>
+              <ProfilList>
                 <ProfilTilte>닉네임</ProfilTilte>
-                <ProfilContent>{parse_user_nickname}</ProfilContent>
-                <Btn className="change">닉네임 변경</Btn>
+                {nicknameChange.is ? (
+                  <ProfilContentInput
+                    type="text"
+                    value={nicknameChange.nickname}
+                    placeholder={`${userInfo.parse_user_nickname}`}
+                    onChange={handleNicknameInput('nickname')}
+                  />
+                ) : (
+                  <ProfilContent>{userInfo.parse_user_nickname}</ProfilContent>
+                )}
+
+                {nicknameChange.is ? (
+                  <div
+                    style={{
+                      display: 'flex',
+                      columnGap: '10px',
+                    }}
+                  >
+                    <Btn
+                      onClick={() => {
+                        handleNicknameEdit();
+                      }}
+                    >
+                      수정
+                    </Btn>
+                    <Btn
+                      onClick={() => {
+                        setNicknameChange({ ...nicknameChange, is: false });
+                      }}
+                    >
+                      취소
+                    </Btn>
+                  </div>
+                ) : (
+                  <Btn
+                    className="change"
+                    onClick={() => {
+                      setNicknameChange({ ...nicknameChange, is: true });
+                    }}
+                  >
+                    닉네임 변경
+                  </Btn>
+                )}
               </ProfilList>
               <ProfilList>
                 <ProfilTilte>이메일</ProfilTilte>
-                <ProfilContent>{parse_user_email}</ProfilContent>
+                <ProfilContent>{userInfo.parse_user_email}</ProfilContent>
               </ProfilList>
               <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                <Btn className="change">비밀번호 변경</Btn>
+                <Btn className="change" onClick={() => handlePasswordEdit()}>
+                  비밀번호 변경
+                </Btn>
                 <Btn className="delete">회원탈퇴</Btn>
               </div>
             </>

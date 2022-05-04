@@ -5,6 +5,7 @@ import {
   POST_BUCKETLIST_NEW,
   POST_EACH_LIKE,
   POST_EACH_BOOKMARK,
+  POST_BUCKETLIST_POTO_UPLOAD,
 } from '../action/index';
 import TypeRedux from './typeRedux';
 
@@ -98,6 +99,15 @@ const postReducer = (
         ...state,
         bucketlist: new_copy,
       };
+
+    case POST_BUCKETLIST_POTO_UPLOAD:
+      let img_copy = state.bucketlist.map((el) => {
+        return el.id === action.payload.id
+          ? { ...el, image_path: action.payload.image_path }
+          : { ...el };
+      });
+
+      return { ...state, bucketlist: img_copy };
 
     default:
       return state;

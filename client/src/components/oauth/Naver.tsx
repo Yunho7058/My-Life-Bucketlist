@@ -22,8 +22,6 @@ const NaverLogin = () => {
         }
       )
       .then((res) => {
-        //로그인 상태 변경
-        //유저정보 로컬에 저장 .. 리덕스로 변경할껀지?
         let accessToken = res.data.access_token;
         window.localStorage.setItem('accessToken', accessToken);
         dispatch(isLogin());

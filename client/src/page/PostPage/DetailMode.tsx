@@ -3,7 +3,6 @@ import { BsPlusCircleDotted } from 'react-icons/bs';
 import TypeRedux from '../../redux/reducer/typeRedux';
 import { TypeRootReducer } from '../../redux/store/store';
 import * as PS from '../style/PostStyledComponents';
-import { useState } from 'react';
 interface TypeProps {
   isPost: { isEditMode: boolean; isSimple: boolean; isCreate: boolean };
   handleInputItem: (
@@ -23,6 +22,8 @@ interface TypeProps {
   handleNewBucketlist: () => void;
   paginationStart: number;
   paginationEnd: number;
+  onLoadFile: (e: { target: HTMLInputElement }) => void;
+  handleImgDelete: (id: number) => void;
 }
 
 const DetailMode = ({
@@ -36,11 +37,13 @@ const DetailMode = ({
   handleNewBucketlist,
   paginationStart,
   paginationEnd,
+  onLoadFile,
+  handleImgDelete,
 }: TypeProps) => {
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
   );
-  console.log(paginationStart, paginationEnd);
+
   return (
     <PS.BucketlistBox>
       {/*편집 on */}
@@ -52,7 +55,12 @@ const DetailMode = ({
               {isPost.isEditMode ? (
                 <>
                   <div>
-                    <PS.BucketlistImg />
+                    {el.image_path ? (
+                      <PS.PostPoto alt="sample" src={el.image_path} />
+                    ) : (
+                      <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
+                    )}
+
                     <PS.BucketlistContent>
                       <PS.InputBox
                         id={`${el.id}`}
@@ -70,6 +78,27 @@ const DetailMode = ({
                       ></PS.TextArea>
                     </PS.BucketlistContent>
                   </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      width: '80%',
+                      justifyContent: 'flex-start',
+                    }}
+                  >
+                    <PS.ImgUploadBack>
+                      <PS.ImgDelete onClick={() => handleImgDelete(el.id)}>
+                        삭제
+                      </PS.ImgDelete>
+                      <PS.ImgInput
+                        type="file"
+                        accept="image/*"
+                        name="file"
+                        id={`${el.id}`}
+                        onChange={onLoadFile}
+                      />
+                    </PS.ImgUploadBack>
+                  </div>
+
                   <div>
                     <PS.Btn
                       className="delete"
@@ -95,8 +124,15 @@ const DetailMode = ({
                 <>
                   {/* 편집 off */}
                   <div>
-                    <PS.BucketlistImg />
-                    {/* //이미지 경로 설정 */}
+                    {el.image_path ? (
+                      <PS.PostPoto
+                        alt="sample"
+                        src={el.image_path}
+                        style={{ margin: 'auto' }}
+                      />
+                    ) : (
+                      <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
+                    )}
                     <PS.BucketlistContent>
                       <div className="content">
                         {paginationStart >= 0 && paginationStart < 21
@@ -117,7 +153,25 @@ const DetailMode = ({
         <>
           <PS.BucketlistView>
             <div>
-              <PS.BucketlistImg />
+              {/* {el.image_path ? (
+                      <PostPoto
+                        alt="sample"
+                        src={el.image_path}
+                        style={{ margin: 'auto' }}
+                      />
+                    ) : (
+                      <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
+                    )}
+                    <ImgDelete onClick={() => handleImgDelete(el.id)}>
+                      <AiFillCloseCircle></AiFillCloseCircle>
+                    </ImgDelete>
+                    <ImgInput
+                      type="file"
+                      accept="image/*"
+                      name="file"
+                      id={`${el.id}`}
+                      onChange={onLoadFile}
+                    /> */}
               <PS.BucketlistContent>
                 <PS.InputBox
                   placeholder="버킷리스트를 작성해주세요"

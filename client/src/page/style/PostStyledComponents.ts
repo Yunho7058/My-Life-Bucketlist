@@ -89,8 +89,10 @@ export const BucketlistView = styled.div`
     background-color: ${({ theme }) => theme.mode.background1};
   }
 `;
-export const BucketlistImg = styled.img`
+export const BucketlistImg = styled.div`
   border: 1px solid;
+  text-align: center;
+  line-height: 200px;
   border-radius: 30px;
   width: 250px;
   height: 200px;
@@ -138,6 +140,7 @@ export const Btn = styled.div`
   text-align: center;
   line-height: 50px;
   cursor: pointer;
+  margin-top: 20px;
   &.delete {
     background-color: #cd5c5c;
     &:hover {
@@ -257,4 +260,26 @@ export const LoginInput = styled.input`
     border: 1px solid #4169e1;
     background-color: ${({ theme }) => theme.mode.background2};
   }
+`;
+
+export const PostPoto = styled.img`
+  width: 250px;
+  height: 200px;
+  border-radius: 15px;
+`;
+
+export const ImgInput = styled.input`
+  cursor: pointer;
+`;
+
+export const ImgDelete = styled.button`
+  cursor: pointer;
+`;
+
+export const ImgUploadBack = styled.div`
+  margin: 10px;
+
+  display: flex;
+
+  column-gap: 10px;
 `;
