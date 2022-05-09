@@ -21,7 +21,9 @@ from app.crud.users import (
     get_user_by_nickname,
     get_user_by_id,
     update_user_nickname,
-    update_user_password
+    update_user_password,
+    update_user_profile,
+    delete_user
 )
 from app.crud.posts import create_post
 from app.core.config import settings
@@ -32,7 +34,7 @@ from app.core.security import (
     verify_password,
     decode_token
 )
-from app.utils import send_email_code
+from app.utils import send_email_code, generate_random_password, send_new_password
 
 
 
@@ -168,7 +170,7 @@ def get_post_id(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/nickname", status_code=204, responses={400: {}, 401: {}}, summary="닉네임 수정", tags=["마이페이지"])
-def update_nickname(nickname: str = Body(..., embed=True), user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+def update_nickname(nickname: str = Body(..., embed=True), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     nickname = nickname.strip()
     if not nickname:
         raise HTTPException(status_code=400)
@@ -176,12 +178,51 @@ def update_nickname(nickname: str = Body(..., embed=True), user: str = Depends(g
     return
 
 
-@router.patch("/password", status_code=204, responses={400: {}, 401: {}}, summary="비밀번호 수정", tags=["마이페이지"])
-def update_password(password: str = Body(..., embed=True), user: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    password = password.strip()
-    if len(password) < 8:
+@router.patch("/password", status_code=204, responses={400: {}, 401: {}, 403: {}}, summary="비밀번호 수정", tags=["마이페이지"])
+def update_password(password: str = Body(..., embed=True), new_password: str = Body(..., embed=True), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not verify_password(password, user.password):
+        raise HTTPException(status_code=403)
+    new_password = new_password.strip()
+    if len(new_password) < 8:
         raise HTTPException(status_code=400)
-    update_user_password(db, user.id, password)
+    update_user_password(db, user.id, new_password)
+    return
+
+
+@router.post("/password", status_code=204, responses={401: {}}, summary="비밀번호 찾기", tags=["마이페이지"])
+def find_password(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    new_password = generate_random_password()
+    update_user_password(db, user.id, new_password)
+    send_new_password(user.email, new_password)
+    return
+
+
+@router.get("/profile/presigned-post", summary="S3에 프로필 이미지 업로드를 위한 Presigned POST 요청", tags=["마이페이지"])
+def get_presigned_post(file_name: str, user: User = Depends(get_current_user)):
+    file_type = file_name.split(".")[-1]
+    response = requests.post(
+        f"{settings.AWS_API_GATEWAY_URL}/presigned-post",
+        headers={"Authorization": settings.AWS_AUTH_KEY},
+        json={"type": "profile", "name": f"profile.{file_type}", "id": user.id}
+    ).json()
+    if response.get("error"):
+        return response.get("message")
+    return response.get("data")
+
+
+@router.patch("/profile", status_code=204, responses={401: {}}, summary="프로필 사진 경로 수정", tags=["마이페이지"])
+def update_profile(image_path: str | None = Body(None, embed=True), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not image_path:
+        image_path = None
+    update_user_profile(db, user.id, image_path)
+    return
+
+
+@router.delete("/user", status_code=204, responses={401: {}, 403: {}}, summary="회원 탈퇴", tags=["마이페이지"])
+def delete_user_info(password: str = Body(..., embed=True), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not verify_password(password, user.password):
+        raise HTTPException(status_code=403)
+    delete_user(db, user.id)
     return
 
 

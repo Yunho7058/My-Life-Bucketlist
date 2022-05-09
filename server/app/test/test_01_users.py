@@ -215,6 +215,7 @@ def test_get_user_info_success():
         "email": "test@example.com",
         "nickname": "테스트",
         "domain": None,
+        "image_path": None,
         "post_id": 1
     }
 
@@ -286,7 +287,8 @@ def test_update_password_success():
             "Authorization": "test"
         },
         json={
-            "password": "test1234"
+            "password": "qwer1234",
+            "new_password": "test1234"
         }
     )
     assert response.status_code == 204
@@ -299,7 +301,8 @@ def test_update_password_failure1():
             "Authorization": ""
         },
         json={
-            "password": "test1234"
+            "password": "test1234",
+            "new_password": "qwer1234"
         }
     )
     assert response.status_code == 401
@@ -312,7 +315,105 @@ def test_update_password_failure2():
             "Authorization": "test"
         },
         json={
-            "password": "     "
+            "password": "test1234",
+            "new_password": "       "
         }
     )
     assert response.status_code == 400
+
+
+def test_update_password_failure3():
+    response = client.patch(
+        "password",
+        headers={
+            "Authorization": "test"
+        },
+        json={
+            "password": "qwer1234",
+            "new_password": "test1234"
+        }
+    )
+    assert response.status_code == 403
+
+
+def test_update_profile_success1():
+    response = client.patch(
+        "profile",
+        headers={
+            "Authorization": "test"
+        },
+        json={
+            "image_path": "test.jpg"
+        }
+    )
+    assert response.status_code == 204
+
+
+def test_update_profile_success2():
+    response = client.patch(
+        "profile",
+        headers={
+            "Authorization": "test"
+        },
+        json={
+            "image_path": ""
+        }
+    )
+    assert response.status_code == 204
+
+
+def test_update_profile_failure1():
+    response = client.patch(
+        "profile",
+        headers={
+            "Authorization": ""
+        },
+        json={
+            "image_path": "test.jpg"
+        }
+    )
+    assert response.status_code == 401
+
+
+def test_delete_user_info_failure1():
+    response = client.post(
+        "signup",
+        json={
+            "email": "test3@example.com",
+            "password": "qwer1234",
+            "nickname": "테스트3",
+        }
+    )
+    response = client.delete(
+        "user",
+        json={
+            "password": "qwer1234"
+        }
+    )
+    assert response.status_code == 401
+
+
+def test_delete_user_info_failure2():
+    response = client.delete(
+        "user",
+        headers={
+            "Authorization": "test3"
+        },
+        json={
+            "password": "sadfqwer"
+        }
+    )
+    assert response.status_code == 403
+
+
+def test_delete_user_info_success():
+    response = client.delete(
+        "user",
+        headers={
+            "Authorization": "test3"
+        },
+        json={
+            "password": "qwer1234"
+        }
+    )
+    assert response.status_code == 204
