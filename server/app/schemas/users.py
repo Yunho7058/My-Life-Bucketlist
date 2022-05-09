@@ -22,6 +22,7 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
+    image_path: str | None
 
     class Config:
         orm_mode = True

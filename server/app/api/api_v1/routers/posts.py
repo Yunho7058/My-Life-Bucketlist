@@ -251,12 +251,12 @@ def get_bookmarked_post_list(user: User = Depends(get_current_user), db: Session
     return bookmarked_posts
 
 
-@router.get("/presigned-post", summary="S3 이미지 업로드를 위한 Presigned POST 요청", tags=["버킷리스트"])
+@router.get("/bucketlist/presigned-post", summary="S3에 버킷리스트 이미지 업로드를 위한 Presigned POST 요청", tags=["버킷리스트"])
 def get_presigned_post(file_name: str, user: User = Depends(get_current_user)):
     response = requests.post(
         f"{settings.AWS_API_GATEWAY_URL}/presigned-post",
         headers={"Authorization": settings.AWS_AUTH_KEY},
-        json={"name": file_name, "post_id": user.post.id}
+        json={"type": "bucketlist", "name": file_name, "id": user.post.id}
     ).json()
     if response.get("error"):
         return response.get("message")

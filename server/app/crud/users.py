@@ -45,3 +45,17 @@ def update_user_password(db: Session, user_id: int, password: str):
     user.password = get_password_hash(password)
     db.commit()
     return
+
+
+def update_user_profile(db: Session, user_id: int, image_path: str | None):
+    user = db.get(User, user_id)
+    user.image_path = image_path
+    db.commit()
+    return
+
+
+def delete_user(db: Session, user_id: int):
+    user = db.get(User, user_id)
+    db.delete(user)
+    db.commit()
+    return
