@@ -233,23 +233,23 @@ def delete_user_info(password: str = Body(..., embed=True), user: User = Depends
     return
 
 
-@router.post("/login/kakao", response_model=Token, responses={401: {}}, summary="카카오 로그인", tags=["유저"])
+@router.post("/oauth/kakao", response_model=Token, responses={401: {}}, summary="카카오 로그인", tags=["유저"])
 def kakao_login(response: Response, code: str = Body(..., embed=True), db: Session = Depends(get_db)):
     res = get_kakao_token(code)
-    data = res.json()
     if res.status_code != 200:
         raise HTTPException(status_code=401, detail="invalid code")
-    res = get_kakao_user_email(data.get("access_token"))
     data = res.json()
+    res = get_kakao_user_email(data.get("access_token"))
     if res.status_code != 200:
         raise HTTPException(status_code=401, detail="invalid token")
+    data = res.json()
     email = data.get("kakao_account").get("email")
     user = get_user(db, email)
     if user is None:
         nickname = data.get("properties").get("nickname")
         user = get_user_by_nickname(db, nickname)
         if user:
-            nickname += uuid.uuid4().hex
+            nickname += "-kakao-" + uuid.uuid4().hex
         profile_image = data.get("properties").get("profile_image")
         user = UserCreate(
             email=email,
@@ -265,12 +265,14 @@ def kakao_login(response: Response, code: str = Body(..., embed=True), db: Sessi
     return token
 
 
-@router.post("/login/google", response_model=Token, responses={401: {}}, summary="구글 로그인", tags=["유저"])
+@router.post("/oauth/google", response_model=Token, responses={401: {}}, summary="구글 로그인", tags=["유저"])
 def google_login(response: Response, token: str = Body(..., embed=True), db: Session = Depends(get_db)):
     res = requests.get(
         "https://openidconnect.googleapis.com/v1/userinfo",
         headers={"Authorization": f"Bearer {token}"}
     )
+    if res.status_code != 200:
+        raise HTTPException(status_code=401, detail="invalid token")
     data = res.json()
     email = data.get("email")
     user = get_user(db, email)
@@ -290,3 +292,47 @@ def google_login(response: Response, token: str = Body(..., embed=True), db: Ses
     response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
     return token
 
+
+@router.post("/oauth/naver", response_model=Token, responses={401: {}}, summary="네이버 로그인", tags=["유저"])
+def naver_login(response: Response, code: str = Body(..., embed=True), state: str = Body(..., embed=True), db: Session = Depends(get_db)):
+    res = requests.post(
+        "https://nid.naver.com/oauth2.0/token",
+        data={
+            "grant_type": "authorization_code",
+            "client_id": settings.NAVER_CLIENT_ID,
+            "client_secret": settings.NAVER_CLIENT_SECRET,
+            "code": code,
+            "state": state
+        }
+    )
+    if res.status_code != 200:
+        raise HTTPException(status_code=401, detail="invalid code")
+    data = res.json()
+    access_token = data.get("access_token")
+    res = requests.get(
+        "https://openapi.naver.com/v1/nid/me",
+        headers={"Authorization": f"Bearer {access_token}"}
+    )
+    if res.status_code != 200:
+        raise HTTPException(status_code=401, detail="invalid token")
+    data = res.json()
+    email = data.get("response").get("email")
+    user = get_user(db, email)
+    if user is None:
+        nickname = data.get("response").get("nickname")
+        user = get_user_by_nickname(db, nickname)
+        if user:
+            nickname += "-naver-" + uuid.uuid4().hex
+        profile_image = data.get("response").get("profile_image")
+        user = UserCreate(
+            email=email,
+            nickname=nickname[:30],
+            password="",
+            domain="naver"
+        )
+        user = create_user(db, user)
+        create_post(db, user.id)
+    token = create_token(email)
+    refresh_token = token.pop("refresh_token")
+    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
+    return token

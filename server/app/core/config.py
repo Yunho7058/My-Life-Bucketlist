@@ -34,11 +34,7 @@ class Settings(BaseSettings):
     KAKAO_REDIRECT_URI: str
 
     NAVER_CLIENT_ID: str
-    NAVER_REDIRECT_URI: str
-    NAVER_CLIENT_STATE: str
-
-    GOOGLE_CLIENT_ID: str
-    GOOGLE_REDIRECT_URI: str
+    NAVER_CLIENT_SECRET: str
 
     class Config:
         env_file = "app/.env"
