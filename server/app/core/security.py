@@ -79,6 +79,8 @@ def get_kakao_user_email(token):
     url = "https://kapi.kakao.com/v2/user/me"
     headers = {
         "Authorization": "Bearer " + token,
+        "Content-Type": "application/x-www-form-urlencoded"
     }
-    response = requests.get(url, headers=headers)
+    data ='property_keys=["properties.nickname","properties.profile_image","kakao_account.email"]'
+    response = requests.post(url, headers=headers, data=data)
     return response

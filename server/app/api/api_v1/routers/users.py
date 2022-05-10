@@ -8,6 +8,8 @@ from fastapi import (
 )
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+import uuid
+import requests
 
 from app.api.dependencies import (
     get_db,
@@ -125,6 +127,11 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
             status_code=400,
             detail="email",
         )
+    if user.domain:
+        raise HTTPException(
+            status_code=400,
+            detail="domain",
+        )
     if not verify_password(form_data.password, user.password):
         raise HTTPException(
             status_code=400,
@@ -226,18 +233,106 @@ def delete_user_info(password: str = Body(..., embed=True), user: User = Depends
     return
 
 
-# @router.post("/token/kakao", response_model=Token)
-# def kakao_login(code: str = Body(...)):
-#     response = get_kakao_token(code)
-#     data = response.json()
-#     if response.status_code != 200:
-#         raise HTTPException(status_code=400)
-#     response = get_kakao_user_email(data.get("access_token"))
-#     data = response.json()
-#     if response.status_code != 200:
-#         raise HTTPException(status_code=400)
-#     print("========================response")
-#     print(data)
-#     print(response.status_code)
-#     return 
+@router.post("/oauth/kakao", response_model=Token, responses={401: {}}, summary="카카오 로그인", tags=["유저"])
+def kakao_login(response: Response, code: str = Body(..., embed=True), db: Session = Depends(get_db)):
+    res = get_kakao_token(code)
+    if res.status_code != 200:
+        raise HTTPException(status_code=401, detail="invalid code")
+    data = res.json()
+    res = get_kakao_user_email(data.get("access_token"))
+    if res.status_code != 200:
+        raise HTTPException(status_code=401, detail="invalid token")
+    data = res.json()
+    email = data.get("kakao_account").get("email")
+    user = get_user(db, email)
+    if user is None:
+        nickname = data.get("properties").get("nickname")
+        user = get_user_by_nickname(db, nickname)
+        if user:
+            nickname += "-kakao-" + uuid.uuid4().hex
+        profile_image = data.get("properties").get("profile_image")
+        user = UserCreate(
+            email=email,
+            nickname=nickname[:30],
+            password="",
+            domain="kakao"
+        )
+        user = create_user(db, user)
+        create_post(db, user.id)
+    token = create_token(email)
+    refresh_token = token.pop("refresh_token")
+    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
+    return token
 
+
+@router.post("/oauth/google", response_model=Token, responses={401: {}}, summary="구글 로그인", tags=["유저"])
+def google_login(response: Response, token: str = Body(..., embed=True), db: Session = Depends(get_db)):
+    res = requests.get(
+        "https://openidconnect.googleapis.com/v1/userinfo",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    if res.status_code != 200:
+        raise HTTPException(status_code=401, detail="invalid token")
+    data = res.json()
+    email = data.get("email")
+    user = get_user(db, email)
+    if user is None:
+        nickname = "google-"
+        nickname += uuid.uuid4().hex
+        user = UserCreate(
+            email=email,
+            nickname=nickname[:30],
+            password="",
+            domain="google"
+        )
+        user = create_user(db, user)
+        create_post(db, user.id)
+    token = create_token(email)
+    refresh_token = token.pop("refresh_token")
+    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
+    return token
+
+
+@router.post("/oauth/naver", response_model=Token, responses={401: {}}, summary="네이버 로그인", tags=["유저"])
+def naver_login(response: Response, code: str = Body(..., embed=True), state: str = Body(..., embed=True), db: Session = Depends(get_db)):
+    res = requests.post(
+        "https://nid.naver.com/oauth2.0/token",
+        data={
+            "grant_type": "authorization_code",
+            "client_id": settings.NAVER_CLIENT_ID,
+            "client_secret": settings.NAVER_CLIENT_SECRET,
+            "code": code,
+            "state": state
+        }
+    )
+    if res.status_code != 200:
+        raise HTTPException(status_code=401, detail="invalid code")
+    data = res.json()
+    access_token = data.get("access_token")
+    res = requests.get(
+        "https://openapi.naver.com/v1/nid/me",
+        headers={"Authorization": f"Bearer {access_token}"}
+    )
+    if res.status_code != 200:
+        raise HTTPException(status_code=401, detail="invalid token")
+    data = res.json()
+    email = data.get("response").get("email")
+    user = get_user(db, email)
+    if user is None:
+        nickname = data.get("response").get("nickname")
+        user = get_user_by_nickname(db, nickname)
+        if user:
+            nickname += "-naver-" + uuid.uuid4().hex
+        profile_image = data.get("response").get("profile_image")
+        user = UserCreate(
+            email=email,
+            nickname=nickname[:30],
+            password="",
+            domain="naver"
+        )
+        user = create_user(db, user)
+        create_post(db, user.id)
+    token = create_token(email)
+    refresh_token = token.pop("refresh_token")
+    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
+    return token

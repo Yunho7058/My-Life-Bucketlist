@@ -19,9 +19,6 @@ class Settings(BaseSettings):
     ALLOW_METHODS: list[str] = ["*"]
     ALLOW_HEADERS: list[str] = ["*"]
 
-    KAKAO_CLIENT_ID: str
-    KAKAO_REDIRECT_URI: str
-
     NAVER_ID: str 
     NAVER_PASSWORD: str
 
@@ -32,6 +29,12 @@ class Settings(BaseSettings):
 
     AWS_API_GATEWAY_URL: str
     AWS_AUTH_KEY: str
+
+    KAKAO_CLIENT_ID: str
+    KAKAO_REDIRECT_URI: str
+
+    NAVER_CLIENT_ID: str
+    NAVER_CLIENT_SECRET: str
 
     class Config:
         env_file = "app/.env"
