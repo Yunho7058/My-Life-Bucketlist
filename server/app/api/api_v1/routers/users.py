@@ -8,6 +8,7 @@ from fastapi import (
 )
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+import uuid
 
 from app.api.dependencies import (
     get_db,
@@ -125,6 +126,11 @@ def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), 
             status_code=400,
             detail="email",
         )
+    if user.domain:
+        raise HTTPException(
+            status_code=400,
+            detail="domain",
+        )
     if not verify_password(form_data.password, user.password):
         raise HTTPException(
             status_code=400,
@@ -226,18 +232,35 @@ def delete_user_info(password: str = Body(..., embed=True), user: User = Depends
     return
 
 
-# @router.post("/token/kakao", response_model=Token)
-# def kakao_login(code: str = Body(...)):
-#     response = get_kakao_token(code)
-#     data = response.json()
-#     if response.status_code != 200:
-#         raise HTTPException(status_code=400)
-#     response = get_kakao_user_email(data.get("access_token"))
-#     data = response.json()
-#     if response.status_code != 200:
-#         raise HTTPException(status_code=400)
-#     print("========================response")
-#     print(data)
-#     print(response.status_code)
-#     return 
+@router.post("/login/kakao", response_model=Token, summary="카카오 로그인", tags=["유저"])
+def kakao_login(response: Response, code: str = Body(..., embed=True), db: Session = Depends(get_db)):
+    res = get_kakao_token(code)
+    data = res.json()
+    if res.status_code != 200:
+        raise HTTPException(status_code=400, detail="invalid code")
+    res = get_kakao_user_email(data.get("access_token"))
+    data = res.json()
+    if res.status_code != 200:
+        raise HTTPException(status_code=400, detail="invalid token")
+    email = data.get("kakao_account").get("email")
+    user = get_user(db, email)
+    if user is None:
+        nickname = data.get("properties").get("nickname")
+        user = get_user_by_nickname(db, nickname)
+        if user:
+            nickname += uuid.uuid4()
+        profile_image = data.get("properties").get("profile_image")
+        user = UserCreate(
+            email=email,
+            nickname=nickname[:30],
+            password="",
+            domain="kakao"
+        )
+        user = create_user(db, user)
+        create_post(db, user.id)
+    token = create_token(email)
+    refresh_token = token.pop("refresh_token")
+    response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
+    return token
+
 
