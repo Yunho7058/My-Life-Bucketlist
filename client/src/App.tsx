@@ -15,9 +15,9 @@ import ScrollToTop from './utils/scrollTopFix';
 
 //components
 //import ReduxTest from './page/ReduxTest';
-import { light, dark, fontSizes, fontWeights } from './components/style/theme';
-import { Toggle } from './components/toggle';
-import { useDarkMode } from './components/hook/useDarkMode';
+import { light, dark } from './components/style/theme';
+import Toggle from './components/toggle';
+//import { useDarkMode } from './components/hook/useDarkMode';
 import Modal from './components/Modal';
 //import Main from './page/Main';
 // import Signup from './page/Signup';
@@ -34,18 +34,17 @@ let Google = lazy(() => import('./components/oauth/Google'));
 let Naver = lazy(() => import('./components/oauth/Naver'));
 
 function App() {
-  const [themeMode, toggleTheme] = useDarkMode();
-  const theme =
-    themeMode === 'light'
-      ? { mode: light, fontSizes, fontWeights }
-      : { mode: dark, fontSizes, fontWeights };
+  const stateDarkMode = useSelector(
+    (state: TypeRootReducer) => state.isDarkeMode
+  );
+  const theme = stateDarkMode === 'light' ? { mode: light } : { mode: dark };
   return (
     <>
       <ThemeProvider theme={theme}>
         <BrowserRouter>
           <ScrollToTop />
           <Reset />
-          <Toggle themeMode={themeMode} toggleTheme={toggleTheme} />
+
           <Backgound>
             <Suspense fallback={<div>....로딩중</div>}>
               <Routes>

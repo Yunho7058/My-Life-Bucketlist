@@ -1,9 +1,9 @@
 import styled from 'styled-components';
-
-interface IToggle {
-  themeMode: string;
-  toggleTheme: () => void;
-}
+import { useDispatch, useSelector } from 'react-redux';
+import isDarkeMode from '../redux/reducer/isDarkMode';
+import { darkMode } from '../redux/action';
+import { TypeRootReducer } from '../redux/store/store';
+import { BsFillMoonStarsFill, BsFillSunFill } from 'react-icons/bs';
 
 interface IWrapper {
   themeMode: string;
@@ -19,36 +19,41 @@ const Wrapper = styled.button<IWrapper>`
   font-size: 0.5rem;
   justify-content: space-between;
   align-items: center;
-  margin: 0 auto;
+
   overflow: hidden;
   padding: 0.5rem;
-  position: fixed;
   z-index: 1;
-  width: 4rem;
-  height: 2rem;
-  bottom: 2rem;
-  right: 1rem;
+  width: 80px;
+  height: 30px;
+
   svg {
     color: ${({ theme }) => theme.mode.themeIcon};
     &:first-child {
       transform: ${({ themeMode }) =>
-        themeMode === 'light' ? 'translateY(0)' : 'translateY(2rem)'};
-      transition: background 0.25s ease 2s;
+        themeMode === 'light' ? 'translateX(22px)' : 'translateX(6rem)'};
+      transition: 300ms;
     }
     &:nth-child(2) {
       transform: ${({ themeMode }) =>
-        themeMode === 'dark' ? 'translateY(0)' : 'translateY(-2rem)'};
-      transition: background 0.25s ease 2s;
+        themeMode === 'dark' ? 'translateX(-19px)' : 'translateX(-6rem)'};
+      transition: 300ms;
     }
   }
 `;
 
-export const Toggle = ({ themeMode, toggleTheme }: IToggle) => {
+const Toggle = () => {
+  const dispatch = useDispatch();
+  const stataThemeMode = useSelector(
+    (state: TypeRootReducer) => state.isDarkeMode
+  );
   return (
     <>
-      <Wrapper onClick={toggleTheme} themeMode={themeMode}></Wrapper>
+      <Wrapper onClick={() => dispatch(darkMode())} themeMode={stataThemeMode}>
+        <BsFillSunFill size={18} />
+        <BsFillMoonStarsFill size={18} />
+      </Wrapper>
     </>
   );
 };
 
-export {};
+export default Toggle;

@@ -1,5 +1,4 @@
 import axios from 'axios';
-console.log(window.localStorage.getItem('accessToken'));
 const baseURL = `${process.env.REACT_APP_SERVER_URI}`;
 
 const axiosInstance = axios.create();

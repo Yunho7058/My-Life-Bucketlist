@@ -3,8 +3,8 @@ import styled from 'styled-components';
 export const PostBack = styled.div`
   width: 100%;
   height: 100%;
-  min-height: 100vh;
 
+  min-height: 100vh;
   background-color: ${({ theme }) => theme.mode.background1};
   display: flex;
   justify-content: center;
@@ -13,6 +13,8 @@ export const PostBack = styled.div`
 `;
 export const PostBox = styled.div`
   margin-top: 15%;
+
+  overflow-x: hidden;
   margin-bottom: 20px;
   height: auto;
   width: 90vw;
@@ -278,7 +280,6 @@ export const ImgDelete = styled.button`
 
 export const ImgUploadBack = styled.div`
   margin: 10px;
-
   display: flex;
 
   column-gap: 10px;

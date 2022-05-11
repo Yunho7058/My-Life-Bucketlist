@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { BsFillArrowUpCircleFill } from 'react-icons/bs';
 
 export const ScrollBtn = styled.div`
   position: fixed;
-  top: 100px;
-  width: 50px;
-  height: 50px;
-  border: 2px solid;
+  bottom: 100px;
+  right: 30px;
+  cursor: pointer;
 `;
 
 const ScrollTopBtn = () => {
@@ -51,7 +51,9 @@ const ScrollTopBtn = () => {
           onClick={() => {
             handleTop();
           }}
-        ></ScrollBtn>
+        >
+          <BsFillArrowUpCircleFill size={50} />
+        </ScrollBtn>
       )}
     </>
   );

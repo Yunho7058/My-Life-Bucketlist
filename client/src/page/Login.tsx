@@ -19,6 +19,9 @@ import { getUserInfo, isLogin } from '../redux/action';
 import * as LS from './style/LoginS';
 import axiosInstance from '../components/axios';
 import Modal from '../components/Modal';
+import kakao from '../assets/oauth/kakao.png';
+import google from '../assets/oauth/google.png';
+import naver from '../assets/oauth/naver.png';
 
 export const LoginSNSBack = styled.div`
   width: 100%;
@@ -30,12 +33,29 @@ export const LoginSNSBack = styled.div`
   align-items: center;
 `;
 
-export const LoginSNS = styled.div`
-  border: 1px solid;
+export const LoginSNS = styled.img`
   height: 60px;
   width: 60px;
-  text-align: center;
   cursor: pointer;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  &.google {
+    height: 40px;
+    width: 40px;
+    box-shadow: 0px 0px 0px 0px;
+  }
+`;
+
+export const LoginSNSGoogleBack = styled.div`
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.5);
+  border: 1px solid;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  width: 60px;
+  height: 60px;
 `;
 
 function Login() {
@@ -224,23 +244,23 @@ function Login() {
               onClick={() => {
                 handleKakaoLogin();
               }}
-            >
-              카카오
-            </LoginSNS>
-            <LoginSNS
-              onClick={() => {
-                handleGoogleLogin();
-              }}
-            >
-              구글
-            </LoginSNS>
+              src={kakao}
+            ></LoginSNS>
+            <LoginSNSGoogleBack>
+              <LoginSNS
+                onClick={() => {
+                  handleGoogleLogin();
+                }}
+                src={google}
+                className="google"
+              ></LoginSNS>
+            </LoginSNSGoogleBack>
             <LoginSNS
               onClick={() => {
                 handleNaverLogin();
               }}
-            >
-              네이버
-            </LoginSNS>
+              src={naver}
+            ></LoginSNS>
           </LoginSNSBack>
         </LS.LoginBox>
         <LS.LoginSignupBtn
@@ -252,7 +272,6 @@ function Login() {
           <AiOutlineDoubleRight size={23} />
         </LS.LoginSignupBtn>
       </LS.LoginBack>
-    
     </>
   );
 }
