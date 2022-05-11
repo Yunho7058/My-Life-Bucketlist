@@ -15,7 +15,7 @@ from app.api.dependencies import (
     get_db,
     get_current_user
 )
-from app.schemas.users import User, UserCreate, Token, UserLogin, UserWithPostId, PostId
+from app.schemas.users import User, UserCreate, Token, UserWithPostId
 from app.schemas.common import HTTPError
 from app.crud.users import (
     create_user, 
@@ -166,14 +166,6 @@ def logout(response: Response):
 def get_current_user_info(user: User = Depends(get_current_user)):
     user.post_id = user.post.id
     return user
-
-
-@router.get("/user/{user_id}/post", response_model=PostId, responses={404: {}}, summary="유저의 게시글 아이디 및 공개여부 조회", tags=["유저"])
-def get_post_id(user_id: int, db: Session = Depends(get_db)):
-    user = get_user_by_id(db, user_id)
-    if user is None:
-        raise HTTPException(status_code=404)
-    return user.post
 
 
 @router.patch("/nickname", status_code=204, responses={400: {}, 401: {}}, summary="닉네임 수정", tags=["마이페이지"])
