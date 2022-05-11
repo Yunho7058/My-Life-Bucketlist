@@ -25,6 +25,14 @@ def create_post(db: Session, user_id: int):
     return
 
 
+def update_post_public(db: Session, post_id: int):
+    db_post = db.get(Post, post_id)
+    db_post.is_public = not(db_post.is_public)
+    db.commit()
+    db.refresh(db_post)
+    return db_post
+
+
 def update_post_title(db: Session, post_id: int, title: str):
     db_post = db.get(Post, post_id)
     db_post.title = title 

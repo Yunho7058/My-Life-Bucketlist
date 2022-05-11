@@ -41,11 +41,3 @@ class UserLogin(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
-
-
-class PostId(BaseModel):
-    id: int
-    is_public: bool
-
-    class Config:
-        orm_mode = True

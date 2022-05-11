@@ -31,6 +31,12 @@ def get_post_list(last_id: int | None = None, db: Session = Depends(get_db)):
     return posts
 
 
+@router.patch("/post", status_code=204, responses={401: {}}, summary="게시글 공개/비공개 변경", tags=["버킷리스트"])
+def update_public(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    crud.update_post_public(db, user.post.id)
+    return
+
+
 @router.get("/post/{post_id}", response_model=schemas.PostDetail, summary="게시글 상세 조회", tags=["버킷리스트"])
 def get_post_detail(post_id: int, email: str = Depends(authenticate_by_token), db: Session = Depends(get_db)):
     """
@@ -39,18 +45,22 @@ def get_post_detail(post_id: int, email: str = Depends(authenticate_by_token), d
     post = crud.get_post_detail(db, post_id)
     if post is None:
         raise HTTPException(status_code=404)
-    post.nickname = post.user.nickname
     user = get_user(db, email)
     if user:
+        if not post.is_public:
+            raise HTTPException(status_code=403)
         like = crud.get_like(db, post.id, user.id)
         post.like = like.state if like else False
         bookmark = crud.get_bookmark(db, post.id, user.id)
         post.bookmark = bookmark.state if bookmark else False
         post.owner = user.id == post.user.id
     else:
+        if not post.is_public:
+            raise HTTPException(status_code=401)
         post.like = False
         post.bookmark = False
         post.owner = False
+    post.nickname = post.user.nickname
     return post
 
 
