@@ -11,6 +11,7 @@ import { isLogin, isLogout, modalOpen, postAll } from '../redux/action';
 import axios from 'axios';
 import axiosInstance from './axios';
 import ScrollTopBtn from '../utils/scrollTopBtn';
+import Toggle from './toggle';
 
 export const CreatePostBtn = styled.div`
   position: fixed;
@@ -179,73 +180,76 @@ function Headers() {
     setIsSiderbar(!isSidebar);
   };
   return (
-    <HeaderBack>
-      <ScrollTopBtn></ScrollTopBtn>
-      <LogoTitle onClick={() => navigate('/')}>My Life Bucketlist</LogoTitle>
+    <div style={{ position: 'relative', zIndex: '1000px' }}>
+      <HeaderBack>
+        <ScrollTopBtn></ScrollTopBtn>
+        <LogoTitle onClick={() => navigate('/')}>My Life Bucketlist</LogoTitle>
 
-      {stateIsLogin ? (
-        <>
-          <div
-            className="프로필 사진(임시)"
-            style={{
-              width: '40px',
-              height: '40px',
-              backgroundColor: 'white',
-              borderRadius: '20px',
-              position: 'relative',
-              cursor: 'pointer',
-            }}
+        {stateIsLogin ? (
+          <>
+            <div
+              className="프로필 사진(임시)"
+              style={{
+                width: '40px',
+                height: '40px',
+                backgroundColor: 'white',
+                borderRadius: '20px',
+                position: 'relative',
+                cursor: 'pointer',
+              }}
+              onClick={() => {
+                handleIsSidebar();
+              }}
+            >
+              {isSidebar && (
+                <TestCss
+                  className="arrow_box"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  <SideId>
+                    {parse_user_nickname}
+                    <div>{parse_user_email}</div>
+                  </SideId>
+                  <SideLine></SideLine>
+                  <SideMenu
+                    onClick={() => {
+                      handleMyPostBtn();
+                    }}
+                  >
+                    나의 버킷리스트
+                  </SideMenu>
+                  <SideMenu
+                    onClick={() => {
+                      handleMypageMove();
+                    }}
+                  >
+                    마이페이지
+                  </SideMenu>
+                  <SideMenu
+                    onClick={() => {
+                      handleLoginLogoutBtn();
+                    }}
+                  >
+                    로그아웃
+                  </SideMenu>
+                  <Toggle></Toggle>
+                </TestCss>
+              )}
+            </div>
+          </>
+        ) : (
+          <LoginBtn
             onClick={() => {
-              handleIsSidebar();
+              handleLoginLogoutBtn();
             }}
           >
-            {isSidebar && (
-              <TestCss
-                className="arrow_box"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <SideId>
-                  {parse_user_nickname}
-                  <div>{parse_user_email}</div>
-                </SideId>
-                <SideLine></SideLine>
-                <SideMenu
-                  onClick={() => {
-                    handleMyPostBtn();
-                  }}
-                >
-                  나의 버킷리스트
-                </SideMenu>
-                <SideMenu
-                  onClick={() => {
-                    handleMypageMove();
-                  }}
-                >
-                  마이페이지
-                </SideMenu>
-                <SideMenu
-                  onClick={() => {
-                    handleLoginLogoutBtn();
-                  }}
-                >
-                  로그아웃
-                </SideMenu>
-              </TestCss>
-            )}
-          </div>
-        </>
-      ) : (
-        <LoginBtn
-          onClick={() => {
-            handleLoginLogoutBtn();
-          }}
-        >
-          로그인
-        </LoginBtn>
-      )}
-    </HeaderBack>
+            로그인
+          </LoginBtn>
+        )}
+      </HeaderBack>
+    </div>
   );
 }
 

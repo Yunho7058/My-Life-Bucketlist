@@ -2,7 +2,7 @@ import styled, { keyframes } from 'styled-components';
 
 export const LoginBack = styled.div`
   background-color: ${({ theme }) => theme.mode.background1};
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   display: flex;
   flex-direction: column;

@@ -14,9 +14,10 @@ export const MainDiv = styled.div`
   height: 100px;
 `;
 export const MainBack = styled.div`
-  padding: 30px;
   width: 100%;
   height: 100%;
+  padding-top: 30px;
+  padding-bottom: 30px;
   background-color: ${({ theme }) => theme.mode.background1};
   display: flex;
   justify-content: space-evenly;
@@ -67,8 +68,7 @@ export const MainPost = styled.div`
   align-items: center;
   justify-content: space-between;
   &:hover {
-    transform: translate(0px, -15px);
-
+    transform: translateY(-15px);
     transition: 500ms;
   }
   @media screen and (max-width: 1170px) {
@@ -124,7 +124,6 @@ function Main() {
   return (
     <>
       <Headers></Headers>
-      <MainDiv></MainDiv>
       <MainBack>
         <MainPostBack>
           {stateAllPost.map((el: TypeRedux.TypePostsData) => {

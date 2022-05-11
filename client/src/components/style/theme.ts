@@ -38,20 +38,20 @@ const light = {
   stepIconColor: '',
 };
 
-const fontSizes = {
-  xsm: '10px',
-  sm: '12px',
-  md: '16px',
-  lg: '20px',
-  xl: '24px',
-  xxl: '28px',
-};
+// const fontSizes = {
+//   xsm: '10px',
+//   sm: '12px',
+//   md: '16px',
+//   lg: '20px',
+//   xl: '24px',
+//   xxl: '28px',
+// };
 
-const fontWeights = {
-  extraBold: 800,
-  bold: 700,
-  semiBold: 600,
-  regular: 400,
-};
+// const fontWeights = {
+//   extraBold: 800,
+//   bold: 700,
+//   semiBold: 600,
+//   regular: 400,
+// };
 
-export { dark, light, fontSizes, fontWeights };
+export { dark, light };

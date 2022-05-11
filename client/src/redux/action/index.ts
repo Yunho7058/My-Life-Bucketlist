@@ -1,4 +1,5 @@
 import TypeRedux from '../reducer/typeRedux';
+export const IS_DARK_MODE = 'DARK_MODE';
 export const IS_LOGIN = 'IS_LOGIN';
 export const IS_LOGOUT = 'IS_LOGOUT';
 export const MODAL_OPEN = 'MODAL_OPEN';
@@ -12,6 +13,12 @@ export const POST_BUCKETLIST_DELET = 'POST_BUCKETLIST_DELET';
 export const POST_BUCKETLIST_NEW = 'POST_BUCKETLIST_NEW';
 export const GET_USER_INFO = 'GET_USER_INFO';
 export const POST_BUCKETLIST_POTO_UPLOAD = 'POST_BUCKETLIST_POTO_UPLOAD';
+
+export const darkMode = () => {
+  return {
+    type: IS_DARK_MODE,
+  };
+};
 
 export const isLogin = () => {
   return {

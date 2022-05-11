@@ -31,19 +31,19 @@ declare module 'styled-components' {
       stepIconBackColor: string;
       stepIconColor: string;
     };
-    fontSizes: {
-      xsm: string;
-      sm: string;
-      md: string;
-      lg: string;
-      xl: string;
-      xxl: string;
-    };
-    fontWeights: {
-      extraBold: number;
-      bold: number;
-      semiBold: number;
-      regular: number;
-    };
+    // fontSizes: {
+    //   xsm: string;
+    //   sm: string;
+    //   md: string;
+    //   lg: string;
+    //   xl: string;
+    //   xxl: string;
+    // };
+    // fontWeights: {
+    //   extraBold: number;
+    //   bold: number;
+    //   semiBold: number;
+    //   regular: number;
+    // };
   }
 }

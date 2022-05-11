@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const SignupBack = styled.div`
   background-color: ${({ theme }) => theme.mode.background1};
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   display: flex;
 
@@ -14,7 +14,7 @@ export const SignupBox = styled.div`
   background-color: ${({ theme }) => theme.mode.background2};
   width: 340px;
   height: 340px;
-
+  margin-bottom: 50px;
   border-radius: 40px;
   position: relative;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);

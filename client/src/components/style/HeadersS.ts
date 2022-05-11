@@ -4,11 +4,6 @@ export const HeaderBack = styled.div`
   width: 100%;
   min-width: 400px;
   height: 50px;
-  position: fixed;
-  right: 0px;
-  top: 0px;
-
-  z-index: 999px;
   display: flex;
   justify-content: space-between;
   background-color: ${({ theme }) => theme.mode.background2};
