@@ -47,7 +47,7 @@ def get_post_detail(post_id: int, email: str = Depends(authenticate_by_token), d
         raise HTTPException(status_code=404)
     user = get_user(db, email)
     if user:
-        if not post.is_public:
+        if user.id != post.user_id and not post.is_public:
             raise HTTPException(status_code=403)
         like = crud.get_like(db, post.id, user.id)
         post.like = like.state if like else False

@@ -39,7 +39,7 @@ def test_get_post_detail_success():
         "id": 1,
         "nickname": "테스트",
         "owner": False,
-        'is_public': True,
+        'is_public': False,
         "bookmark": False,
         "like": False,
         "like_count": 0,
@@ -47,6 +47,22 @@ def test_get_post_detail_success():
         "updated_at": None,
         "bucketlist": []
     }
+
+
+def test_update_public_success():
+    response = client.patch(
+        "post",
+        headers={"Authorization": "test"}
+    )
+    assert response.status_code == 204
+
+
+def test_update_public_failure():
+    response = client.patch(
+        "post",
+        headers={"Authorization": ""}
+    )
+    assert response.status_code == 401
 
 
 def test_update_post_title_success():
