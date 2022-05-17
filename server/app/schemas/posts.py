@@ -34,7 +34,6 @@ class Bucketlist(BucketlistIn, BucketlistOut):
 
 
 class PostBase(BaseModel):
-    title: str | None = None
     updated_at: datetime.datetime | None = None
 
     class Config:

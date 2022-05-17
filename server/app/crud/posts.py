@@ -33,14 +33,6 @@ def update_post_public(db: Session, post_id: int):
     return db_post
 
 
-def update_post_title(db: Session, post_id: int, title: str):
-    db_post = db.get(Post, post_id)
-    db_post.title = title 
-    db.commit()
-    db.refresh(db_post)
-    return db_post
-
-
 def get_bucketlist(db: Session, bucketlist_id: int):
     return db.get(Bucketlist, bucketlist_id)
 

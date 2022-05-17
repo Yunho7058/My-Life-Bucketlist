@@ -12,38 +12,22 @@ client.base_url += "/api/"
 def test_get_post_list():
     response = client.get("post")
     assert response.status_code == 200
-    assert response.json() == [
-        {   
-            "bucketlist": [],
-            "id": 2,
-            "like_count": 0,
-            "nickname": "테스트2",
-            "title": None,
-            "updated_at": None
-        },
-        {
-            "id": 1,
-            "nickname": "테스트",
-            "title": None,
-            "like_count": 0,
-            "bucketlist": [],
-            "updated_at": None
-        }
-    ]
 
 
 def test_get_post_detail_success():
-    response = client.get("post/1")
+    response = client.get(
+        "post/1",
+        headers={"Authorization": "test"}
+    )
     assert response.status_code == 200
     assert response.json() == {
         "id": 1,
         "nickname": "테스트",
-        "owner": False,
+        "owner": True,
         'is_public': False,
         "bookmark": False,
         "like": False,
         "like_count": 0,
-        "title": None,
         "updated_at": None,
         "bucketlist": []
     }
@@ -63,69 +47,6 @@ def test_update_public_failure():
         headers={"Authorization": ""}
     )
     assert response.status_code == 401
-
-
-def test_update_post_title_success():
-    response = client.patch(
-        "post/1",
-        headers={
-            "Authorization": "test"
-        },
-        json={
-            "title": "테스트의 버킷리스트"
-        }
-    )
-    assert response.status_code == 200
-    assert response.json().get("title") == "테스트의 버킷리스트"
-
-
-def test_update_post_title_failure1():
-    response = client.patch(
-        "post/100",
-        headers={
-            "Authorization": "test"
-        },
-        json={
-            "title": "테스트의 버킷리스트"
-        }
-    )
-    assert response.status_code == 404
-
-
-def test_update_post_title_failure2():
-    response = client.patch(
-        "post/1",
-        headers={
-            "Authorization": "test2"
-        },
-        json={
-            "title": "테스트의 버킷리스트"
-        }
-    )
-    assert response.status_code == 403
-
-
-def test_update_post_title_failure3():
-    response = client.patch(
-        "post/1",
-        json={
-            "title": "테스트의 버킷리스트"
-        }
-    )
-    assert response.status_code == 401
-
-
-def test_update_post_title_failure4():
-    response = client.patch(
-        "post/1",
-        headers={
-            "Authorization": "test"
-        },
-        json={
-            "title": "    "
-        }
-    )
-    assert response.status_code == 400
 
 
 def test_create_bucketlist_success():
