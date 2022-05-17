@@ -21,7 +21,6 @@ class Post(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True)
     updated_at = Column(DateTime(timezone=True), onupdate=get_now)
-    title = Column(String(100))
     is_public = Column(Boolean, default=False)
 
     user = relationship("User", back_populates="post")
