@@ -52,8 +52,12 @@ def update_bucketlist(db: Session, db_bucketlist: Bucketlist, bucketlist: schema
     db_bucketlist.content = bucketlist.content
     if bucketlist.detail:
         db_bucketlist.detail = bucketlist.detail
+    else:
+        db_bucketlist.detail = None
     if bucketlist.image_path:
         db_bucketlist.image_path = bucketlist.image_path
+    else:
+        db_bucketlist.image_path = None
     db.commit()
     return
 

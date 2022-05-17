@@ -186,7 +186,8 @@ def get_presigned_post(file_name: str, user: User = Depends(get_current_user)):
         f"{settings.AWS_API_GATEWAY_URL}/presigned-post",
         headers={"Authorization": settings.AWS_AUTH_KEY},
         json={"type": "bucketlist", "name": file_name, "id": user.post.id}
-    ).json()
-    if response.get("error"):
-        return response.get("message")
-    return response.get("data")
+    )
+    data = response.json()
+    if response.status_code == 500:
+        return data
+    return data.get("data")
