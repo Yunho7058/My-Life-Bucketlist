@@ -12,6 +12,7 @@ import axios from 'axios';
 import axiosInstance from './axios';
 import ScrollTopBtn from '../utils/scrollTopBtn';
 import Toggle from './toggle';
+import Spinner from '../utils/spinner';
 
 export const CreatePostBtn = styled.div`
   position: fixed;
@@ -114,6 +115,7 @@ function Headers() {
   const stateIsLogin = useSelector(
     (state: TypeRootReducer) => state.isLoginReducer
   );
+
   //! 새로고침
   useEffect(() => {
     if (window.localStorage.getItem('accessToken')) {
@@ -132,7 +134,12 @@ function Headers() {
       .catch((err) => {
         console.log(err, 'Post All err ');
       });
-  }, []);
+  }, [dispatch]);
+
+  // //! 모든 게시물 불러오기
+  // useEffect(() => {
+  //   dispatch(postTest());
+  // }, [dispatch]);
 
   //! 로그아웃
   const handleLoginLogoutBtn = () => {

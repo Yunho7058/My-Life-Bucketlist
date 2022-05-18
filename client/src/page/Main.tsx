@@ -121,6 +121,8 @@ function Main() {
   const handlePostClick = (id: number) => {
     navigate(`/post/${id}`);
   };
+  console.log(stateAllPost);
+
   return (
     <>
       <Headers></Headers>
@@ -136,7 +138,7 @@ function Main() {
               >
                 <PostImg />
                 <PostContentBox>
-                  {el.title}
+                  {el.nickname}의 버킷리스트
                   <PostBucketlist>
                     {el.bucketlist
                       .filter((el, idx) => {

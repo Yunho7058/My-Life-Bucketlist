@@ -6,6 +6,8 @@ import {
   POST_EACH_LIKE,
   POST_EACH_BOOKMARK,
   POST_BUCKETLIST_POTO_UPLOAD,
+  POST_IMG_DOWNLOAD,
+  POST_IMG_ORIGIN,
 } from '../action/index';
 import TypeRedux from './typeRedux';
 
@@ -18,12 +20,14 @@ const initialization = {
   owner: false,
   bookmark: false,
   like: false,
+  is_public: false,
   bucketlist: [
     {
       id: 0,
       content: '',
       detaile: '',
       image_path: '',
+      image_path_origin: '',
     },
   ],
 };
@@ -33,6 +37,28 @@ const postReducer = (
   action: TypeRedux.TypePost
 ) => {
   switch (action.type) {
+    case POST_IMG_ORIGIN:
+      let copy_img_origin = state.bucketlist.map((el) => {
+        return el.id === action.payload.id
+          ? {
+              ...el,
+              image_path_origin: action.payload.url,
+            }
+          : { ...el };
+      });
+      return { ...state, bucketlist: copy_img_origin };
+
+    case POST_IMG_DOWNLOAD:
+      let copy_img = state.bucketlist.map((el) => {
+        return el.id === action.payload.id
+          ? {
+              ...el,
+              image_path: action.payload.url,
+            }
+          : { ...el };
+      });
+      return { ...state, bucketlist: copy_img };
+
     case POST_EACH:
       let copy = action.payload.postEachData;
 
@@ -88,12 +114,9 @@ const postReducer = (
       return { ...state, bucketlist: delete_copy };
 
     case POST_BUCKETLIST_NEW:
-      const { id, content, detail } = action.payload;
+      const { id, content, detail, image_path } = action.payload;
 
-      let new_copy = [
-        ...state.bucketlist,
-        { id: id, content: content, detail: detail },
-      ];
+      let new_copy = [...state.bucketlist, { id, content, detail, image_path }];
 
       return {
         ...state,

@@ -29,6 +29,9 @@ const Comment = () => {
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
   );
+  const stateIsLogin = useSelector(
+    (state: TypeRootReducer) => state.isLoginReducer
+  );
   const [allComment, setAllComment] = useState([
     {
       id: 0,
@@ -54,7 +57,6 @@ const Comment = () => {
     axiosInstance
       .get(`/comment/${postURL.id}`)
       .then((res) => {
-        console.log(res.data);
         setAllComment([...res.data]);
       })
       .catch((err) => console.log(err, 'comment get err'));
@@ -70,8 +72,8 @@ const Comment = () => {
             return el.id !== commentId;
           })
         );
-        setSelectId2(0);
-        setSelectId(0);
+        setCommentEditMiniModal2(0);
+        setCommentEditMiniModal(0);
         dispatch(modalOpen('댓글이 삭제되었습니다.'));
       })
       .catch((err) => {
@@ -89,11 +91,16 @@ const Comment = () => {
         setAllComment(
           allComment.map((el) => {
             return el.id === editComment.comment_id
-              ? { ...el, content: editComment.content }
+              ? {
+                  ...el,
+                  content: editComment.content,
+                  updated_at: res.data.updated_at,
+                }
               : { ...el };
           })
         );
-        setSelectId2(0);
+        dispatch(modalOpen('수정이 완료됐습니다.'));
+        setCommentEditMiniModal2(0);
       })
       .catch((err) => {
         console.log(err, 'comment edit err');
@@ -116,15 +123,15 @@ const Comment = () => {
     };
   //!댓글 작성
   const handleCommentClick = () => {
-    if (!newComment.content.length) {
+    console.log(stateIsLogin);
+    if (!stateIsLogin) {
+      dispatch(modalOpen('로그인을 진행해주세요.'));
+    } else if (!newComment.content.length) {
       dispatch(modalOpen('내용을 입력해주세요.'));
     } else {
       axiosInstance
         .post(`/comment/${statePost.id}`, newComment)
         .then((res) => {
-          //댓글 아이디 받기,만든 날짜
-          console.log(res.data);
-          //setAllComment({ ...allComment });
           setAllComment([
             ...allComment,
             {
@@ -135,6 +142,8 @@ const Comment = () => {
               updated_at: res.data.updated_at,
             },
           ]);
+          setNewComment({ content: '' });
+          dispatch(modalOpen('댓글이 작성됐습니다.'));
         })
         .catch((err) => {
           console.log(err, 'comment create err');
@@ -143,21 +152,24 @@ const Comment = () => {
   };
 
   //!댓글 수정,삭제 모달 버튼 관리 state 및 함수
-  const [selectId, setSelectId] = useState(0);
-  const [selectId2, setSelectId2] = useState(0);
+  const [commentEditMiniModal, setCommentEditMiniModal] = useState(0);
+  const [commentEditMiniModal2, setCommentEditMiniModal2] = useState(0);
   const handleCommentEdit = (id: number) => {
-    if (selectId2 === id) {
-      setSelectId2(0);
+    if (commentEditMiniModal2 === id) {
+      setCommentEditMiniModal2(0);
     } else {
-      setSelectId2(id);
+      setCommentEditMiniModal2(id);
     }
-    setSelectId(0);
+    setCommentEditMiniModal(0);
   };
+  //... 클릭
   const handleClickBtn = (id: number) => {
-    if (selectId === id) {
-      setSelectId(0);
+    if (commentEditMiniModal === id) {
+      //0일때는 모달창 clos
+      setCommentEditMiniModal(0);
     } else {
-      setSelectId(id);
+      //user_id 같으면 open
+      setCommentEditMiniModal(id);
     }
   };
 
@@ -173,7 +185,7 @@ const Comment = () => {
             onChange={handleInputNewComment('content')}
             placeholder=" 댓글 내용 작성"
             name={newComment.content}
-            defaultValue={newComment.content}
+            value={newComment.content}
           />
           <CS.CommentCreateBtn
             onClick={() => {
@@ -185,79 +197,84 @@ const Comment = () => {
         </CS.CommentTextAreaBox>
       </CS.CommentCreateBox>
       <CS.CommentListBox>
-        {allComment.map((el) => {
-          return (
-            <CS.CommentList key={el.id}>
-              <CS.CommentProfile className="list">
-                <FaUserCircle size={30}></FaUserCircle>
-                <div>{el.nickname}</div>
-              </CS.CommentProfile>
-              {el.id === selectId2 ? (
-                <CS.CommentEditBox>
-                  <CS.CommentTextArea
-                    onChange={handleInputEditComment('content')}
-                    name={el.content}
-                    id={`${el.id}`}
-                    defaultValue={el.content}
-                  />
-                  <CS.CommentEditBtn>
-                    <div onClick={() => setSelectId2(0)}>취소</div>
-                    <div
-                      className="edit"
-                      onClick={() => {
-                        handleTextCommentEdit();
-                      }}
-                    >
-                      수정
-                    </div>
-                  </CS.CommentEditBtn>
-                </CS.CommentEditBox>
-              ) : (
-                <CS.CommentListBody>
-                  {el.content}
-                  <div className="date">{el.updated_at}</div>
-                </CS.CommentListBody>
-              )}
-
-              {el.user_id === parse_user_id && (
-                <CS.CommentListBtn>
-                  <BiDotsVerticalRounded
-                    size={30}
-                    onClick={() => handleClickBtn(el.id)}
-                  ></BiDotsVerticalRounded>
-                  {el.id === selectId && (
-                    <CS.CommentBtnBack>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          columnGap: '10px',
-                        }}
-                        onClick={() => {
-                          handleDelete(el.id);
-                        }}
-                      >
-                        <FaTrashAlt size={20} />
-                        삭제
+        {allComment
+          .slice(0)
+          .reverse()
+          .map((el) => {
+            return (
+              <CS.CommentList key={el.id}>
+                <CS.CommentProfile className="list">
+                  <FaUserCircle size={30}></FaUserCircle>
+                  <div>{el.nickname}</div>
+                </CS.CommentProfile>
+                {el.id === commentEditMiniModal2 ? (
+                  <CS.CommentEditBox>
+                    <CS.CommentTextArea
+                      onChange={handleInputEditComment('content')}
+                      name={el.content}
+                      id={`${el.id}`}
+                      defaultValue={el.content}
+                    />
+                    <CS.CommentEditBtn>
+                      <div onClick={() => setCommentEditMiniModal2(0)}>
+                        취소
                       </div>
                       <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          columnGap: '10px',
+                        className="edit"
+                        onClick={() => {
+                          handleTextCommentEdit();
                         }}
-                        onClick={() => handleCommentEdit(el.id)}
                       >
-                        <MdModeEdit size={20} />
                         수정
                       </div>
-                    </CS.CommentBtnBack>
-                  )}
-                </CS.CommentListBtn>
-              )}
-            </CS.CommentList>
-          );
-        })}
+                    </CS.CommentEditBtn>
+                  </CS.CommentEditBox>
+                ) : (
+                  <CS.CommentListBody>
+                    {el.content}
+                    <div className="date">{el.updated_at.split('T')[0]}</div>
+                  </CS.CommentListBody>
+                )}
+
+                {el.user_id === parse_user_id && (
+                  <CS.CommentListBtn>
+                    <BiDotsVerticalRounded
+                      size={30}
+                      onClick={() => handleClickBtn(el.id)}
+                    ></BiDotsVerticalRounded>
+                    {el.id === commentEditMiniModal && (
+                      <CS.CommentBtnBack>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            columnGap: '10px',
+                          }}
+                          onClick={() => {
+                            handleDelete(el.id);
+                          }}
+                        >
+                          <FaTrashAlt size={20} />
+                          삭제
+                        </div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            columnGap: '10px',
+                          }}
+                          onClick={() => handleCommentEdit(el.id)}
+                        >
+                          <MdModeEdit size={20} />
+                          수정
+                        </div>
+                      </CS.CommentBtnBack>
+                    )}
+                  </CS.CommentListBtn>
+                )}
+              </CS.CommentList>
+            );
+          })}
       </CS.CommentListBox>
     </CS.CommentBox>
   );

@@ -199,6 +199,14 @@ const Modal = () => {
       })
       .then((res) => {
         dispatch(modalOpen('비밀번호가 변경되었습니다.'));
+        setPasswordEdit({
+          isPassword: false,
+          isPasswordConfirm: false,
+          msg: '',
+          password: '',
+          newPassword: '',
+          newPasswordConfirm: '',
+        });
       })
       .catch((err) => {
         setPasswordEdit({ ...passwordEdit, msg: '현재 비밀번호가 틀립니다.' });

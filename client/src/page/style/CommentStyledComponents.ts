@@ -29,6 +29,7 @@ export const CommentListBox = styled.div`
 `;
 export const CommentList = styled.div`
   border-radius: 15px;
+  margin-top: 40px;
   padding: 10px;
   width: 95%;
   height: 30%;
@@ -83,8 +84,13 @@ export const CommentListBody = styled.div`
   position: relative;
   padding: 5px;
   height: 60px;
+  font-size: 18px;
   > div.date {
+    width: 100%;
+    text-align: right;
     position: absolute;
+    font-size: 12px;
+    opacity: 0.7;
     bottom: -15px;
     left: 0px;
   }
