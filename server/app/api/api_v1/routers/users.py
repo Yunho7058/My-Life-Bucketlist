@@ -27,7 +27,6 @@ from app.crud.users import (
     update_user_profile,
     delete_user
 )
-from app.crud.posts import create_post
 from app.core.config import settings
 from app.core.security import (
     create_token, 
@@ -83,8 +82,7 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400)
     if get_user_by_nickname(db, user.nickname):
         raise HTTPException(status_code=400)
-    user = create_user(db, user)
-    create_post(db, user.id)
+    create_user(db, user)
     return
 
 
@@ -249,8 +247,7 @@ def kakao_login(response: Response, code: str = Body(..., embed=True), db: Sessi
             password="",
             domain="kakao"
         )
-        user = create_user(db, user)
-        create_post(db, user.id)
+        create_user(db, user)
     token = create_token(email)
     refresh_token = token.pop("refresh_token")
     response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
@@ -269,16 +266,18 @@ def google_login(response: Response, token: str = Body(..., embed=True), db: Ses
     email = data.get("email")
     user = get_user(db, email)
     if user is None:
-        nickname = "google-"
-        nickname += uuid.uuid4().hex
+        nickname = email.split("@")[0]
+        user = get_user_by_nickname(db, nickname)
+        if user:
+            nickname = "google-"
+            nickname += uuid.uuid4().hex
         user = UserCreate(
             email=email,
             nickname=nickname[:30],
             password="",
             domain="google"
         )
-        user = create_user(db, user)
-        create_post(db, user.id)
+        create_user(db, user)
     token = create_token(email)
     refresh_token = token.pop("refresh_token")
     response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)
@@ -322,8 +321,7 @@ def naver_login(response: Response, code: str = Body(..., embed=True), state: st
             password="",
             domain="naver"
         )
-        user = create_user(db, user)
-        create_post(db, user.id)
+        create_user(db, user)
     token = create_token(email)
     refresh_token = token.pop("refresh_token")
     response.set_cookie("refresh_token", refresh_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES*60)

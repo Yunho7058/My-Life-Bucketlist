@@ -2,7 +2,8 @@ from sqlalchemy.orm import Session
 
 from app.models.users import User
 from app.schemas.users import UserCreate
-from app.core.security import get_password_hash, verify_password
+from app.core.security import get_password_hash
+from app.models.posts import Post, Bucketlist
 
 
 def create_user(db: Session, user: UserCreate):
@@ -14,9 +15,21 @@ def create_user(db: Session, user: UserCreate):
         domain=user.domain
     )
     db.add(db_user)
-    db.commit()
+    db.flush()
     db.refresh(db_user)
-    return db_user
+
+    db_post = Post(user_id=db_user.id)
+    db.add(db_post)
+    db.flush()
+    db.refresh(db_post)
+
+    db_bucketlist = Bucketlist(
+        content="첫번째 버킷리스트 등록하기",
+        post_id=db_post.id
+    )
+    db.add(db_bucketlist)
+    db.commit()
+    return
 
 
 def get_user(db: Session, email: str):
