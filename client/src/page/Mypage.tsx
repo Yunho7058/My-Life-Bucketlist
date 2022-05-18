@@ -138,7 +138,7 @@ export const Btn = styled.div`
     background-color: #6495ed;
   }
 `;
-type bookBucketlistInfo = { title: string; id: number }[];
+type bookBucketlistInfo = { nickname: string; id: number }[];
 const Mypage = () => {
   const dispatch = useDispatch();
   const [list, setList] = useState(0);
@@ -155,7 +155,6 @@ const Mypage = () => {
   });
   useEffect(() => {
     if (getUser !== null) {
-      console.log(getUser);
       setUserInfo({
         parse_user_email: JSON.parse(getUser).email,
         parse_post_id: Number(JSON.parse(getUser).post_id),
@@ -164,15 +163,14 @@ const Mypage = () => {
     }
   }, []);
 
+  //! 북마크 게시물 리스트
   useEffect(() => {
     axiosInstance
       .get('/bookmark')
       .then((res) => {
-        //가져온 게시물들 관리
-        //let {title, id} = res.data
         setBookBucketlist(
-          res.data.map((el: { title: string; id: number }) => {
-            return { title: el.title, id: el.id };
+          res.data.map((el: { nickname: string; id: number }) => {
+            return { nickname: el.nickname, id: el.id };
           })
         );
       })
@@ -187,7 +185,6 @@ const Mypage = () => {
   });
   const handleNicknameInput =
     (key: string) => (e: { target: HTMLInputElement }) => {
-      console.log(key);
       setNicknameChange({ ...nicknameChange, [key]: e.target.value });
     };
   const handleNicknameEdit = () => {
@@ -212,11 +209,16 @@ const Mypage = () => {
       .patch('/nickname', { nickname: nicknameChange.nickname })
       .then((res) => {
         dispatch(modalOpen('닉네임이 변경되었습니다.'));
-        setNicknameChange({ ...nicknameChange, is: false });
+        setNicknameChange({
+          ...nicknameChange,
+          is: false,
+          isNickNameCheck: false,
+        });
+        setUserInfo({
+          ...userInfo,
+          parse_user_nickname: nicknameChange.nickname,
+        });
         dispatch(getUserInfo());
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
       })
       .catch((err) => {
         console.log(err, 'nickname edit err');
@@ -257,7 +259,7 @@ const Mypage = () => {
                           key={el.id}
                           onClick={() => navigate(`/post/${el.id}`)}
                         >
-                          {idx + 1}. {el.title}
+                          {idx + 1}. {el.nickname}님의 버킷리스트
                         </BookBucketlist>
                       );
                     })}

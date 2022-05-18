@@ -25,6 +25,7 @@ namespace TypeRedux {
       content: string;
       detail?: string;
       image_path?: string;
+      image_path_origin?: string;
     }[];
   }
   export interface TypeKeyString {
@@ -32,6 +33,7 @@ namespace TypeRedux {
   }
   export interface TypePostData extends TypePostsData {
     owner: boolean;
+    is_public: boolean;
     bookmark: boolean;
     like: boolean;
   }
@@ -45,6 +47,7 @@ namespace TypeRedux {
       content: string;
       detail: string;
       image_path: string;
+      url: string;
     };
   }
 

@@ -1,23 +1,8 @@
+import axiosInstance from '../../components/axios';
 import { POST_ALL } from '../action/index';
 import TypeRedux from './typeRedux';
 
-const initialization = [
-  {
-    title: '',
-    id: 0,
-    nickname: '',
-    updated_at: '',
-    like_count: 0,
-    bucketlist: [
-      {
-        id: 0,
-        content: '',
-        detaile: '',
-        image_path: '',
-      },
-    ],
-  },
-];
+const initialization: TypeRedux.TypePostsData[] = [];
 
 const postsAllReducer = (
   state: TypeRedux.TypePostsData[] = initialization,
@@ -27,6 +12,13 @@ const postsAllReducer = (
     case POST_ALL:
       let allData = action.payload.postAlldata;
       return allData;
+
+    // case POST_TEST:
+    //   let copy = [...state];
+    //   console.log(action.payload);
+
+    //   return copy;
+
     default:
       return state;
   }

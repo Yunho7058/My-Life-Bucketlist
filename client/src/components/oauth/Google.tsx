@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { getUserInfo, isLogin } from '../../redux/action';
+import Spinner from '../../utils/spinner';
 
 const GoogleLogin = () => {
   const navigate = useNavigate();
@@ -13,8 +14,8 @@ const GoogleLogin = () => {
   useEffect(() => {
     axios
       .post(
-        `${process.env.REACT_APP_SERVER_URI}oauth/google`,
-        { data: code },
+        `${process.env.REACT_APP_SERVER_URI}/oauth/google`,
+        { token: code },
         {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
@@ -31,7 +32,11 @@ const GoogleLogin = () => {
         console.log(err, 'google login err');
       });
   }, []);
-  return <>구글 로그인</>;
+  return (
+    <>
+      <Spinner></Spinner>
+    </>
+  );
 };
 
 export default GoogleLogin;
