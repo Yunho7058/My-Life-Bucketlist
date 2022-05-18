@@ -6,10 +6,13 @@ from sqlalchemy import (
     DateTime, 
     Date,
     Boolean,
-    TEXT
+    TEXT,
+    event,
+    update
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.associationproxy import association_proxy
 
 from app.db.database import Base
 from app.utils import get_now
@@ -20,7 +23,7 @@ class Post(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True)
-    updated_at = Column(DateTime(timezone=True), onupdate=get_now)
+    updated_at = Column(DateTime(timezone=True), default=get_now, onupdate=get_now)
     is_public = Column(Boolean, default=False)
 
     user = relationship("User", back_populates="post")
@@ -28,6 +31,8 @@ class Post(Base):
     comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
     likes = relationship("Like", back_populates="post", cascade="all, delete-orphan", lazy="dynamic")
     bookmarks = relationship("Bookmark", back_populates="post", cascade="all, delete-orphan")
+
+    nickname = association_proxy("user", "nickname")
 
     @hybrid_property
     def like_count(self):
@@ -43,7 +48,7 @@ class Bucketlist(Base):
     detail = Column(TEXT)
     image_path = Column(String(300))
 
-    post = relationship("Post", back_populates="bucketlist")
+    post = relationship("Post", back_populates="bucketlist", cascade="save-update")
 
 
 class Comment(Base):
@@ -57,6 +62,8 @@ class Comment(Base):
 
     post = relationship("Post", back_populates="comments")
     user = relationship("User", back_populates="comments")
+
+    nickname = association_proxy("user", "nickname")
 
 
 class Like(Base):
@@ -79,3 +86,11 @@ class Bookmark(Base):
 
     user = relationship("User", back_populates="bookmarks")
     post = relationship("Post", back_populates="bookmarks")
+
+
+def bucketlist_listener(mapper, connection, target):
+    connection.execute(update(Post).values(updated_at=get_now()).where(Post.id == target.post_id))
+
+event.listen(Bucketlist, 'after_insert', bucketlist_listener)
+event.listen(Bucketlist, 'after_update', bucketlist_listener)
+event.listen(Bucketlist, 'after_delete', bucketlist_listener)

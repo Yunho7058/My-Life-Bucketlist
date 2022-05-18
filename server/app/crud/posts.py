@@ -18,13 +18,6 @@ def get_post_detail(db: Session, post_id: int):
     return db.get(Post, post_id)
 
 
-def create_post(db: Session, user_id: int):
-    db_post = Post(user_id=user_id)
-    db.add(db_post)
-    db.commit()
-    return
-
-
 def update_post_public(db: Session, post_id: int):
     db_post = db.get(Post, post_id)
     db_post.is_public = not(db_post.is_public)
@@ -37,7 +30,7 @@ def get_bucketlist(db: Session, bucketlist_id: int):
     return db.get(Bucketlist, bucketlist_id)
 
 
-def create_bucketlist(db: Session, bucketlist: schemas.Bucketlist, post_id: int):
+def create_bucketlist(db: Session, bucketlist: schemas.BucketlistIn, post_id: int):
     db_bucketlist = Bucketlist(
         **bucketlist.dict(),
         post_id=post_id
@@ -72,11 +65,8 @@ def get_comment(db: Session, comment_id: int):
     return db.get(Comment, comment_id)
 
 
-def get_comment_list(db: Session, post_id: int, last_id: int | None):
-    size = 20
-    if last_id is None:
-        return db.query(Comment).filter_by(post_id = post_id).order_by(Comment.id).limit(size).all()
-    return db.query(Comment).filter(Comment.post_id == post_id, Comment.id > last_id).order_by(Comment.id).limit(size).all()
+def get_comment_list(db: Session, post_id: int):
+    return db.query(Comment).filter_by(post_id = post_id).order_by(Comment.id).all()
 
 
 def create_comment(db: Session, content: str, user_id: int, post_id: int):

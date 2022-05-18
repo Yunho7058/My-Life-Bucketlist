@@ -26,7 +26,6 @@ def get_post_list(last_id: int | None = None, db: Session = Depends(get_db)):
     """
     posts = crud.get_post_list(db, last_id)
     for post in posts:
-        post.nickname = post.user.nickname
         post.bucketlist = post.bucketlist[:3]
     return posts
 
@@ -60,7 +59,6 @@ def get_post_detail(post_id: int, email: str = Depends(authenticate_by_token), d
         post.like = False
         post.bookmark = False
         post.owner = False
-    post.nickname = post.user.nickname
     return post
 
 
@@ -81,33 +79,22 @@ def update_bucketlist(bucketlist_id: int, bucketlist: schemas.BucketlistIn, user
     return
 
 
-@router.delete("/bucketlist/{bucketlist_id}", status_code=204, responses={401: {}, 403: {}, 404: {}}, summary="버킷리스트 삭제", tags=["버킷리스트"])
+@router.delete("/bucketlist/{bucketlist_id}", status_code=204, responses={400: {}, 401: {}, 403: {}, 404: {}}, summary="버킷리스트 삭제", tags=["버킷리스트"])
 def delete_bucketlist(bucketlist_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     bucketlist = crud.get_bucketlist(db, bucketlist_id)
     if bucketlist is None:
         raise HTTPException(status_code=404)
     if bucketlist.post_id != user.post.id:
         raise HTTPException(status_code=403)
+    if len(user.post.bucketlist) <= 1:
+        raise HTTPException(status_code=400)
     crud.delete_bucketlist(db, bucketlist)
     return
 
 
 @router.get("/comment/{post_id}", response_model=list[schemas.Comment], summary="댓글 목록 조회", tags=["댓글"])
-def get_comment_list(post_id: int, last_id: int | None = None, db: Session = Depends(get_db)):
-    """
-    **설명**
-    - post_id를 받아 해당 게시글의 댓글 20개를 응답
-    - last_id가 주어지면 그 다음 댓글 20개를 응답
-
-    **Path**
-    - post_id: 댓글목록을 조회하려는 게시글의 id
-
-    **query**
-    - last_id: 마지막 댓글의 id
-    """
-    comments = crud.get_comment_list(db, post_id, last_id)
-    for comment in comments:
-        comment.nickname = comment.user.nickname
+def get_comment_list(post_id: int, db: Session = Depends(get_db)):
+    comments = crud.get_comment_list(db, post_id)
     return comments
 
 
@@ -175,8 +162,6 @@ def push_bookmark(post_id: int, user: User = Depends(get_current_user), db: Sess
 @router.get("/bookmark", response_model=list[schemas.Post], summary="북마크한 게시글 목록 조회", tags=["북마크"])
 def get_bookmarked_post_list(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     bookmarked_posts = crud.get_bookmarked_post_list(db, user)
-    for post in bookmarked_posts:
-        post.nickname = post.user.nickname
     return bookmarked_posts
 
 
