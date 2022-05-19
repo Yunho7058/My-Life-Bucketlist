@@ -140,9 +140,6 @@ function Post() {
               let url = window.URL.createObjectURL(new Blob([res.data]));
               dispatch(postImgDownload(url, id));
               dispatch(postImgOrigin(url, id));
-              // test111(url, id);
-
-              //url과 id를 같이 보내주면
             })
             .catch((err) => console.log(err));
         })
