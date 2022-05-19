@@ -7,7 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import Headers from '../components/Headers';
 import { TypeRootReducer } from '../redux/store/store';
 import TypeRedux from '../redux/reducer/typeRedux';
-import { postEach } from '../redux/action';
+import { postAll, postAllAdd, postEach } from '../redux/action';
+import { useEffect, useRef, useState } from 'react';
+import axiosInstance from '../components/axios';
 
 export const MainDiv = styled.div`
   background-color: ${({ theme }) => theme.mode.background1};
@@ -114,48 +116,123 @@ function Main() {
   const stateAllPost: TypeRedux.TypePostsData[] = useSelector(
     (state: TypeRootReducer) => state.postsReducer
   );
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   //! POST 클릭시
   const handlePostClick = (id: number) => {
     navigate(`/post/${id}`);
   };
-  console.log(stateAllPost);
 
+  //! 모든 게시물 불러오기
+  useEffect(() => {
+    axiosInstance
+      .get(`/post`)
+      .then((res) => {
+        dispatch(postAll(res.data));
+      })
+      .catch((err) => {
+        console.log(err, 'Post All err ');
+      });
+  }, []);
+
+  const [testA, setTestA] = useState(false);
+  const getAllpost = () => {
+    axiosInstance
+      .get(`/post?last_id=${stateAllPost[stateAllPost.length - 1].id}`)
+      .then((res) => {
+        if (res.data.length !== 0) {
+          dispatch(postAllAdd(res.data));
+        } else {
+          setTestA(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err, 'Post All err ');
+      });
+  };
+
+  const observerRef = useRef<IntersectionObserver>();
+  const boxRef = useRef(null);
+
+  useEffect(() => {
+    if (!testA) {
+      observerRef.current = new IntersectionObserver((entries, io) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            io.unobserve(entry.target);
+            getAllpost();
+          }
+        });
+      });
+      boxRef.current && observerRef.current.observe(boxRef.current);
+    }
+  }, [stateAllPost]);
+  console.log(stateAllPost);
   return (
     <>
       <Headers></Headers>
       <MainBack>
         <MainPostBack>
-          {stateAllPost.map((el: TypeRedux.TypePostsData) => {
-            return (
-              <MainPost
-                key={el.id}
-                onClick={() => {
-                  handlePostClick(el.id);
-                }}
-              >
-                <PostImg />
-                <PostContentBox>
-                  {el.nickname}의 버킷리스트
-                  <PostBucketlist>
-                    {el.bucketlist
-                      .filter((el, idx) => {
-                        return idx < 3;
-                      })
-                      .map((el, idx) => {
-                        return (
-                          <div key={idx}>
-                            {idx + 1}. {el.content}
-                          </div>
-                        );
-                      })}
-                  </PostBucketlist>
-                </PostContentBox>
-                <PostBoxNickname>닉네임:{el.nickname}</PostBoxNickname>
-              </MainPost>
-            );
+          {stateAllPost.map((el: TypeRedux.TypePostsData, idx) => {
+            if (stateAllPost.length - 2 === idx) {
+              return (
+                <MainPost
+                  key={el.id}
+                  onClick={() => {
+                    handlePostClick(el.id);
+                  }}
+                  ref={boxRef}
+                >
+                  <PostImg />
+                  <PostContentBox>
+                    {el.nickname}의 버킷리스트
+                    <PostBucketlist>
+                      {el.bucketlist
+                        .filter((el, idx) => {
+                          return idx < 3;
+                        })
+                        .map((el, idx) => {
+                          return (
+                            <div key={idx}>
+                              {idx + 1}. {el.content}
+                            </div>
+                          );
+                        })}
+                    </PostBucketlist>
+                  </PostContentBox>
+                  <PostBoxNickname>닉네임:{el.nickname}</PostBoxNickname>
+                </MainPost>
+              );
+            } else {
+              return (
+                <MainPost
+                  key={el.id}
+                  onClick={() => {
+                    handlePostClick(el.id);
+                  }}
+                >
+                  <PostImg />
+                  <PostContentBox>
+                    {el.nickname}의 버킷리스트
+                    <PostBucketlist>
+                      {el.bucketlist
+                        .filter((el, idx) => {
+                          return idx < 3;
+                        })
+                        .map((el, idx) => {
+                          return (
+                            <div key={idx}>
+                              {idx + 1}. {el.content}
+                            </div>
+                          );
+                        })}
+                    </PostBucketlist>
+                  </PostContentBox>
+                  <PostBoxNickname>닉네임:{el.nickname}</PostBoxNickname>
+                </MainPost>
+              );
+            }
           })}
         </MainPostBack>
         {/* <MainRankingBox>랭킹</MainRankingBox> */}

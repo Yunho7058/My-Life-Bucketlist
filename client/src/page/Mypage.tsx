@@ -152,6 +152,7 @@ const Mypage = () => {
     parse_post_id: 0,
     parse_user_email: '',
     parse_user_nickname: '',
+    parse_user_domain: '',
   });
   useEffect(() => {
     if (getUser !== null) {
@@ -159,6 +160,7 @@ const Mypage = () => {
         parse_user_email: JSON.parse(getUser).email,
         parse_post_id: Number(JSON.parse(getUser).post_id),
         parse_user_nickname: JSON.parse(getUser).nickname,
+        parse_user_domain: JSON.parse(getUser).domain,
       });
     }
   }, []);
@@ -226,8 +228,16 @@ const Mypage = () => {
   }, [nicknameChange.isNickNameCheck]);
 
   const handlePasswordEdit = () => {
-    dispatch(modalOpen('password'));
+    if (!userInfo.parse_user_domain) {
+      dispatch(modalOpen('password'));
+    } else {
+      dispatch(modalOpen('SNS이용자는 변경하실 수 없습니다.'));
+    }
   };
+  const handleSignout = () => {
+    dispatch(modalOpen('signout'));
+  };
+
   return (
     <>
       <Headers></Headers>
@@ -326,7 +336,9 @@ const Mypage = () => {
                 <Btn className="change" onClick={() => handlePasswordEdit()}>
                   비밀번호 변경
                 </Btn>
-                <Btn className="delete">회원탈퇴</Btn>
+                <Btn className="delete" onClick={() => handleSignout()}>
+                  회원탈퇴
+                </Btn>
               </div>
             </>
           )}

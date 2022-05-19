@@ -41,13 +41,13 @@ export const LogoTitle = styled.div`
 `;
 
 //https://cssarrowplease.com/ 말풍선 커스텀 사이트
-export const TestCss = styled.div`
+export const SidebarBack = styled.div`
   position: absolute;
   padding: 20px;
   padding-left: 50px;
   top: 70px;
-  right: 230px;
-  width: 180px;
+  right: 260px;
+  width: 200px;
   height: 200px;
   border-radius: 15px;
   box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.2);
@@ -124,18 +124,6 @@ function Headers() {
     return;
   }, [dispatch]);
 
-  //! 모든 게시물 불러오기
-  useEffect(() => {
-    axiosInstance
-      .get(`/post`)
-      .then((res) => {
-        dispatch(postAll(res.data));
-      })
-      .catch((err) => {
-        console.log(err, 'Post All err ');
-      });
-  }, [dispatch]);
-
   // //! 모든 게시물 불러오기
   // useEffect(() => {
   //   dispatch(postTest());
@@ -209,7 +197,7 @@ function Headers() {
               }}
             >
               {isSidebar && (
-                <TestCss
+                <SidebarBack
                   className="arrow_box"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -242,7 +230,7 @@ function Headers() {
                     로그아웃
                   </SideMenu>
                   <Toggle></Toggle>
-                </TestCss>
+                </SidebarBack>
               )}
             </div>
           </>

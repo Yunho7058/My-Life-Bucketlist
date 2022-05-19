@@ -17,6 +17,7 @@ export const POST_BUCKETLIST_POTO_UPLOAD = 'POST_BUCKETLIST_POTO_UPLOAD';
 //export const POST_TEST = 'POST_TEST';
 export const POST_IMG_DOWNLOAD = 'POST_IMG_DOWNLOAD';
 export const POST_IMG_ORIGIN = 'POST_IMG_ORIGIN';
+export const POST_ALL_ADD = 'POST_ALL_ADD';
 
 export const postImgOrigin = (url: string, id: number) => {
   return {
@@ -59,6 +60,14 @@ export const isLogout = () => {
 export const postAll = (data: TypeRedux.TypePosts) => {
   return {
     type: POST_ALL,
+    payload: {
+      postAlldata: data,
+    },
+  };
+};
+export const postAllAdd = (data: TypeRedux.TypePosts) => {
+  return {
+    type: POST_ALL_ADD,
     payload: {
       postAlldata: data,
     },

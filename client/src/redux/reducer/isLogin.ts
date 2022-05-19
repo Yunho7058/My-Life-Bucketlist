@@ -16,6 +16,7 @@ const isLoginReducer = (state = false, action: TypeAction): boolean => {
       axiosInstance
         .get(`/me`)
         .then((res) => {
+          //console.log(res.data);
           window.localStorage.setItem(
             'user',
             JSON.stringify({
@@ -23,6 +24,7 @@ const isLoginReducer = (state = false, action: TypeAction): boolean => {
               email: res.data.email,
               nickname: res.data.nickname,
               post_id: res.data.post_id,
+              domain: res.data.domain,
             })
             //! 읽을때 JSON.part()
           );

@@ -253,7 +253,7 @@ const SimpleMode = ({
         </PS.BucketlistContent>
       )}
       {/* 생성 버튼 */}
-      {isPost.isEditMode && (
+      {/* {isPost.isEditMode && (
         <PS.BucketlistCreate
           onClick={() => {
             handleBucketlistCreate();
@@ -263,7 +263,7 @@ const SimpleMode = ({
             <BsPlusCircleDotted size={30} />
           </PS.Btn>
         </PS.BucketlistCreate>
-      )}
+      )} */}
     </PS.BucketlistBox>
   );
 };
