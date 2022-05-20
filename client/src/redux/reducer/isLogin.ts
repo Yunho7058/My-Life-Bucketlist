@@ -25,6 +25,7 @@ const isLoginReducer = (state = false, action: TypeAction): boolean => {
               nickname: res.data.nickname,
               post_id: res.data.post_id,
               domain: res.data.domain,
+              image_path: res.data.image_path,
             })
             //! 읽을때 JSON.part()
           );

@@ -136,7 +136,7 @@ function Main() {
       });
   }, []);
 
-  const [testA, setTestA] = useState(false);
+  const [postInfiniteScrollEnd, setPostInfiniteScrollEnd] = useState(false);
   const getAllpost = () => {
     axiosInstance
       .get(`/post?last_id=${stateAllPost[stateAllPost.length - 1].id}`)
@@ -144,7 +144,7 @@ function Main() {
         if (res.data.length !== 0) {
           dispatch(postAllAdd(res.data));
         } else {
-          setTestA(true);
+          setPostInfiniteScrollEnd(true);
         }
       })
       .catch((err) => {
@@ -156,10 +156,11 @@ function Main() {
   const boxRef = useRef(null);
 
   useEffect(() => {
-    if (!testA) {
+    if (!postInfiniteScrollEnd) {
       observerRef.current = new IntersectionObserver((entries, io) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            console.log('참지');
             io.unobserve(entry.target);
             getAllpost();
           }
@@ -168,14 +169,14 @@ function Main() {
       boxRef.current && observerRef.current.observe(boxRef.current);
     }
   }, [stateAllPost]);
-  console.log(stateAllPost);
+
   return (
     <>
       <Headers></Headers>
       <MainBack>
         <MainPostBack>
           {stateAllPost.map((el: TypeRedux.TypePostsData, idx) => {
-            if (stateAllPost.length - 2 === idx) {
+            if (stateAllPost.length - 5 === idx) {
               return (
                 <MainPost
                   key={el.id}

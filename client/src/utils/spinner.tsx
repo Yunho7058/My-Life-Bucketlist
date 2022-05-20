@@ -7,6 +7,12 @@ const Back = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  &.img {
+    width: 250px;
+    height: 200px;
+    border-radius: 15px;
+  }
 `;
 
 const Rotate = keyframes`     
@@ -23,11 +29,19 @@ const SpinnerMain = styled.div`
   animation: ${Rotate} 0.7s infinite linear;
 `;
 
-const Spinner = () => {
+const Spinner = (type: { type?: string }) => {
   return (
-    <Back>
-      <SpinnerMain></SpinnerMain>
-    </Back>
+    <>
+      {type.type === 'img' ? (
+        <Back className="img">
+          <SpinnerMain></SpinnerMain>
+        </Back>
+      ) : (
+        <Back>
+          <SpinnerMain></SpinnerMain>
+        </Back>
+      )}
+    </>
   );
 };
 

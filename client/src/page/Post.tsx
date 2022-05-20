@@ -140,6 +140,9 @@ function Post() {
               let url = window.URL.createObjectURL(new Blob([res.data]));
               dispatch(postImgDownload(url, id));
               dispatch(postImgOrigin(url, id));
+              setTimeout(() => {
+                setSpinnerImg(false);
+              }, 3000);
             })
             .catch((err) => console.log(err));
         })
@@ -201,7 +204,6 @@ function Post() {
     } else {
       data[0].image_path = '';
     }
-    console.log(data[0].image_path);
     axiosInstance
       .put(`/bucketlist/${id}`, data[0])
       .then((res) => {
@@ -254,9 +256,7 @@ function Post() {
   }, [newImgUrl]);
   //! bucketlist 생성 버튼
   const handleNewBucketlist = () => {
-    //100개 초과시 더이상 버킷리스트를 만들 수 없습니다 문구 띄우기.
-
-    console.log(newBucketlist);
+    //? 100개 초과시 더이상 버킷리스트를 만들 수 없습니다 문구 띄우기.
 
     if (!newBucketlist.content.length) {
       dispatch(modalOpen('버킷리스트를 작성해주세요.'));
@@ -374,14 +374,16 @@ function Post() {
 
   //server로부터 key get
   useEffect(() => {
-    axiosInstance
-      .get(`/bucketlist/presigned-post?file_name=${fileName}`)
-      .then((res) => {
-        setPresignedPost(res.data);
-      })
-      .catch((err) => {
-        console.log('poto err');
-      });
+    if (fileName) {
+      axiosInstance
+        .get(`/bucketlist/presigned-post?file_name=${fileName}`)
+        .then((res) => {
+          setPresignedPost(res.data);
+        })
+        .catch((err) => {
+          console.log('poto err');
+        });
+    }
   }, [fileName]);
 
   //! 사진 삭제
@@ -435,6 +437,7 @@ function Post() {
   };
 
   const [spinner, setSpinner] = useState(true);
+  const [spinnerImg, setSpinnerImg] = useState(true);
   const [bucketlistSelect, setBucketlistSelect] = useState(0);
 
   const handleBucketlistSelect = (id: number) => {
@@ -543,6 +546,7 @@ function Post() {
                   bucketlistSelect={bucketlistSelect}
                   handleBucketlistSelect={handleBucketlistSelect}
                   newImgUrl={newImgUrl}
+                  spinnerImg={spinnerImg}
                 ></DetailMode>
               )}
 

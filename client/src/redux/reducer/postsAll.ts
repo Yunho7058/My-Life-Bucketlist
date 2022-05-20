@@ -16,7 +16,11 @@ const postsAllReducer = (
     case POST_ALL_ADD:
       let allDataAdd = action.payload.postAlldata;
 
-      return state.concat(allDataAdd);
+      if (state[state.length - 1].id === allDataAdd[allDataAdd.length - 1].id) {
+        return state;
+      } else {
+        return state.concat(allDataAdd);
+      }
 
     // case POST_TEST:
     //   let copy = [...state];
