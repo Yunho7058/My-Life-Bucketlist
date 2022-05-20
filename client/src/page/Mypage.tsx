@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -138,6 +139,26 @@ export const Btn = styled.div`
     background-color: #6495ed;
   }
 `;
+export const ImgInput = styled.input`
+  cursor: pointer;
+  display: none;
+`;
+export const PostPoto = styled.img`
+  width: 250px;
+  height: 200px;
+  border-radius: 15px;
+`;
+export const BucketlistImg = styled.div`
+  border: 1px solid;
+  text-align: center;
+  line-height: 200px;
+  border-radius: 30px;
+  width: 250px;
+  height: 200px;
+
+  background-color: grey;
+`;
+
 type bookBucketlistInfo = { nickname: string; id: number }[];
 const Mypage = () => {
   const dispatch = useDispatch();
@@ -153,6 +174,7 @@ const Mypage = () => {
     parse_user_email: '',
     parse_user_nickname: '',
     parse_user_domain: '',
+    paser_user_image_path: '',
   });
   useEffect(() => {
     if (getUser !== null) {
@@ -161,6 +183,7 @@ const Mypage = () => {
         parse_post_id: Number(JSON.parse(getUser).post_id),
         parse_user_nickname: JSON.parse(getUser).nickname,
         parse_user_domain: JSON.parse(getUser).domain,
+        paser_user_image_path: JSON.parse(getUser).image_path,
       });
     }
   }, []);
@@ -237,6 +260,113 @@ const Mypage = () => {
   const handleSignout = () => {
     dispatch(modalOpen('signout'));
   };
+  const potoInput = useRef<HTMLInputElement>(null);
+  const handlePotoInput = () => {
+    if (potoInput.current) {
+      potoInput.current.click();
+    }
+  };
+
+  const [selectImg, setSelectImg] = useState(userInfo.paser_user_image_path);
+  const [userImg, setUserImg] = useState('');
+  const [file, setFile] = useState<FileList | undefined>();
+  const [fileName, setFileName] = useState<string>('');
+  const [presignedPost, setPresignedPost] = useState<TypePresignedPost>();
+  interface TypePresignedPost {
+    url: string;
+    fields: {
+      Policy: string;
+      'X-Amz-Algorithm': string;
+      'X-Amz-Credential': string;
+      'X-Amz-Date': string;
+      'X-Amz-Security-Token': string;
+      'X-Amz-Signature': string;
+      bucket: string;
+      key: string;
+    };
+  }
+  const onLoadFile = (e: { target: HTMLInputElement }) => {
+    if (e.target.files !== null && e.target.files.length > 0) {
+      const fileList = e.target.files; //선택한 사진 파일
+      let imgUrl = URL.createObjectURL(fileList[0]); //미리보기를 위한 파일 변경
+      setUserImg(imgUrl);
+      setFile(fileList);
+      setFileName(fileList[0].name); //선택한 사진 파일 이름
+    }
+  };
+  const handleImgDelete = () => {
+    setFile(undefined);
+    setFileName('');
+    setUserImg('');
+  };
+
+  useEffect(() => {
+    axiosInstance
+      .get(`/profile/presigned-post?file_name=${fileName}`) //server 파일이름 전송
+      .then((res) => {
+        setPresignedPost(res.data); // server로 부터 받은 s3 key값과 url
+      })
+      .catch((err) => {
+        console.log('poto err');
+      });
+  }, [fileName]);
+
+  useEffect(() => {
+    if (fileName) {
+      handleS3ImgUpload();
+      if (typeof presignedPost?.fields.key === 'string')
+        setSelectImg(presignedPost.fields.key);
+    } else {
+      setSelectImg('');
+    }
+  }, [userImg]);
+
+  const handleS3ImgUpload = () => {
+    const formData = new FormData(); //fromdata 생성
+    if (presignedPost && file) {
+      // server로 받은 정보와 선택한 사진파일 정보가 있을때
+      Object.entries(presignedPost.fields).forEach((entry) => {
+        const [key, value] = entry;
+        formData.append(key, value); //server로 받은 정보를 fromdata에 append
+      });
+      formData.append('file', file[0]); // 선택한 사진 정보 또한 append
+      axios
+        .post(presignedPost.url, formData, {
+          //server로 부터 받은 정보 url
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        .then((res) => {
+          //setSelectImg(presignedPost.fields.key);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+  //로컬에서 항상 가져오기 사진
+  const handleImgEdit = () => {
+    if (!userImg) {
+      dispatch(modalOpen('사진을 선택해주세요.'));
+    } else {
+      axiosInstance
+        .patch(`/profile`, { image_path: selectImg })
+        .then((res) => {
+          // dispatch(
+          //   postBucketlistNew(
+          //     res.data.id,
+          //     newBucketlist.content,
+          //     newBucketlist.detail,
+          //     newImgUrl
+          //   )
+          // );
+          //local에 이미지 저장
+          dispatch(modalOpen('생성되었습니다.'));
+        })
+        .catch((err) => {
+          console.log(err, 'new bucketlist create err');
+        });
+    }
+  };
 
   return (
     <>
@@ -281,6 +411,28 @@ const Mypage = () => {
             <>
               <ProfilList>
                 <ProfilTilte>사진</ProfilTilte>
+                {userImg ? (
+                  <PostPoto
+                    alt="sample"
+                    src={userImg}
+                    onClick={() => handlePotoInput()}
+                  />
+                ) : (
+                  <BucketlistImg onClick={() => handlePotoInput()}>
+                    사진을 선택해주세요.
+                  </BucketlistImg>
+                )}
+                <ImgInput
+                  type="file"
+                  accept="image/*"
+                  name="file"
+                  ref={potoInput}
+                  onChange={onLoadFile}
+                />
+                <Btn className="imgDelete" onClick={() => handleImgDelete()}>
+                  사진 삭제하기
+                </Btn>
+                <Btn onClick={() => handleImgEdit()}>수정</Btn>
               </ProfilList>
               <ProfilList>
                 <ProfilTilte>닉네임</ProfilTilte>

@@ -5,6 +5,7 @@ import TypeRedux from '../../redux/reducer/typeRedux';
 import { useRef, useState } from 'react';
 import { TypeRootReducer } from '../../redux/store/store';
 import * as PS from '../style/PostStyledComponents';
+import Spinner from '../../utils/spinner';
 interface TypeProps {
   isPost: { isEditMode: boolean; isSimple: boolean; isCreate: boolean };
   handleInputItem: (
@@ -29,6 +30,7 @@ interface TypeProps {
   bucketlistSelect: number;
   handleBucketlistSelect: (id: number) => void;
   newImgUrl: string;
+  spinnerImg: boolean;
 }
 
 const DetailMode = ({
@@ -47,6 +49,7 @@ const DetailMode = ({
   bucketlistSelect,
   handleBucketlistSelect,
   newImgUrl,
+  spinnerImg,
 }: TypeProps) => {
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
@@ -79,11 +82,15 @@ const DetailMode = ({
                   <>
                     <div>
                       {el.image_path ? (
-                        <PS.PostPoto
-                          alt="sample"
-                          src={el.image_path}
-                          onClick={() => handlePotoInput()}
-                        />
+                        !spinnerImg ? (
+                          <PS.PostPoto
+                            alt="sample"
+                            src={el.image_path}
+                            onClick={() => handlePotoInput()}
+                          />
+                        ) : (
+                          <Spinner type="img"></Spinner>
+                        )
                       ) : (
                         <PS.BucketlistImg onClick={() => handlePotoInput()}>
                           사진을 선택해주세요.
@@ -158,11 +165,15 @@ const DetailMode = ({
                     {/* 편집 off */}
                     <div>
                       {el.image_path ? (
-                        <PS.PostPoto
-                          alt="sample"
-                          src={el.image_path}
-                          style={{ margin: 'auto' }}
-                        />
+                        !spinnerImg ? (
+                          <PS.PostPoto
+                            alt="sample"
+                            src={el.image_path}
+                            style={{ margin: 'auto' }}
+                          />
+                        ) : (
+                          <Spinner type="img"></Spinner>
+                        )
                       ) : (
                         <PS.BucketlistImg>
                           사진을 선택해주세요.
@@ -187,11 +198,15 @@ const DetailMode = ({
         <PS.BucketlistView>
           <div>
             {newImgUrl ? (
-              <PS.PostPoto
-                alt="sample"
-                src={newImgUrl}
-                onClick={() => handlePotoInput()}
-              />
+              spinnerImg ? (
+                <PS.PostPoto
+                  alt="sample"
+                  src={newImgUrl}
+                  onClick={() => handlePotoInput()}
+                />
+              ) : (
+                <Spinner type="img"></Spinner>
+              )
             ) : (
               <PS.BucketlistImg onClick={() => handlePotoInput()}>
                 사진을 선택해주세요.
