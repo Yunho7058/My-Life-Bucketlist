@@ -174,7 +174,7 @@ const Mypage = () => {
     parse_user_email: '',
     parse_user_nickname: '',
     parse_user_domain: '',
-    paser_user_image_path: '',
+    parse_user_image_path: '',
   });
   useEffect(() => {
     if (getUser !== null) {
@@ -183,8 +183,9 @@ const Mypage = () => {
         parse_post_id: Number(JSON.parse(getUser).post_id),
         parse_user_nickname: JSON.parse(getUser).nickname,
         parse_user_domain: JSON.parse(getUser).domain,
-        paser_user_image_path: JSON.parse(getUser).image_path,
+        parse_user_image_path: JSON.parse(getUser).image_path,
       });
+      setUserImg(JSON.parse(getUser).image_path);
     }
   }, []);
 
@@ -222,6 +223,7 @@ const Mypage = () => {
         })
         .then((res) => {
           setNicknameChange({ ...nicknameChange, isNickNameCheck: true });
+          dispatch(modalOpen('닉네임이 변경되었습니다.'));
         })
         .catch((err) => {
           dispatch(modalOpen('중복된 닉네임입니다.'));
@@ -266,9 +268,8 @@ const Mypage = () => {
       potoInput.current.click();
     }
   };
-
-  const [selectImg, setSelectImg] = useState(userInfo.paser_user_image_path);
-  const [userImg, setUserImg] = useState('');
+  const [selectImg, setSelectImg] = useState('');
+  const [userImg, setUserImg] = useState(userInfo.parse_user_image_path);
   const [file, setFile] = useState<FileList | undefined>();
   const [fileName, setFileName] = useState<string>('');
   const [presignedPost, setPresignedPost] = useState<TypePresignedPost>();
@@ -289,17 +290,19 @@ const Mypage = () => {
     if (e.target.files !== null && e.target.files.length > 0) {
       const fileList = e.target.files; //선택한 사진 파일
       let imgUrl = URL.createObjectURL(fileList[0]); //미리보기를 위한 파일 변경
+      console.log(imgUrl);
       setUserImg(imgUrl);
       setFile(fileList);
       setFileName(fileList[0].name); //선택한 사진 파일 이름
     }
   };
-  const handleImgDelete = () => {
-    setFile(undefined);
-    setFileName('');
-    setUserImg('');
-  };
+  // const handleImgDelete = () => {
+  //   setFile(undefined);
+  //   setFileName('');
+  //   setUserImg('');
+  // };
 
+  //server로 부터 s3접급 key 받아오기
   useEffect(() => {
     axiosInstance
       .get(`/profile/presigned-post?file_name=${fileName}`) //server 파일이름 전송
@@ -360,13 +363,18 @@ const Mypage = () => {
           //   )
           // );
           //local에 이미지 저장
-          dispatch(modalOpen('생성되었습니다.'));
+          dispatch(modalOpen('수정되었습니다.'));
         })
         .catch((err) => {
           console.log(err, 'new bucketlist create err');
         });
     }
   };
+  useEffect(() => {
+    dispatch(getUserInfo());
+  }, []);
+  console.log(userImg);
+  console.log(Boolean(userImg));
 
   return (
     <>
@@ -411,7 +419,7 @@ const Mypage = () => {
             <>
               <ProfilList>
                 <ProfilTilte>사진</ProfilTilte>
-                {userImg ? (
+                {userImg !== '' ? (
                   <PostPoto
                     alt="sample"
                     src={userImg}
@@ -429,9 +437,9 @@ const Mypage = () => {
                   ref={potoInput}
                   onChange={onLoadFile}
                 />
-                <Btn className="imgDelete" onClick={() => handleImgDelete()}>
+                {/* <Btn className="imgDelete" onClick={() => handleImgDelete()}>
                   사진 삭제하기
-                </Btn>
+                </Btn> */}
                 <Btn onClick={() => handleImgEdit()}>수정</Btn>
               </ProfilList>
               <ProfilList>

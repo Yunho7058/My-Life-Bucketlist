@@ -45,8 +45,8 @@ export const SidebarBack = styled.div`
   position: absolute;
   padding: 20px;
   padding-left: 50px;
-  top: 70px;
-  right: 260px;
+  top: 60px;
+  right: 215px;
   width: 200px;
   height: 200px;
   border-radius: 15px;
@@ -101,6 +101,29 @@ export const SideMenu = styled.div`
   }
 `;
 
+export const SideBtn = styled.div`
+  margin: 5px;
+  margin-right: 40px;
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  border-radius: 20px;
+  position: relative;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+`;
+
+export const ProfileImg = styled.img`
+  position: absolute;
+  border-radius: 10px;
+
+  width: 40px;
+  height: 40px;
+  top: 0px;
+  right: 0px;
+`;
+
 function Headers() {
   const [isSidebar, setIsSiderbar] = useState(false);
   const navigate = useNavigate();
@@ -108,9 +131,11 @@ function Headers() {
   let getUserId = window.localStorage.getItem('user');
   let parse_user_email: string = '';
   let parse_user_nickname: string = '';
+  let parse_user_image_path = '';
   if (getUserId !== null) {
     parse_user_email = JSON.parse(getUserId).email;
     parse_user_nickname = JSON.parse(getUserId).nickname;
+    parse_user_image_path = JSON.parse(getUserId).image_path;
   }
   const stateIsLogin = useSelector(
     (state: TypeRootReducer) => state.isLoginReducer
@@ -182,20 +207,12 @@ function Headers() {
 
         {stateIsLogin ? (
           <>
-            <div
-              className="프로필 사진(임시)"
-              style={{
-                width: '40px',
-                height: '40px',
-                backgroundColor: 'white',
-                borderRadius: '20px',
-                position: 'relative',
-                cursor: 'pointer',
-              }}
+            <SideBtn
               onClick={() => {
                 handleIsSidebar();
               }}
             >
+              <ProfileImg src={parse_user_image_path} />
               {isSidebar && (
                 <SidebarBack
                   className="arrow_box"
@@ -232,7 +249,7 @@ function Headers() {
                   <Toggle></Toggle>
                 </SidebarBack>
               )}
-            </div>
+            </SideBtn>
           </>
         ) : (
           <LoginBtn
