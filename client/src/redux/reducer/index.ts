@@ -9,6 +9,7 @@ import postsReducer from './postsAll';
 import postReducer from './postEach';
 import modal from './modal';
 import isDarkeMode from './isDarkMode';
+import userInfo from './userInfo';
 
 const rootReducer = combineReducers({
   testReducer,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   postReducer,
   modal,
   isDarkeMode,
+  userInfo,
 });
 
 export default rootReducer;

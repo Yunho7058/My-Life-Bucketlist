@@ -105,9 +105,8 @@ export const BucketlistImg = styled.div`
   text-align: center;
   line-height: 200px;
   border-radius: 30px;
-  width: 250px;
+  min-width: 250px;
   height: 200px;
-
   background-color: grey;
 `;
 
@@ -118,6 +117,7 @@ export const BucketlistContent = styled.div`
   justify-content: space-around;
   padding: 15px;
   border-radius: 30px;
+  margin-right: 115px;
 
   > div.content {
     font-size: 18px;
@@ -293,6 +293,8 @@ export const LoginInput = styled.input`
 export const PostPoto = styled.img`
   width: 250px;
   height: 200px;
+  padding: 0px;
+
   border-radius: 15px;
 `;
 

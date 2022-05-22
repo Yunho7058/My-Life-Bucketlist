@@ -14,7 +14,7 @@ import Headers from '../components/Headers';
 import { Terms_2 } from '../components/terms/Terms_2';
 import { Terms_1 } from '../components/terms/Terms_1';
 import * as SS from './style/SignupS';
-import axiosInstance from '../components/axios';
+import axiosInstance from '../utils/axios';
 import Modal from '../components/Modal';
 
 function Signup() {

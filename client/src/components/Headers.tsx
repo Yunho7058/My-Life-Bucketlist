@@ -7,9 +7,16 @@ import { MdEditCalendar } from 'react-icons/md';
 //components
 import { TypeRootReducer } from '../redux/store/store';
 import { HeaderBack, LoginBtn } from './style/HeadersS';
-import { isLogin, isLogout, modalOpen, postAll } from '../redux/action';
+import {
+  isLogin,
+  isLogout,
+  modalOpen,
+  postAll,
+  userInfoSave,
+} from '../redux/action';
 import axios from 'axios';
-import axiosInstance from './axios';
+import { FaUserCircle } from 'react-icons/fa';
+import axiosInstance from '../utils/axios';
 import ScrollTopBtn from '../utils/scrollTopBtn';
 import Toggle from './toggle';
 import Spinner from '../utils/spinner';
@@ -42,6 +49,7 @@ export const LogoTitle = styled.div`
 
 //https://cssarrowplease.com/ 말풍선 커스텀 사이트
 export const SidebarBack = styled.div`
+  z-index: 999;
   position: absolute;
   padding: 20px;
   padding-left: 50px;
@@ -103,25 +111,40 @@ export const SideMenu = styled.div`
 
 export const SideBtn = styled.div`
   margin: 5px;
-  margin-right: 40px;
+  margin-right: 20px;
   width: 40px;
   height: 40px;
-  background-color: white;
+
   border-radius: 20px;
   position: relative;
   /* display: flex;
   justify-content: center;
   align-items: center; */
+  > svg {
+    position: absolute;
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    top: 0px;
+    right: 0px;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.7;
+    }
+  }
 `;
 
 export const ProfileImg = styled.img`
   position: absolute;
   border-radius: 10px;
-
   width: 40px;
   height: 40px;
   top: 0px;
   right: 0px;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.7;
+  }
 `;
 
 function Headers() {
@@ -129,9 +152,11 @@ function Headers() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   let getUserId = window.localStorage.getItem('user');
+
   let parse_user_email: string = '';
   let parse_user_nickname: string = '';
   let parse_user_image_path = '';
+
   if (getUserId !== null) {
     parse_user_email = JSON.parse(getUserId).email;
     parse_user_nickname = JSON.parse(getUserId).nickname;
@@ -140,6 +165,13 @@ function Headers() {
   const stateIsLogin = useSelector(
     (state: TypeRootReducer) => state.isLoginReducer
   );
+  const stateUserInfo = useSelector((state: TypeRootReducer) => state.userInfo);
+
+  useEffect(() => {
+    setTimeout(() => {
+      dispatch(userInfoSave());
+    }, 2000);
+  }, [stateIsLogin]);
 
   //! 새로고침
   useEffect(() => {
@@ -157,7 +189,6 @@ function Headers() {
   //! 로그아웃
   const handleLoginLogoutBtn = () => {
     if (stateIsLogin) {
-      let accessToken = window.localStorage.getItem('accessToken');
       axiosInstance
         .get(`/logout`)
         .then((res) => {
@@ -183,15 +214,8 @@ function Headers() {
     parse_post_id = Number(JSON.parse(getPostId).post_id);
   }
   const handleMyPostBtn = () => {
-    if (parse_post_id) {
-      navigate(`/`);
-      setTimeout(() => {
-        navigate(`/post/${parse_post_id}`);
-      }, 10);
-    } else {
-      dispatch(modalOpen('로그인을 먼저 진행해주세요.'));
-      navigate(`/login`);
-    }
+    window.location.replace(`/post/${parse_post_id}`);
+    //navigate(`/post/${parse_post_id}`);
   };
   const handleMypageMove = () => {
     navigate('/mypage');
@@ -212,7 +236,16 @@ function Headers() {
                 handleIsSidebar();
               }}
             >
-              <ProfileImg src={parse_user_image_path} />
+              {stateUserInfo.image_path ? (
+                stateUserInfo.image_path !== 'none' ? (
+                  <ProfileImg src={stateUserInfo.image_path} />
+                ) : (
+                  <FaUserCircle size={40} />
+                )
+              ) : (
+                <Spinner type="profilePoto" />
+              )}
+
               {isSidebar && (
                 <SidebarBack
                   className="arrow_box"

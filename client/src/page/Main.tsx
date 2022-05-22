@@ -9,7 +9,8 @@ import { TypeRootReducer } from '../redux/store/store';
 import TypeRedux from '../redux/reducer/typeRedux';
 import { postAll, postAllAdd, postEach } from '../redux/action';
 import { useEffect, useRef, useState } from 'react';
-import axiosInstance from '../components/axios';
+import Spinner from '../utils/spinner';
+import axiosInstance from '../utils/axios';
 
 export const MainDiv = styled.div`
   background-color: ${({ theme }) => theme.mode.background1};
@@ -124,12 +125,14 @@ function Main() {
     navigate(`/post/${id}`);
   };
 
+  const [spinner, setSpinner] = useState(false);
   //! 모든 게시물 불러오기
   useEffect(() => {
     axiosInstance
       .get(`/post`)
       .then((res) => {
         dispatch(postAll(res.data));
+        setSpinner(true);
       })
       .catch((err) => {
         console.log(err, 'Post All err ');
@@ -160,7 +163,7 @@ function Main() {
       observerRef.current = new IntersectionObserver((entries, io) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            console.log('참지');
+            console.log('하이');
             io.unobserve(entry.target);
             getAllpost();
           }
@@ -169,75 +172,78 @@ function Main() {
       boxRef.current && observerRef.current.observe(boxRef.current);
     }
   }, [stateAllPost]);
-
+  console.log(stateAllPost);
   return (
     <>
-      <Headers></Headers>
-      <MainBack>
-        <MainPostBack>
-          {stateAllPost.map((el: TypeRedux.TypePostsData, idx) => {
-            if (stateAllPost.length - 5 === idx) {
-              return (
-                <MainPost
-                  key={el.id}
-                  onClick={() => {
-                    handlePostClick(el.id);
-                  }}
-                  ref={boxRef}
-                >
-                  <PostImg />
-                  <PostContentBox>
-                    {el.nickname}의 버킷리스트
-                    <PostBucketlist>
-                      {el.bucketlist
-                        .filter((el, idx) => {
-                          return idx < 3;
-                        })
-                        .map((el, idx) => {
-                          return (
-                            <div key={idx}>
-                              {idx + 1}. {el.content}
-                            </div>
-                          );
-                        })}
-                    </PostBucketlist>
-                  </PostContentBox>
-                  <PostBoxNickname>닉네임:{el.nickname}</PostBoxNickname>
-                </MainPost>
-              );
-            } else {
-              return (
-                <MainPost
-                  key={el.id}
-                  onClick={() => {
-                    handlePostClick(el.id);
-                  }}
-                >
-                  <PostImg />
-                  <PostContentBox>
-                    {el.nickname}의 버킷리스트
-                    <PostBucketlist>
-                      {el.bucketlist
-                        .filter((el, idx) => {
-                          return idx < 3;
-                        })
-                        .map((el, idx) => {
-                          return (
-                            <div key={idx}>
-                              {idx + 1}. {el.content}
-                            </div>
-                          );
-                        })}
-                    </PostBucketlist>
-                  </PostContentBox>
-                  <PostBoxNickname>닉네임:{el.nickname}</PostBoxNickname>
-                </MainPost>
-              );
-            }
-          })}
-        </MainPostBack>
-        {/* <MainRankingBox>랭킹</MainRankingBox> */}
-      </MainBack>
+      <>
+        {!spinner && <Spinner />}
+        <Headers></Headers>
+        <MainBack>
+          <MainPostBack>
+            {stateAllPost.map((el: TypeRedux.TypePostsData, idx) => {
+              if (stateAllPost.length - 5 === idx) {
+                return (
+                  <MainPost
+                    key={el.id}
+                    onClick={() => {
+                      handlePostClick(el.id);
+                    }}
+                    ref={boxRef}
+                  >
+                    <PostImg />
+                    <PostContentBox>
+                      {el.nickname}의 버킷리스트
+                      <PostBucketlist>
+                        {el.bucketlist
+                          .filter((el, idx) => {
+                            return idx < 3;
+                          })
+                          .map((el, idx) => {
+                            return (
+                              <div key={idx}>
+                                {idx + 1}. {el.content}
+                              </div>
+                            );
+                          })}
+                      </PostBucketlist>
+                    </PostContentBox>
+                    <PostBoxNickname>닉네임:{el.nickname}</PostBoxNickname>
+                  </MainPost>
+                );
+              } else {
+                return (
+                  <MainPost
+                    key={el.id}
+                    onClick={() => {
+                      handlePostClick(el.id);
+                    }}
+                  >
+                    <PostImg />
+                    <PostContentBox>
+                      {el.nickname}의 버킷리스트
+                      <PostBucketlist>
+                        {el.bucketlist
+                          .filter((el, idx) => {
+                            return idx < 3;
+                          })
+                          .map((el, idx) => {
+                            return (
+                              <div key={idx}>
+                                {idx + 1}. {el.content}
+                              </div>
+                            );
+                          })}
+                      </PostBucketlist>
+                    </PostContentBox>
+                    <PostBoxNickname>닉네임:{el.nickname}</PostBoxNickname>
+                  </MainPost>
+                );
+              }
+            })}
+          </MainPostBack>
+          {/* <MainRankingBox>랭킹</MainRankingBox> */}
+        </MainBack>
+      </>
     </>
   );
 }
