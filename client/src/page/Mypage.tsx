@@ -2,11 +2,12 @@ import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { FaUserCircle } from 'react-icons/fa';
 import styled from 'styled-components';
-import axiosInstance from '../components/axios';
+import axiosInstance from '../utils/axios';
 import Headers from '../components/Headers';
 import Modal from '../components/Modal';
-import { getUserInfo, modalOpen } from '../redux/action';
+import { getUserInfo, modalOpen, userInfoSave } from '../redux/action';
 
 export const MypageBack = styled.div`
   width: 100%;
@@ -83,6 +84,12 @@ export const ProfilList = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   column-gap: 70px;
+  > svg {
+    cursor: pointer;
+    &:hover {
+      opacity: 0.7;
+    }
+  }
 `;
 export const ProfilTilte = styled.div`
   text-align: center;
@@ -147,6 +154,11 @@ export const PostPoto = styled.img`
   width: 250px;
   height: 200px;
   border-radius: 15px;
+  cursor: pointer;
+  &:hover {
+    //background-color: rgba(0, 0, 0, 0.6);
+    opacity: 0.7;
+  }
 `;
 export const BucketlistImg = styled.div`
   border: 1px solid;
@@ -171,6 +183,7 @@ const Mypage = () => {
   let getUser = window.localStorage.getItem('user');
   const [userInfo, setUserInfo] = useState({
     parse_post_id: 0,
+    parse_user_id: 0,
     parse_user_email: '',
     parse_user_nickname: '',
     parse_user_domain: '',
@@ -180,6 +193,7 @@ const Mypage = () => {
     if (getUser !== null) {
       setUserInfo({
         parse_user_email: JSON.parse(getUser).email,
+        parse_user_id: JSON.parse(getUser).id,
         parse_post_id: Number(JSON.parse(getUser).post_id),
         parse_user_nickname: JSON.parse(getUser).nickname,
         parse_user_domain: JSON.parse(getUser).domain,
@@ -223,7 +237,6 @@ const Mypage = () => {
         })
         .then((res) => {
           setNicknameChange({ ...nicknameChange, isNickNameCheck: true });
-          dispatch(modalOpen('닉네임이 변경되었습니다.'));
         })
         .catch((err) => {
           dispatch(modalOpen('중복된 닉네임입니다.'));
@@ -232,24 +245,26 @@ const Mypage = () => {
     }
   };
   useEffect(() => {
-    axiosInstance
-      .patch('/nickname', { nickname: nicknameChange.nickname })
-      .then((res) => {
-        dispatch(modalOpen('닉네임이 변경되었습니다.'));
-        setNicknameChange({
-          ...nicknameChange,
-          is: false,
-          isNickNameCheck: false,
+    if (nicknameChange.isNickNameCheck) {
+      axiosInstance
+        .patch('/nickname', { nickname: nicknameChange.nickname })
+        .then((res) => {
+          dispatch(modalOpen('닉네임이 변경되었습니다.'));
+          setNicknameChange({
+            ...nicknameChange,
+            is: false,
+            isNickNameCheck: false,
+          });
+          setUserInfo({
+            ...userInfo,
+            parse_user_nickname: nicknameChange.nickname,
+          });
+          dispatch(getUserInfo());
+        })
+        .catch((err) => {
+          console.log(err, 'nickname edit err');
         });
-        setUserInfo({
-          ...userInfo,
-          parse_user_nickname: nicknameChange.nickname,
-        });
-        dispatch(getUserInfo());
-      })
-      .catch((err) => {
-        console.log(err, 'nickname edit err');
-      });
+    }
   }, [nicknameChange.isNickNameCheck]);
 
   const handlePasswordEdit = () => {
@@ -301,7 +316,6 @@ const Mypage = () => {
   //   setFileName('');
   //   setUserImg('');
   // };
-
   //server로 부터 s3접급 key 받아오기
   useEffect(() => {
     axiosInstance
@@ -354,16 +368,21 @@ const Mypage = () => {
       axiosInstance
         .patch(`/profile`, { image_path: selectImg })
         .then((res) => {
-          // dispatch(
-          //   postBucketlistNew(
-          //     res.data.id,
-          //     newBucketlist.content,
-          //     newBucketlist.detail,
-          //     newImgUrl
-          //   )
-          // );
-          //local에 이미지 저장
+          window.localStorage.setItem(
+            'user',
+            JSON.stringify({
+              id: userInfo.parse_post_id,
+              email: userInfo.parse_user_email,
+              nickname: userInfo.parse_user_nickname,
+              post_id: userInfo.parse_post_id,
+              domain: userInfo.parse_user_domain,
+              image_path: userImg,
+            })
+            //! 읽을때 JSON.part()
+          );
           dispatch(modalOpen('수정되었습니다.'));
+          navigate('/mypage');
+          dispatch(userInfoSave());
         })
         .catch((err) => {
           console.log(err, 'new bucketlist create err');
@@ -373,8 +392,6 @@ const Mypage = () => {
   useEffect(() => {
     dispatch(getUserInfo());
   }, []);
-  console.log(userImg);
-  console.log(Boolean(userImg));
 
   return (
     <>
@@ -419,16 +436,17 @@ const Mypage = () => {
             <>
               <ProfilList>
                 <ProfilTilte>사진</ProfilTilte>
-                {userImg !== '' ? (
+                {userImg ? (
                   <PostPoto
                     alt="sample"
                     src={userImg}
                     onClick={() => handlePotoInput()}
                   />
                 ) : (
-                  <BucketlistImg onClick={() => handlePotoInput()}>
-                    사진을 선택해주세요.
-                  </BucketlistImg>
+                  <FaUserCircle
+                    size={70}
+                    onClick={() => handlePotoInput()}
+                  ></FaUserCircle>
                 )}
                 <ImgInput
                   type="file"

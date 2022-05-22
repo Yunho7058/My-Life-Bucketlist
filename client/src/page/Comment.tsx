@@ -11,7 +11,7 @@ import TypeRedux from '../redux/reducer/typeRedux';
 import { TypeRootReducer } from '../redux/store/store';
 import * as CS from './style/CommentStyledComponents';
 
-import axiosInstance from '../components/axios';
+import axiosInstance from '../utils/axios';
 import { useParams } from 'react-router-dom';
 
 const Comment = () => {
@@ -21,9 +21,11 @@ const Comment = () => {
   let getUserId = window.localStorage.getItem('user');
   let parse_user_id: number;
   let parse_user_nickname: string = '';
+  let parse_user_image_path = '';
   if (getUserId !== null) {
     parse_user_id = Number(JSON.parse(getUserId).post_id);
     parse_user_nickname = JSON.parse(getUserId).nickname;
+    parse_user_image_path = JSON.parse(getUserId).image_path;
   }
 
   const statePost: TypeRedux.TypePostData = useSelector(
@@ -39,6 +41,7 @@ const Comment = () => {
       nickname: '',
       content: '',
       updated_at: '',
+      image_path: '',
     },
   ]);
   //신규 생성 state
@@ -123,7 +126,6 @@ const Comment = () => {
     };
   //!댓글 작성
   const handleCommentClick = () => {
-    console.log(stateIsLogin);
     if (!stateIsLogin) {
       dispatch(modalOpen('로그인을 진행해주세요.'));
     } else if (!newComment.content.length) {
@@ -140,6 +142,7 @@ const Comment = () => {
               content: newComment.content,
               nickname: parse_user_nickname,
               updated_at: res.data.updated_at,
+              image_path: res.data.image_path,
             },
           ]);
           setNewComment({ content: '' });
@@ -177,7 +180,11 @@ const Comment = () => {
     <CS.CommentBox>
       <CS.CommentCreateBox>
         <CS.CommentProfile>
-          <FaUserCircle className="my" size={50}></FaUserCircle>
+          {parse_user_image_path ? (
+            <img src={parse_user_image_path} />
+          ) : (
+            <FaUserCircle className="my" size={50}></FaUserCircle>
+          )}
         </CS.CommentProfile>
         <CS.CommentTextAreaBox>
           <CS.CommentTextArea
@@ -204,7 +211,11 @@ const Comment = () => {
             return (
               <CS.CommentList key={el.id}>
                 <CS.CommentProfile className="list">
-                  <FaUserCircle size={30}></FaUserCircle>
+                  {el.image_path ? (
+                    <img src={el.image_path} />
+                  ) : (
+                    <FaUserCircle size={30} />
+                  )}
                   <div>{el.nickname}</div>
                 </CS.CommentProfile>
                 {el.id === commentEditMiniModal2 ? (

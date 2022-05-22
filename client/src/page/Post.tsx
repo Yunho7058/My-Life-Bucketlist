@@ -27,7 +27,7 @@ import * as PS from './style/PostStyledComponents';
 import Comment from './Comment';
 import SimpleMode from './PostPage/SimpleMode';
 import DetailMode from './PostPage/DetailMode';
-import axiosInstance from '../components/axios';
+import axiosInstance from '../utils/axios';
 import axios from 'axios';
 import Spinner from '../utils/spinner';
 //import { TypeProps } from '../App';

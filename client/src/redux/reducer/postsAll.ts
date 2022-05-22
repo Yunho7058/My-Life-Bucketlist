@@ -1,4 +1,3 @@
-import axiosInstance from '../../components/axios';
 import { POST_ALL, POST_ALL_ADD } from '../action/index';
 import TypeRedux from './typeRedux';
 

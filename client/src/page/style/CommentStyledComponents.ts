@@ -48,6 +48,12 @@ export const CommentProfile = styled.div`
   > svg.my {
     margin-bottom: 20px;
   }
+  > img {
+    border-radius: 45px;
+    width: 90px;
+    height: 90px;
+    margin-bottom: 30px;
+  }
   &.list {
     width: 150px;
     justify-content: flex-start;

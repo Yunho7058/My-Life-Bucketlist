@@ -20,6 +20,7 @@ import Spinner from './utils/spinner';
 import Toggle from './components/toggle';
 //import { useDarkMode } from './components/hook/useDarkMode';
 import Modal from './components/Modal';
+import Headers from './components/Headers';
 //import Main from './page/Main';
 // import Signup from './page/Signup';
 // import Post from './page/Post';

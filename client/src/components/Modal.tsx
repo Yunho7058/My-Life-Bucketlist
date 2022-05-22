@@ -8,7 +8,7 @@ import {
   postBucketlistDelete,
 } from '../redux/action';
 import axios from 'axios';
-import axiosInstance from './axios';
+import axiosInstance from '../utils/axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

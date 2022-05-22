@@ -1,4 +1,4 @@
-import axiosInstance from '../../components/axios';
+import axiosInstance from '../../utils/axios';
 import TypeRedux from '../reducer/typeRedux';
 export const IS_DARK_MODE = 'DARK_MODE';
 export const IS_LOGIN = 'IS_LOGIN';
@@ -18,6 +18,13 @@ export const POST_BUCKETLIST_POTO_UPLOAD = 'POST_BUCKETLIST_POTO_UPLOAD';
 export const POST_IMG_DOWNLOAD = 'POST_IMG_DOWNLOAD';
 export const POST_IMG_ORIGIN = 'POST_IMG_ORIGIN';
 export const POST_ALL_ADD = 'POST_ALL_ADD';
+export const USER_INFO = 'USER_INFO';
+
+export const userInfoSave = () => {
+  return {
+    type: USER_INFO,
+  };
+};
 
 export const postImgOrigin = (url: string, id: number) => {
   return {

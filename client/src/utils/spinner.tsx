@@ -13,6 +13,11 @@ const Back = styled.div`
     height: 200px;
     border-radius: 15px;
   }
+  &.profilePoto {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+  }
 `;
 
 const Rotate = keyframes`     
@@ -27,6 +32,10 @@ const SpinnerMain = styled.div`
   border-top-color: transparent;
   border-left-color: transparent;
   animation: ${Rotate} 0.7s infinite linear;
+  &.profilePoto {
+    width: 25px;
+    height: 25px;
+  }
 `;
 
 const Spinner = (type: { type?: string }) => {
@@ -35,6 +44,10 @@ const Spinner = (type: { type?: string }) => {
       {type.type === 'img' ? (
         <Back className="img">
           <SpinnerMain></SpinnerMain>
+        </Back>
+      ) : type.type === 'profilePoto' ? (
+        <Back className="profilePoto">
+          <SpinnerMain className="profilePoto"></SpinnerMain>
         </Back>
       ) : (
         <Back>
