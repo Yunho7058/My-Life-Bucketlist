@@ -49,6 +49,8 @@ const postReducer = (
       return { ...state, bucketlist: copy_img_origin };
 
     case POST_IMG_DOWNLOAD:
+      console.log('4');
+
       let copy_img = state.bucketlist.map((el) => {
         return el.id === action.payload.id
           ? {
@@ -61,7 +63,7 @@ const postReducer = (
 
     case POST_EACH:
       let copy = action.payload.postEachData;
-
+      console.log('6');
       return { ...copy };
 
     case POST_EACH_LIKE:

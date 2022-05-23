@@ -93,6 +93,7 @@ function Post() {
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
   );
+
   const stateIsLogin = useSelector(
     (state: TypeRootReducer) => state.isLoginReducer
   );
@@ -115,17 +116,27 @@ function Post() {
       .get(`/post/${postId}`)
       .then((res) => {
         dispatch(postEach(res.data));
+        let arr: { id: number; data: string; dataOrigin: string }[] = [];
         res.data.bucketlist.forEach((el: TypeBucketlist) => {
           s3Download(el.image_path, el.id);
+          arr.push({
+            id: el.id,
+            data: el.image_path,
+            dataOrigin: el.image_path,
+          });
         });
         setSpinner(false);
+        setBeforeBlobData(arr);
       })
       .catch((err) => console.log(err, '각 게시물 클릭 err'));
   }, []);
   //사이드바 옵션 버튼
   // console.log(statePost);
   // console.log('두번');
-
+  const [beforeBlobData, setBeforeBlobData] = useState<
+    { id: number; data: string; dataOrigin: string }[]
+  >([]);
+  console.log(beforeBlobData);
   const s3Download = (data: string, id: number) => {
     if (data) {
       axios
@@ -140,9 +151,13 @@ function Post() {
               let url = window.URL.createObjectURL(new Blob([res.data]));
               dispatch(postImgDownload(url, id));
               dispatch(postImgOrigin(url, id));
-              setTimeout(() => {
-                setSpinnerImg(false);
-              }, 3000);
+              console.log(url, '1');
+              console.log(statePost, '5');
+              setSpinnerImg(false);
+              console.log(spinnerImg, '3');
+
+              // setTimeout(() => {
+              // }, 1000);
             })
             .catch((err) => console.log(err));
         })
@@ -198,11 +213,18 @@ function Post() {
     //let accessToken = window.localStorage.getItem('accessToken')
     console.log(fileName);
     let data = statePost.bucketlist.filter((el) => el.id === id);
+    let blobData = beforeBlobData.filter((el) => el.id === id);
+
+    console.log(blobData[0]);
     if (fileName) {
       handleS3ImgUpload();
       data[0].image_path = presignedPost?.fields.key;
     } else {
-      data[0].image_path = '';
+      if (blobData[0].data) {
+        data[0].image_path = blobData[0].dataOrigin;
+      } else {
+        data[0].image_path = '';
+      }
     }
     axiosInstance
       .put(`/bucketlist/${id}`, data[0])
@@ -335,7 +357,6 @@ function Post() {
   const [file, setFile] = useState<FileList | undefined>();
   const [fileName, setFileName] = useState<string>('');
   const [presignedPost, setPresignedPost] = useState<TypePresignedPost>();
-
   interface TypePresignedPost {
     url: string;
     fields: {
@@ -391,6 +412,12 @@ function Post() {
     if (id === 0) {
       setNewImgUrl('');
     } else {
+      const filterImg = beforeBlobData.filter((el) => el.id === id)[0];
+      const filterId = beforeBlobData.filter((el) => el.id !== id);
+      //[{id:'',data:'',origin:''}]
+      filterImg.data = '';
+      console.log(filterImg);
+      setBeforeBlobData([...filterId, filterImg]);
       setFile(undefined);
       setFileName('');
       setImgUrl('');
@@ -450,15 +477,29 @@ function Post() {
           dispatch(postBucketlistImgUpload(el.id, el.image_path_origin));
         }
       });
+      let selectFilterBlob = beforeBlobData.filter(
+        (el) => el.id === id || el.id === bucketlistSelect
+      );
+      selectFilterBlob.forEach((el) => {
+        return { ...el, data: el.dataOrigin };
+      });
+      let filterNotIdBlob = beforeBlobData.filter((el) => el.id !== id);
+      setBeforeBlobData([...selectFilterBlob, ...filterNotIdBlob]);
+
       if (bucketlistSelect === id) {
         setBucketlistSelect(0);
       } else {
         setBucketlistSelect(id);
+        setImgUrl(
+          statePost.bucketlist.filter((el) => el.id === id)[0].image_path || ''
+        );
       }
     } else {
       dispatch(modalOpen('추가한 버킷리스트를 생성해주세요.'));
     }
   };
+
+  //const [isImg]
 
   return (
     <>

@@ -61,7 +61,6 @@ const DetailMode = ({
       potoInput.current.click();
     }
   };
-
   return (
     <PS.BucketlistBox>
       {/*편집 on */}
@@ -165,12 +164,14 @@ const DetailMode = ({
                     {/* 편집 off */}
                     <div>
                       {el.image_path ? (
-                        !spinnerImg ? (
-                          <PS.PostPoto
-                            alt="sample"
-                            src={el.image_path}
-                            style={{ margin: 'auto' }}
-                          />
+                        el.image_path.slice(0, 4) === 'blob' ? (
+                          <>
+                            <PS.PostPoto
+                              alt="sample"
+                              src={el.image_path}
+                              style={{ margin: 'auto' }}
+                            />
+                          </>
                         ) : (
                           <Spinner type="img"></Spinner>
                         )
