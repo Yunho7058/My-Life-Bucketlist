@@ -37,6 +37,8 @@ export const postImgOrigin = (url: string, id: number) => {
 };
 
 export const postImgDownload = (url: string, id: number) => {
+  console.log(url, '2');
+
   return {
     type: POST_IMG_DOWNLOAD,
     payload: {
