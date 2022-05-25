@@ -65,6 +65,12 @@ namespace TypeRedux {
       item?: string;
     };
   }
+
+  export interface TypeS3Reducer {
+    presignPost: string;
+    isPotoDownload: boolean;
+    potoBlob: string;
+  }
 }
 
 export default TypeRedux;

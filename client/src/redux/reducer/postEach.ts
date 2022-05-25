@@ -119,7 +119,7 @@ const postReducer = (
       const { id, content, detail, image_path } = action.payload;
 
       let new_copy = [...state.bucketlist, { id, content, detail, image_path }];
-
+      console.log(new_copy);
       return {
         ...state,
         bucketlist: new_copy,
@@ -131,7 +131,7 @@ const postReducer = (
           ? { ...el, image_path: action.payload.image_path }
           : { ...el };
       });
-
+      console.log(img_copy);
       return { ...state, bucketlist: img_copy };
 
     default:

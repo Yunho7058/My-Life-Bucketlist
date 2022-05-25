@@ -19,6 +19,29 @@ export const POST_IMG_DOWNLOAD = 'POST_IMG_DOWNLOAD';
 export const POST_IMG_ORIGIN = 'POST_IMG_ORIGIN';
 export const POST_ALL_ADD = 'POST_ALL_ADD';
 export const USER_INFO = 'USER_INFO';
+export const POST_POTO_PRESIGNPOST = 'POST_POTO_PRESIGNPOST';
+export const POST_POTO_S3_DOWNLOAD = 'POST_POTO_S3_DOWNLOAD';
+export const POST_POTO_BLOB = 'POST_POTO_BLOB';
+
+export const postBlobType = (blob?: string) => {
+  return {
+    type: POST_POTO_BLOB,
+    payload: blob,
+  };
+};
+
+export const isS3PotoDownload = () => {
+  return {
+    type: POST_POTO_S3_DOWNLOAD,
+  };
+};
+
+export const presignPostUpload = (presignPost: string) => {
+  return {
+    type: POST_POTO_PRESIGNPOST,
+    payload: presignPost,
+  };
+};
 
 export const userInfoSave = () => {
   return {
@@ -164,9 +187,8 @@ export const postBucketlistNew = (
   id: number,
   content: string,
   detail: string,
-  image_path: string
+  image_path?: string
 ) => {
-  console.log(image_path);
   return {
     type: POST_BUCKETLIST_NEW,
     payload: { id, content, detail, image_path },
