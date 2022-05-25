@@ -24,8 +24,8 @@ interface TypeProps {
   handleNewBucketlist: () => void;
   paginationStart: number;
   paginationEnd: number;
-  onLoadFile: (e: { target: HTMLInputElement }) => void;
-  handleImgDelete: (id: number) => void;
+  // onLoadFile: (e: { target: HTMLInputElement }) => void;
+  // handleImgDelete: (id: number) => void;
 }
 
 const SimpleMode = ({
@@ -39,9 +39,9 @@ const SimpleMode = ({
   handleNewBucketlist,
   paginationStart,
   paginationEnd,
-  onLoadFile,
-  handleImgDelete,
-}: TypeProps) => {
+}: // onLoadFile,
+// handleImgDelete,
+TypeProps) => {
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
   );
@@ -108,15 +108,15 @@ const SimpleMode = ({
                     }}
                   >
                     <PS.ImgUploadBack>
-                      <PS.ImgDelete
+                      {/* <PS.ImgDelete
                         onClick={(e) => {
                           handleImgDelete(el.id);
                           e.stopPropagation();
                         }}
                       >
                         삭제
-                      </PS.ImgDelete>
-                      <PS.ImgInput
+                      </PS.ImgDelete> */}
+                      {/* <PS.ImgInput
                         type="file"
                         accept="image/*"
                         name="file"
@@ -125,7 +125,7 @@ const SimpleMode = ({
                         onClick={(e) => {
                           e.stopPropagation();
                         }}
-                      />
+                      /> */}
                     </PS.ImgUploadBack>
                   </div>
                   <div>
