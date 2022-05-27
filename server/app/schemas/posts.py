@@ -10,6 +10,7 @@ class CommentOut(BaseModel):
 class Comment(CommentOut):
     user_id: int
     nickname: str 
+    image_path: str | None = None
     content: str 
 
     class Config:
@@ -22,7 +23,7 @@ class BucketlistOut(BaseModel):
 
 class BucketlistIn(BaseModel):
     content: str 
-    detail:str | None = None
+    detail: str | None = None
     image_path: str | None = None
 
     class Config:

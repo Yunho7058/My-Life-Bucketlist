@@ -64,6 +64,7 @@ class Comment(Base):
     user = relationship("User", back_populates="comments")
 
     nickname = association_proxy("user", "nickname")
+    image_path = association_proxy("user", "image_path")
 
 
 class Like(Base):

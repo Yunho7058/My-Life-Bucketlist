@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+from datetime import datetime
 
 from app.test.test_init import app
 from app.schemas.users import Token
@@ -20,18 +21,24 @@ def test_get_post_detail_success():
         headers={"Authorization": "test"}
     )
     assert response.status_code == 200
-    assert response.json() == {
-        "id": 1,
-        "nickname": "테스트",
-        "owner": True,
-        'is_public': False,
-        "bookmark": False,
-        "like": False,
-        "like_count": 0,
-        "updated_at": None,
-        "bucketlist": []
-    }
-
+    data = response.json()
+    assert data["id"] == 1
+    assert data["nickname"] == "테스트"
+    assert data["owner"] == True
+    assert data["is_public"] == False
+    assert data["bookmark"] == False
+    assert data["like"] == False
+    assert data["like_count"] == 0
+    assert data["updated_at"]
+    assert data["bucketlist"] == [
+            {
+                "content": "첫번째 버킷리스트 등록하기",
+                "detail": None,
+                "id": 1,
+                "image_path": None
+            }
+        ]
+    
 
 def test_update_public_success():
     response = client.patch(
@@ -60,7 +67,7 @@ def test_create_bucketlist_success():
         }
     )
     assert response.status_code == 200
-    assert response.json() == {"id": 1}
+    assert response.json().get("id")
 
 
 def test_create_bucketlist_failure():
@@ -190,6 +197,14 @@ def test_get_comment_list_success():
         "comment/1"
     )
     assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["content"] == "잘 봤습니다~"
+    assert data[0]["id"] == 1
+    assert data[0]["updated_at"]
+    assert data[0]["user_id"] == 1
+    assert data[0]["nickname"] == "테스트"
+    assert data[0]["image_path"] == None
 
 
 def test_update_comment_success():
