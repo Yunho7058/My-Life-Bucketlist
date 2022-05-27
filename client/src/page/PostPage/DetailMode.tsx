@@ -1,8 +1,12 @@
 import { useSelector } from 'react-redux';
 import { BsPlusCircleDotted } from 'react-icons/bs';
+import { AiFillEdit, AiFillCloseCircle } from 'react-icons/ai';
 import TypeRedux from '../../redux/reducer/typeRedux';
+import { useRef, useState } from 'react';
 import { TypeRootReducer } from '../../redux/store/store';
 import * as PS from '../style/PostStyledComponents';
+import Spinner from '../../utils/spinner';
+import PotoArea from './PotoArea';
 interface TypeProps {
   isPost: { isEditMode: boolean; isSimple: boolean; isCreate: boolean };
   handleInputItem: (
@@ -11,6 +15,7 @@ interface TypeProps {
   handleDelete: (id: number) => void;
   handleEdit: (id: number) => void;
   handleBucketlistCreate: () => void;
+  handleBucketlistcancel: () => void;
   handleInputNewItem: (
     key: string
   ) => (e: { target: HTMLInputElement | HTMLTextAreaElement }) => void;
@@ -22,8 +27,11 @@ interface TypeProps {
   handleNewBucketlist: () => void;
   paginationStart: number;
   paginationEnd: number;
-  onLoadFile: (e: { target: HTMLInputElement }) => void;
-  handleImgDelete: (id: number) => void;
+
+  bucketlistSelect: number;
+  handleBucketlistSelect: (id: number) => void;
+
+  spinnerImg: boolean;
 }
 
 const DetailMode = ({
@@ -37,12 +45,22 @@ const DetailMode = ({
   handleNewBucketlist,
   paginationStart,
   paginationEnd,
-  onLoadFile,
-  handleImgDelete,
+  handleBucketlistcancel,
+  bucketlistSelect,
+  handleBucketlistSelect,
+
+  spinnerImg,
 }: TypeProps) => {
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
   );
+
+  const potoInput = useRef<HTMLInputElement>(null);
+  const handlePotoInput = () => {
+    if (potoInput.current) {
+      potoInput.current.click();
+    }
+  };
 
   return (
     <PS.BucketlistBox>
@@ -52,14 +70,19 @@ const DetailMode = ({
         .map((el, idx) => {
           return (
             <PS.BucketlistView key={el.id}>
-              {isPost.isEditMode ? (
+              {statePost.owner && (
+                <AiFillEdit
+                  size={30}
+                  onClick={() => handleBucketlistSelect(el.id)}
+                ></AiFillEdit>
+              )}
+              {bucketlistSelect === el.id ? (
                 <>
                   <div>
-                    {el.image_path ? (
-                      <PS.PostPoto alt="sample" src={el.image_path} />
-                    ) : (
-                      <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
-                    )}
+                    <PotoArea
+                      img={el.image_path}
+                      bucketlistId={el.id}
+                    ></PotoArea>
 
                     <PS.BucketlistContent>
                       <PS.InputBox
@@ -77,26 +100,6 @@ const DetailMode = ({
                         defaultValue={el.detail}
                       ></PS.TextArea>
                     </PS.BucketlistContent>
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      width: '80%',
-                      justifyContent: 'flex-start',
-                    }}
-                  >
-                    <PS.ImgUploadBack>
-                      <PS.ImgDelete onClick={() => handleImgDelete(el.id)}>
-                        삭제
-                      </PS.ImgDelete>
-                      <PS.ImgInput
-                        type="file"
-                        accept="image/*"
-                        name="file"
-                        id={`${el.id}`}
-                        onChange={onLoadFile}
-                      />
-                    </PS.ImgUploadBack>
                   </div>
 
                   <div>
@@ -125,11 +128,7 @@ const DetailMode = ({
                   {/* 편집 off */}
                   <div>
                     {el.image_path ? (
-                      <PS.PostPoto
-                        alt="sample"
-                        src={el.image_path}
-                        style={{ margin: 'auto' }}
-                      />
+                      <PS.PostPoto src={el.image_path}></PS.PostPoto>
                     ) : (
                       <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
                     )}
@@ -149,29 +148,15 @@ const DetailMode = ({
           );
         })}
       {/* 생성 박스 */}
-      {isPost.isCreate && isPost.isEditMode && (
+      {isPost.isCreate && (
         <>
           <PS.BucketlistView>
             <div>
-              {/* {el.image_path ? (
-                      <PostPoto
-                        alt="sample"
-                        src={el.image_path}
-                        style={{ margin: 'auto' }}
-                      />
-                    ) : (
-                      <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
-                    )}
-                    <ImgDelete onClick={() => handleImgDelete(el.id)}>
-                      <AiFillCloseCircle></AiFillCloseCircle>
-                    </ImgDelete>
-                    <ImgInput
-                      type="file"
-                      accept="image/*"
-                      name="file"
-                      id={`${el.id}`}
-                      onChange={onLoadFile}
-                    /> */}
+              <PotoArea
+                img=""
+                bucketlistId={statePost.bucketlist.length}
+              ></PotoArea>
+
               <PS.BucketlistContent>
                 <PS.InputBox
                   placeholder="버킷리스트를 작성해주세요"
@@ -186,7 +171,16 @@ const DetailMode = ({
                 ></PS.TextArea>
               </PS.BucketlistContent>
             </div>
+
             <div>
+              <PS.Btn
+                className="createBtn"
+                onClick={() => {
+                  handleBucketlistcancel();
+                }}
+              >
+                취소
+              </PS.Btn>
               <PS.Btn
                 className="createBtn"
                 onClick={() => {
@@ -200,7 +194,7 @@ const DetailMode = ({
         </>
       )}
       {/* 생성 버튼 */}
-      {isPost.isEditMode && (
+      {statePost.owner && (
         <PS.BucketlistCreate
           onClick={() => {
             handleBucketlistCreate();

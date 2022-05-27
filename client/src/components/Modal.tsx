@@ -1,10 +1,16 @@
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { TypeRootReducer } from '../redux/store/store';
-import { modalClose, modalOpen, postBucketlistDelete } from '../redux/action';
+import {
+  isLogout,
+  modalClose,
+  modalOpen,
+  postBucketlistDelete,
+} from '../redux/action';
 import axios from 'axios';
-import axiosInstance from './axios';
+import axiosInstance from '../utils/axios';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const ModalBack = styled.div`
   position: fixed;
@@ -29,6 +35,10 @@ export const ModalBox = styled.div`
   align-items: center;
   &.password {
     height: 400px;
+    width: 300px;
+  }
+  &.signout {
+    height: 250px;
     width: 300px;
   }
 `;
@@ -107,9 +117,18 @@ export const ModalPasswordMSG = styled.div`
 const Modal = () => {
   const stateModal = useSelector((state: TypeRootReducer) => state.modal);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleClose = () => {
     dispatch(modalClose());
+    setPasswordEdit({
+      isPassword: false,
+      isPasswordConfirm: false,
+      msg: '',
+      password: '',
+      newPassword: '',
+      newPasswordConfirm: '',
+    });
   };
   //!모달 open 후 버킷리스트 항목,댓글 삭제
   const handleCommentDelete = (item?: string, id?: number) => {
@@ -136,6 +155,8 @@ const Modal = () => {
   useEffect(() => {
     if (stateModal.msg === 'password') {
       setModalList(1);
+    } else if (stateModal.msg === 'signout') {
+      setModalList(2);
     } else {
       setModalList(0);
     }
@@ -199,11 +220,51 @@ const Modal = () => {
       })
       .then((res) => {
         dispatch(modalOpen('비밀번호가 변경되었습니다.'));
+        setPasswordEdit({
+          isPassword: false,
+          isPasswordConfirm: false,
+          msg: '',
+          password: '',
+          newPassword: '',
+          newPasswordConfirm: '',
+        });
       })
       .catch((err) => {
         setPasswordEdit({ ...passwordEdit, msg: '현재 비밀번호가 틀립니다.' });
         console.log(err, 'password edit err');
       });
+  };
+
+  const handleSignout = () => {
+    if (!passwordEdit.password) {
+      setPasswordEdit({ ...passwordEdit, msg: '비밀번호를 입력해주세요.' });
+    } else {
+      axiosInstance
+        .delete('/user', {
+          data: {
+            password: passwordEdit.password,
+          },
+        })
+        .then((res) => {
+          dispatch(modalOpen('회원탈퇴가 완료 됐습니다.😢'));
+          window.localStorage.removeItem('accessToken');
+          window.localStorage.removeItem('user');
+          dispatch(isLogout());
+          setPasswordEdit({
+            isPassword: false,
+            isPasswordConfirm: false,
+            msg: '',
+            password: '',
+            newPassword: '',
+            newPasswordConfirm: '',
+          });
+          navigate('/');
+        })
+        .catch((err) => {
+          setPasswordEdit({ ...passwordEdit, msg: '비밀번호를 확인해주세요.' });
+          console.log(err, 'signout err');
+        });
+    }
   };
 
   return (
@@ -265,6 +326,28 @@ const Modal = () => {
             </ModalPasswordBack>
             <ModalBtnBack>
               <ModalBtn onClick={() => handlePasswordEdit()}>확인</ModalBtn>
+              <ModalBtn onClick={() => handleClose()}>취소</ModalBtn>
+            </ModalBtnBack>
+          </ModalBox>
+        </ModalBack>
+      )}
+      {stateModal.show && modalList === 2 && (
+        <ModalBack>
+          <ModalBox className="signout">
+            <ModalText>회원탈퇴</ModalText>
+            <ModalPasswordBack>
+              <ModalPassword>
+                비밀번호
+                <ModalPasswordInput
+                  type="password"
+                  value={passwordEdit.password}
+                  onChange={handleInput('password')}
+                ></ModalPasswordInput>
+              </ModalPassword>
+              <ModalPasswordMSG>{passwordEdit.msg}</ModalPasswordMSG>
+            </ModalPasswordBack>
+            <ModalBtnBack>
+              <ModalBtn onClick={() => handleSignout()}>확인</ModalBtn>
               <ModalBtn onClick={() => handleClose()}>취소</ModalBtn>
             </ModalBtnBack>
           </ModalBox>

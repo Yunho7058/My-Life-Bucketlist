@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { getUserInfo, isLogin } from '../../redux/action';
+import Spinner from '../../utils/spinner';
 
 const NaverLogin = () => {
   const navigate = useNavigate();
@@ -15,8 +16,8 @@ const NaverLogin = () => {
   useEffect(() => {
     axios
       .post(
-        `${process.env.REACT_APP_SERVER_URI}oauth/google`,
-        { data: { code, state } },
+        `${process.env.REACT_APP_SERVER_URI}/oauth/google`,
+        { code, state },
         {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
@@ -33,7 +34,11 @@ const NaverLogin = () => {
         console.log(err, 'naver login err');
       });
   }, []);
-  return <>네이버 로그인</>;
+  return (
+    <>
+      <Spinner></Spinner>
+    </>
+  );
 };
 
 export default NaverLogin;

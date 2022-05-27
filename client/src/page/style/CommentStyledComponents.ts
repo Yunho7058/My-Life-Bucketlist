@@ -29,6 +29,7 @@ export const CommentListBox = styled.div`
 `;
 export const CommentList = styled.div`
   border-radius: 15px;
+  margin-top: 40px;
   padding: 10px;
   width: 95%;
   height: 30%;
@@ -46,6 +47,12 @@ export const CommentProfile = styled.div`
   justify-content: center;
   > svg.my {
     margin-bottom: 20px;
+  }
+  > img {
+    border-radius: 45px;
+    width: 90px;
+    height: 90px;
+    margin-bottom: 30px;
   }
   &.list {
     width: 150px;
@@ -83,8 +90,13 @@ export const CommentListBody = styled.div`
   position: relative;
   padding: 5px;
   height: 60px;
+  font-size: 18px;
   > div.date {
+    width: 100%;
+    text-align: right;
     position: absolute;
+    font-size: 12px;
+    opacity: 0.7;
     bottom: -15px;
     left: 0px;
   }

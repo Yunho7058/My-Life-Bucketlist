@@ -16,9 +16,11 @@ import ScrollToTop from './utils/scrollTopFix';
 //components
 //import ReduxTest from './page/ReduxTest';
 import { light, dark } from './components/style/theme';
+import Spinner from './utils/spinner';
 import Toggle from './components/toggle';
 //import { useDarkMode } from './components/hook/useDarkMode';
 import Modal from './components/Modal';
+import Headers from './components/Headers';
 //import Main from './page/Main';
 // import Signup from './page/Signup';
 // import Post from './page/Post';
@@ -46,7 +48,7 @@ function App() {
           <Reset />
 
           <Backgound>
-            <Suspense fallback={<div>....로딩중</div>}>
+            <Suspense fallback={<Spinner />}>
               <Routes>
                 <Route path="/" element={<Main />} />
                 <Route path="/login" element={<Login />} />

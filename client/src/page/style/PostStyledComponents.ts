@@ -79,8 +79,17 @@ export const BucketlistView = styled.div`
   align-items: center;
   width: 100%;
   height: 50%;
-
+  position: relative;
   border-radius: 30px;
+  > svg {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    &:hover {
+      color: #6495ed;
+    }
+  }
   > div {
     width: 100%;
     display: flex;
@@ -96,9 +105,8 @@ export const BucketlistImg = styled.div`
   text-align: center;
   line-height: 200px;
   border-radius: 30px;
-  width: 250px;
+  min-width: 250px;
   height: 200px;
-
   background-color: grey;
 `;
 
@@ -109,6 +117,7 @@ export const BucketlistContent = styled.div`
   justify-content: space-around;
   padding: 15px;
   border-radius: 30px;
+  margin-right: 115px;
 
   > div.content {
     font-size: 18px;
@@ -143,6 +152,23 @@ export const Btn = styled.div`
   line-height: 50px;
   cursor: pointer;
   margin-top: 20px;
+  &.imgEdit {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 100px;
+    height: 50px;
+  }
+  &.imgDelete {
+    margin: 0px;
+    width: 200px;
+    height: 30px;
+    line-height: 30px;
+    background-color: #cd5c5c;
+    &:hover {
+      background-color: #c77171;
+    }
+  }
   &.delete {
     background-color: #cd5c5c;
     &:hover {
@@ -267,11 +293,14 @@ export const LoginInput = styled.input`
 export const PostPoto = styled.img`
   width: 250px;
   height: 200px;
+  padding: 0px;
+
   border-radius: 15px;
 `;
 
 export const ImgInput = styled.input`
   cursor: pointer;
+  display: none;
 `;
 
 export const ImgDelete = styled.button`
@@ -279,8 +308,5 @@ export const ImgDelete = styled.button`
 `;
 
 export const ImgUploadBack = styled.div`
-  margin: 10px;
-  display: flex;
-
-  column-gap: 10px;
+  margin-top: 10px;
 `;

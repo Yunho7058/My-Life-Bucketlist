@@ -19,14 +19,19 @@ import {
   postEachLike,
   postEachBookMark,
   postBucketlistImgUpload,
+  postImgDownload,
+  postImgOrigin,
+  isS3PotoDownload,
+  postBlobType,
 } from '../redux/action';
 import Modal from '../components/Modal';
 import * as PS from './style/PostStyledComponents';
 import Comment from './Comment';
 import SimpleMode from './PostPage/SimpleMode';
 import DetailMode from './PostPage/DetailMode';
-import axiosInstance from '../components/axios';
+import axiosInstance from '../utils/axios';
 import axios from 'axios';
+import Spinner from '../utils/spinner';
 //import { TypeProps } from '../App';
 
 //편집모드 클릭 시 수정 삭제 추가 버튼 보이게 하기
@@ -77,34 +82,97 @@ function Post() {
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
   );
+
+  const stateIsLogin = useSelector(
+    (state: TypeRootReducer) => state.isLoginReducer
+  );
+  const stateS3 = useSelector((state: TypeRootReducer) => state.s3Poto);
+
   const [isPost, setIsPost] = useState({
     isEditMode: false,
     isSimple: false,
     isCreate: false,
+    isPublic: false,
   });
-  let accessToken = window.localStorage.getItem('accessToken');
+  interface TypeBucketlist {
+    id: number;
+    content: string;
+    detail: string;
+    image_path: string;
+  }
+
   //! 게시물 불러오기
   useEffect(() => {
     axiosInstance
       .get(`/post/${postId}`)
       .then((res) => {
-        //setPostData(res.data);
-        console.log('하이');
         dispatch(postEach(res.data));
+        let arr: { id: number; data: string; dataOrigin: string }[] = [];
+        res.data.bucketlist.forEach((el: TypeBucketlist) => {
+          s3Download(el.image_path, el.id);
+          arr.push({
+            id: el.id,
+            data: el.image_path,
+            dataOrigin: el.image_path,
+          });
+        });
+        setSpinner(false);
+        setBeforeBlobData(arr);
       })
       .catch((err) => console.log(err, '각 게시물 클릭 err'));
-  }, [dispatch]);
-  //사이드바 옵션 버튼
-  // console.log(statePost);
-  // console.log('두번');
+  }, []);
+
+  const [beforeBlobData, setBeforeBlobData] = useState<
+    { id: number; data: string; dataOrigin: string }[]
+  >([]);
+  const s3Download = (data: string, id: number) => {
+    if (data) {
+      axios
+        .post(
+          'https://p9m7fksvha.execute-api.ap-northeast-2.amazonaws.com/s3/presigned-url',
+          { key: data }
+        )
+        .then((res) => {
+          axios
+            .get(res.data.data, { responseType: 'blob' })
+            .then((res) => {
+              let url = window.URL.createObjectURL(new Blob([res.data]));
+              dispatch(postImgDownload(url, id));
+              dispatch(postImgOrigin(url, id));
+
+              setSpinnerImg(false);
+            })
+            .catch((err) => console.log(err));
+        })
+        .catch((err) => {
+          console.log(err, 's3 err');
+        });
+    } else {
+      dispatch(postImgOrigin('', id));
+    }
+  };
 
   const handleIsPost = (value: string) => {
-    console.log(value);
     switch (value) {
       case 'edit':
         return setIsPost({ ...isPost, isEditMode: !isPost.isEditMode });
       case 'simple':
         return setIsPost({ ...isPost, isSimple: !isPost.isSimple });
+      case 'public':
+        return axiosInstance
+          .patch(`/post`)
+          .then((res) => {
+            if (isPost.isPublic) {
+              dispatch(modalOpen('비공개로 설정됐습니다.'));
+              setIsPost({ ...isPost, isPublic: false });
+            } else {
+              dispatch(modalOpen('공개로 설정됐습니다.'));
+              setIsPost({ ...isPost, isPublic: true });
+            }
+          })
+          .catch((err) => {
+            console.log(err, 'public err');
+          });
       default:
         return;
     }
@@ -120,27 +188,38 @@ function Post() {
     };
   //! 저장(수정) 클릭
   const handleEdit = (id: number) => {
-    //let accessToken = window.localStorage.getItem('accessToken')
     let data = statePost.bucketlist.filter((el) => el.id === id);
-    console.log('수정하기 버튼 클릭', data);
+
+    if (stateS3.presignPost) {
+      dispatch(isS3PotoDownload());
+      data[0].image_path = stateS3.presignPost;
+    } else {
+      dispatch(postBucketlistImgUpload(id, ''));
+      data[0].image_path = '';
+    }
     axiosInstance
       .put(`/bucketlist/${id}`, data[0])
       .then((res) => {
         dispatch(modalOpen('수정이 완료되었습니다.'));
+        setBucketlistSelect(0);
       })
       .catch((err) => {
         console.log(err, 'bucketlist edit err');
       });
-    //console.log(data[0]);
   };
   //생성('버킷리스트를 추가해주세요',+) 버튼 클릭시
   const handleBucketlistCreate = () => {
     if (isPost.isCreate) {
-      dispatch(modalOpen('추가한 버킷리스트를 생성 후 클릭해주세요.'));
+      dispatch(modalOpen('추가한 버킷리스트를 작성해주세요.'));
     } else {
+      handleBucketlistSelect(0);
       setIsPost({ ...isPost, isCreate: true });
     }
   };
+  const handleBucketlistcancel = () => {
+    setIsPost({ ...isPost, isCreate: false });
+  };
+
   const [newBucketlist, setNewBucketlist] = useState({
     content: '',
     detail: '',
@@ -152,20 +231,30 @@ function Post() {
     (e: { target: HTMLInputElement | HTMLTextAreaElement }) => {
       setNewBucketlist({ ...newBucketlist, [key]: e.target.value });
     };
+
   //! bucketlist 생성 버튼
   const handleNewBucketlist = () => {
-    //100개 초과시 더이상 버킷리스트를 만들 수 없습니다 문구 띄우기.
+    //? 100개 초과시 더이상 버킷리스트를 만들 수 없습니다 문구 띄우기.
+
     if (!newBucketlist.content.length) {
       dispatch(modalOpen('버킷리스트를 작성해주세요.'));
     } else {
+      if (stateS3.presignPost) {
+        dispatch(isS3PotoDownload());
+      }
+
       axiosInstance
-        .post(`/bucketlist`, newBucketlist)
+        .post(`/bucketlist`, {
+          ...newBucketlist,
+          image_path: stateS3.presignPost || '',
+        })
         .then((res) => {
           dispatch(
             postBucketlistNew(
               res.data.id,
               newBucketlist.content,
-              newBucketlist.detail
+              newBucketlist.detail,
+              stateS3.potoBlob
             )
           );
           dispatch(modalOpen('생성되었습니다.'));
@@ -175,6 +264,9 @@ function Post() {
             detail: '',
             image_path: '',
           });
+          dispatch(isS3PotoDownload());
+          setBucketlistSelect(0);
+          dispatch(postBlobType(''));
         })
         .catch((err) => {
           console.log(err, 'new bucketlist create err');
@@ -183,26 +275,30 @@ function Post() {
   };
   //! 삭제
   const handleDelete = (id: number) => {
-    //console.log('삭제');
     dispatch(modalOpen('정말 삭제하시겠습니까?', 'bucketlist', id));
   };
   const handleLikeClick = () => {
     let post_id = statePost.id;
-    axiosInstance
-      .put(`/like/${post_id}`, {})
-      .then((res) => {
-        dispatch(postEachLike());
-      })
-      .catch((err) => {
-        console.log(err, 'like click err');
-      });
+    if (!stateIsLogin) {
+      dispatch(modalOpen('로그인을 진행해주세요.'));
+    } else {
+      axiosInstance
+        .put(`/like/${post_id}`, {})
+        .then((res) => {
+          dispatch(postEachLike());
+        })
+        .catch((err) => {
+          console.log(err, 'like click err');
+        });
+    }
   };
-  console.log(statePost.bucketlist);
+
   //! bookmark
   const handleBookClick = () => {
     let post_id = statePost.id;
-    console.log(post_id);
-    if (statePost.owner) {
+    if (!stateIsLogin) {
+      dispatch(modalOpen('로그인을 진행해주세요.'));
+    } else if (statePost.owner) {
     } else {
       axiosInstance
         .put(`/bookmark/${post_id}`, {})
@@ -220,224 +316,161 @@ function Post() {
     }
   };
 
-  const [file, setFile] = useState<FileList | undefined>();
-  const [fileName, setFileName] = useState<string>('');
-  const [presignedPost, setPresignedPost] = useState<TypePresignedPost>();
-
-  interface TypePresignedPost {
-    url: string;
-    fields: {
-      Policy: string;
-      'X-Amz-Algorithm': string;
-      'X-Amz-Credential': string;
-      'X-Amz-Date': string;
-      'X-Amz-Security-Token': string;
-      'X-Amz-Signature': string;
-      bucket: string;
-      key: string;
-    };
-  }
-  //Poto 선택시
-  const onLoadFile = (e: { target: HTMLInputElement }) => {
-    const fileList = e.target.files;
-    const id = Number(e.target.id);
-    if (fileList !== null) {
-      let imgUrl = URL.createObjectURL(fileList[0]);
-      dispatch(postBucketlistImgUpload(id, imgUrl));
-      setFile(fileList);
-      setFileName(fileList[0].name);
-    }
-  };
-  //server로부터 key get
-  useEffect(() => {
-    axiosInstance(`/presigned-post?file_name일부로오타=${fileName}`)
-      .then((res) => {
-        setPresignedPost(res.data);
-      })
-      .catch((err) => {
-        console.log('poto err');
-      });
-  }, [fileName]);
-
-  const handleImgDelete = (id: number) => {
-    dispatch(postBucketlistImgUpload(id, ''));
-  };
-
-  //formdata 새로 생성후 s3전송
-  //! 생성 or 저장 버튼 클릭 시 변경?
-  //! 아니면 올리자마자 바로 저장
-  useEffect(() => {
-    const formData = new FormData();
-    if (presignedPost && file) {
-      Object.entries(presignedPost.fields).forEach((entry) => {
-        const [key, value] = entry;
-        formData.append(key, value);
-      });
-      formData.append('file', file[0]);
-      axios
-        .post(presignedPost.url, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
-        .then((res) => {
-          console.log(res, '요청완료');
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [presignedPost]);
-
   const [paginationStart, setPaginationStart] = useState(0);
   const [paginationEnd, setPaginationEnd] = useState(20);
   const handlePaginationClick = (s: number, e: number) => {
-    //console.log(statePost.bucketlist.length);
     setPaginationStart(s);
     setPaginationEnd(e);
   };
+
+  const [spinner, setSpinner] = useState(true);
+  const [spinnerImg, setSpinnerImg] = useState(true);
+  const [bucketlistSelect, setBucketlistSelect] = useState(0);
+
+  const handleBucketlistSelect = (id: number) => {
+    if (!isPost.isCreate) {
+      if (bucketlistSelect === id) {
+        setBucketlistSelect(0);
+      } else {
+        setBucketlistSelect(id);
+      }
+    } else {
+      dispatch(modalOpen('추가한 버킷리스트를 생성해주세요.'));
+    }
+  };
+
   return (
     <>
-      <Headers></Headers>
-      <Modal></Modal>
-      <PS.PostBack>
-        <PS.PostBox>
-          <PS.PostTitle>
-            <div>{statePost.title}</div>
-            {/* {isPost.isEditMode ? (
-              <>
-                <PS.InputBox
-                  placeholder="제목을 작성해주세요."
-                  className="title"
-                  name={statePost.title}
-                  defaultValue={statePost.title}
-                />
-                <PS.Btn className="simpleCreate">저장</PS.Btn>
-              </>
-            ) : (
-              statePost.title
-            )} */}
-            <PS.PostTitleSide>
-              {statePost.owner && (
-                <div
-                  onClick={() => {
-                    handleIsPost('edit');
-                  }}
-                >
-                  {isPost.isEditMode ? '편집 OFF' : '편집 ON'}
-                </div>
+      {spinner && <Spinner></Spinner>}
+      {!spinner && (
+        <>
+          <Headers></Headers>
+          <Modal></Modal>
+          <PS.PostBack>
+            <PS.PostBox>
+              <PS.PostTitle>
+                <div>{statePost.nickname}의 버킷리스트</div>
+
+                <PS.PostTitleSide>
+                  {statePost.owner && (
+                    <div
+                      onClick={() => {
+                        handleIsPost('public');
+                      }}
+                    >
+                      {isPost.isPublic ? '공개 상태' : '비공개 상태'}
+                    </div>
+                  )}
+
+                  <div
+                    onClick={() => {
+                      handleIsPost('simple');
+                    }}
+                  >
+                    {isPost.isSimple ? '이미지 보기' : '간략히 보기'}
+                  </div>
+                </PS.PostTitleSide>
+              </PS.PostTitle>
+              {isPost.isSimple ? (
+                <SimpleMode
+                  isPost={isPost}
+                  handleInputItem={handleInputItem}
+                  handleDelete={handleDelete}
+                  handleEdit={handleEdit}
+                  handleBucketlistCreate={handleBucketlistCreate}
+                  handleInputNewItem={handleInputNewItem}
+                  newBucketlist={newBucketlist}
+                  handleNewBucketlist={handleNewBucketlist}
+                  paginationStart={paginationStart}
+                  paginationEnd={paginationEnd}
+                ></SimpleMode>
+              ) : (
+                <DetailMode
+                  isPost={isPost}
+                  handleInputItem={handleInputItem}
+                  handleDelete={handleDelete}
+                  handleEdit={handleEdit}
+                  handleBucketlistCreate={handleBucketlistCreate}
+                  handleInputNewItem={handleInputNewItem}
+                  newBucketlist={newBucketlist}
+                  handleNewBucketlist={handleNewBucketlist}
+                  paginationStart={paginationStart}
+                  paginationEnd={paginationEnd}
+                  bucketlistSelect={bucketlistSelect}
+                  handleBucketlistSelect={handleBucketlistSelect}
+                  spinnerImg={spinnerImg}
+                  handleBucketlistcancel={handleBucketlistcancel}
+                ></DetailMode>
               )}
-              <div
-                onClick={() => {
-                  handleIsPost('simple');
-                }}
-              >
-                {isPost.isSimple ? '이미지 보기' : '간략히 보기'}
-              </div>
-              <span>{statePost.updated_at.split('T')[0]}</span>
-            </PS.PostTitleSide>
-          </PS.PostTitle>
-          {isPost.isSimple ? (
-            <SimpleMode
-              isPost={isPost}
-              handleInputItem={handleInputItem}
-              handleDelete={handleDelete}
-              handleEdit={handleEdit}
-              handleBucketlistCreate={handleBucketlistCreate}
-              handleInputNewItem={handleInputNewItem}
-              newBucketlist={newBucketlist}
-              handleNewBucketlist={handleNewBucketlist}
-              paginationStart={paginationStart}
-              paginationEnd={paginationEnd}
-              onLoadFile={onLoadFile}
-              handleImgDelete={handleImgDelete}
-            ></SimpleMode>
-          ) : (
-            <DetailMode
-              isPost={isPost}
-              handleInputItem={handleInputItem}
-              handleDelete={handleDelete}
-              handleEdit={handleEdit}
-              handleBucketlistCreate={handleBucketlistCreate}
-              handleInputNewItem={handleInputNewItem}
-              newBucketlist={newBucketlist}
-              handleNewBucketlist={handleNewBucketlist}
-              paginationStart={paginationStart}
-              paginationEnd={paginationEnd}
-              onLoadFile={onLoadFile}
-              handleImgDelete={handleImgDelete}
-            ></DetailMode>
-          )}
 
-          <Pagination>
-            <PaginationBtn onClick={() => handlePaginationClick(0, 20)}>
-              1~20위
-            </PaginationBtn>
-            {statePost.bucketlist.length > 20 && (
-              <PaginationBtn onClick={() => handlePaginationClick(21, 41)}>
-                21~40위
-              </PaginationBtn>
-            )}
-            {statePost.bucketlist.length > 40 && (
-              <PaginationBtn onClick={() => handlePaginationClick(41, 61)}>
-                41~60위
-              </PaginationBtn>
-            )}
+              <Pagination>
+                <PaginationBtn onClick={() => handlePaginationClick(0, 20)}>
+                  1~20위
+                </PaginationBtn>
+                {statePost.bucketlist.length > 20 && (
+                  <PaginationBtn onClick={() => handlePaginationClick(21, 41)}>
+                    21~40위
+                  </PaginationBtn>
+                )}
+                {statePost.bucketlist.length > 40 && (
+                  <PaginationBtn onClick={() => handlePaginationClick(41, 61)}>
+                    41~60위
+                  </PaginationBtn>
+                )}
 
-            {statePost.bucketlist.length > 60 && (
-              <PaginationBtn onClick={() => handlePaginationClick(61, 81)}>
-                61~80위
-              </PaginationBtn>
-            )}
+                {statePost.bucketlist.length > 60 && (
+                  <PaginationBtn onClick={() => handlePaginationClick(61, 81)}>
+                    61~80위
+                  </PaginationBtn>
+                )}
 
-            {statePost.bucketlist.length > 80 && (
-              <PaginationBtn onClick={() => handlePaginationClick(81, 101)}>
-                81~100위
-              </PaginationBtn>
-            )}
-          </Pagination>
-          <BookAndlikeBtn>
-            {statePost.bookmark ? (
-              <BsBookmarkPlusFill
-                size={25}
-                onClick={() => {
-                  handleBookClick();
-                }}
-              />
-            ) : (
-              <BsBookmarkPlus
-                size={25}
-                onClick={() => {
-                  handleBookClick();
-                }}
-              />
-            )}
-            {statePost.like ? (
-              <FaHeart
-                size={25}
-                onClick={() => {
-                  handleLikeClick();
-                }}
-              />
-            ) : (
-              <FaRegHeart
-                size={25}
-                onClick={() => {
-                  handleLikeClick();
-                }}
-              />
-            )}
-            좋아요 {statePost.like_count}개
-          </BookAndlikeBtn>
+                {statePost.bucketlist.length > 80 && (
+                  <PaginationBtn onClick={() => handlePaginationClick(81, 101)}>
+                    81~100위
+                  </PaginationBtn>
+                )}
+              </Pagination>
+              <BookAndlikeBtn>
+                {statePost.bookmark ? (
+                  <BsBookmarkPlusFill
+                    size={25}
+                    onClick={() => {
+                      handleBookClick();
+                    }}
+                  />
+                ) : (
+                  <BsBookmarkPlus
+                    size={25}
+                    onClick={() => {
+                      handleBookClick();
+                    }}
+                  />
+                )}
+                {statePost.like ? (
+                  <FaHeart
+                    size={25}
+                    onClick={() => {
+                      handleLikeClick();
+                    }}
+                  />
+                ) : (
+                  <FaRegHeart
+                    size={25}
+                    onClick={() => {
+                      handleLikeClick();
+                    }}
+                  />
+                )}
+                좋아요 {statePost.like_count}개
+              </BookAndlikeBtn>
 
-          <Comment />
-        </PS.PostBox>
-      </PS.PostBack>
+              <Comment />
+            </PS.PostBox>
+          </PS.PostBack>
+        </>
+      )}
     </>
   );
 }
 
 export default Post;
-
-/*
-게시물 공유하기 안하기
-비로그인 클릭시 '먼저 로그인을 해주세요' 문구 후 로그인 페이지로
-*/

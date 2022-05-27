@@ -17,7 +17,7 @@ import qs from 'qs';
 import Headers from '../components/Headers';
 import { getUserInfo, isLogin } from '../redux/action';
 import * as LS from './style/LoginS';
-import axiosInstance from '../components/axios';
+import axiosInstance from '../utils/axios';
 import Modal from '../components/Modal';
 import kakao from '../assets/oauth/kakao.png';
 import google from '../assets/oauth/google.png';

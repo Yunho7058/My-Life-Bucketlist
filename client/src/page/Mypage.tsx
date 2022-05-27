@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { FaUserCircle } from 'react-icons/fa';
 import styled from 'styled-components';
-import axiosInstance from '../components/axios';
+import axiosInstance from '../utils/axios';
 import Headers from '../components/Headers';
 import Modal from '../components/Modal';
-import { getUserInfo, modalOpen } from '../redux/action';
+import { getUserInfo, modalOpen, userInfoSave } from '../redux/action';
 
 export const MypageBack = styled.div`
   width: 100%;
@@ -82,6 +84,12 @@ export const ProfilList = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   column-gap: 70px;
+  > svg {
+    cursor: pointer;
+    &:hover {
+      opacity: 0.7;
+    }
+  }
 `;
 export const ProfilTilte = styled.div`
   text-align: center;
@@ -138,7 +146,32 @@ export const Btn = styled.div`
     background-color: #6495ed;
   }
 `;
-type bookBucketlistInfo = { title: string; id: number }[];
+export const ImgInput = styled.input`
+  cursor: pointer;
+  display: none;
+`;
+export const PostPoto = styled.img`
+  width: 250px;
+  height: 200px;
+  border-radius: 15px;
+  cursor: pointer;
+  &:hover {
+    //background-color: rgba(0, 0, 0, 0.6);
+    opacity: 0.7;
+  }
+`;
+export const BucketlistImg = styled.div`
+  border: 1px solid;
+  text-align: center;
+  line-height: 200px;
+  border-radius: 30px;
+  width: 250px;
+  height: 200px;
+
+  background-color: grey;
+`;
+
+type bookBucketlistInfo = { nickname: string; id: number }[];
 const Mypage = () => {
   const dispatch = useDispatch();
   const [list, setList] = useState(0);
@@ -150,29 +183,34 @@ const Mypage = () => {
   let getUser = window.localStorage.getItem('user');
   const [userInfo, setUserInfo] = useState({
     parse_post_id: 0,
+    parse_user_id: 0,
     parse_user_email: '',
     parse_user_nickname: '',
+    parse_user_domain: '',
+    parse_user_image_path: '',
   });
   useEffect(() => {
     if (getUser !== null) {
-      console.log(getUser);
       setUserInfo({
         parse_user_email: JSON.parse(getUser).email,
+        parse_user_id: JSON.parse(getUser).id,
         parse_post_id: Number(JSON.parse(getUser).post_id),
         parse_user_nickname: JSON.parse(getUser).nickname,
+        parse_user_domain: JSON.parse(getUser).domain,
+        parse_user_image_path: JSON.parse(getUser).image_path,
       });
+      setUserImg(JSON.parse(getUser).image_path);
     }
   }, []);
 
+  //! 북마크 게시물 리스트
   useEffect(() => {
     axiosInstance
       .get('/bookmark')
       .then((res) => {
-        //가져온 게시물들 관리
-        //let {title, id} = res.data
         setBookBucketlist(
-          res.data.map((el: { title: string; id: number }) => {
-            return { title: el.title, id: el.id };
+          res.data.map((el: { nickname: string; id: number }) => {
+            return { nickname: el.nickname, id: el.id };
           })
         );
       })
@@ -187,7 +225,6 @@ const Mypage = () => {
   });
   const handleNicknameInput =
     (key: string) => (e: { target: HTMLInputElement }) => {
-      console.log(key);
       setNicknameChange({ ...nicknameChange, [key]: e.target.value });
     };
   const handleNicknameEdit = () => {
@@ -208,24 +245,154 @@ const Mypage = () => {
     }
   };
   useEffect(() => {
-    axiosInstance
-      .patch('/nickname', { nickname: nicknameChange.nickname })
-      .then((res) => {
-        dispatch(modalOpen('닉네임이 변경되었습니다.'));
-        setNicknameChange({ ...nicknameChange, is: false });
-        dispatch(getUserInfo());
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      })
-      .catch((err) => {
-        console.log(err, 'nickname edit err');
-      });
+    if (nicknameChange.isNickNameCheck) {
+      axiosInstance
+        .patch('/nickname', { nickname: nicknameChange.nickname })
+        .then((res) => {
+          dispatch(modalOpen('닉네임이 변경되었습니다.'));
+          setNicknameChange({
+            ...nicknameChange,
+            is: false,
+            isNickNameCheck: false,
+          });
+          setUserInfo({
+            ...userInfo,
+            parse_user_nickname: nicknameChange.nickname,
+          });
+          dispatch(getUserInfo());
+        })
+        .catch((err) => {
+          console.log(err, 'nickname edit err');
+        });
+    }
   }, [nicknameChange.isNickNameCheck]);
 
   const handlePasswordEdit = () => {
-    dispatch(modalOpen('password'));
+    if (!userInfo.parse_user_domain) {
+      dispatch(modalOpen('password'));
+    } else {
+      dispatch(modalOpen('SNS이용자는 변경하실 수 없습니다.'));
+    }
   };
+  const handleSignout = () => {
+    dispatch(modalOpen('signout'));
+  };
+  const potoInput = useRef<HTMLInputElement>(null);
+  const handlePotoInput = () => {
+    if (potoInput.current) {
+      potoInput.current.click();
+    }
+  };
+  const [selectImg, setSelectImg] = useState('');
+  const [userImg, setUserImg] = useState(userInfo.parse_user_image_path);
+  const [file, setFile] = useState<FileList | undefined>();
+  const [fileName, setFileName] = useState<string>('');
+  const [presignedPost, setPresignedPost] = useState<TypePresignedPost>();
+  interface TypePresignedPost {
+    url: string;
+    fields: {
+      Policy: string;
+      'X-Amz-Algorithm': string;
+      'X-Amz-Credential': string;
+      'X-Amz-Date': string;
+      'X-Amz-Security-Token': string;
+      'X-Amz-Signature': string;
+      bucket: string;
+      key: string;
+    };
+  }
+  const onLoadFile = (e: { target: HTMLInputElement }) => {
+    if (e.target.files !== null && e.target.files.length > 0) {
+      const fileList = e.target.files; //선택한 사진 파일
+      let imgUrl = URL.createObjectURL(fileList[0]); //미리보기를 위한 파일 변경
+      console.log(imgUrl);
+      setUserImg(imgUrl);
+      setFile(fileList);
+      setFileName(fileList[0].name); //선택한 사진 파일 이름
+    }
+  };
+  // const handleImgDelete = () => {
+  //   setFile(undefined);
+  //   setFileName('');
+  //   setUserImg('');
+  // };
+  //server로 부터 s3접급 key 받아오기
+  useEffect(() => {
+    axiosInstance
+      .get(`/profile/presigned-post?file_name=${fileName}`) //server 파일이름 전송
+      .then((res) => {
+        setPresignedPost(res.data); // server로 부터 받은 s3 key값과 url
+      })
+      .catch((err) => {
+        console.log('poto err');
+      });
+  }, [fileName]);
+
+  useEffect(() => {
+    if (fileName) {
+      handleS3ImgUpload();
+      if (typeof presignedPost?.fields.key === 'string')
+        setSelectImg(presignedPost.fields.key);
+    } else {
+      setSelectImg('');
+    }
+  }, [userImg]);
+
+  const handleS3ImgUpload = () => {
+    const formData = new FormData(); //fromdata 생성
+    if (presignedPost && file) {
+      // server로 받은 정보와 선택한 사진파일 정보가 있을때
+      Object.entries(presignedPost.fields).forEach((entry) => {
+        const [key, value] = entry;
+        formData.append(key, value); //server로 받은 정보를 fromdata에 append
+      });
+      formData.append('file', file[0]); // 선택한 사진 정보 또한 append
+      axios
+        .post(presignedPost.url, formData, {
+          //server로 부터 받은 정보 url
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        .then((res) => {
+          //setSelectImg(presignedPost.fields.key);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+  //로컬에서 항상 가져오기 사진
+  const handleImgEdit = () => {
+    if (!userImg) {
+      dispatch(modalOpen('사진을 선택해주세요.'));
+    } else {
+      axiosInstance
+        .patch(`/profile`, { image_path: selectImg })
+        .then((res) => {
+          window.localStorage.setItem(
+            'user',
+            JSON.stringify({
+              id: userInfo.parse_post_id,
+              email: userInfo.parse_user_email,
+              nickname: userInfo.parse_user_nickname,
+              post_id: userInfo.parse_post_id,
+              domain: userInfo.parse_user_domain,
+              image_path: userImg,
+            })
+            //! 읽을때 JSON.part()
+          );
+          dispatch(modalOpen('수정되었습니다.'));
+          navigate('/mypage');
+          dispatch(userInfoSave());
+        })
+        .catch((err) => {
+          console.log(err, 'new bucketlist create err');
+        });
+    }
+  };
+  useEffect(() => {
+    dispatch(getUserInfo());
+  }, []);
+
   return (
     <>
       <Headers></Headers>
@@ -257,7 +424,7 @@ const Mypage = () => {
                           key={el.id}
                           onClick={() => navigate(`/post/${el.id}`)}
                         >
-                          {idx + 1}. {el.title}
+                          {idx + 1}. {el.nickname}님의 버킷리스트
                         </BookBucketlist>
                       );
                     })}
@@ -269,6 +436,29 @@ const Mypage = () => {
             <>
               <ProfilList>
                 <ProfilTilte>사진</ProfilTilte>
+                {userImg ? (
+                  <PostPoto
+                    alt="sample"
+                    src={userImg}
+                    onClick={() => handlePotoInput()}
+                  />
+                ) : (
+                  <FaUserCircle
+                    size={70}
+                    onClick={() => handlePotoInput()}
+                  ></FaUserCircle>
+                )}
+                <ImgInput
+                  type="file"
+                  accept="image/*"
+                  name="file"
+                  ref={potoInput}
+                  onChange={onLoadFile}
+                />
+                {/* <Btn className="imgDelete" onClick={() => handleImgDelete()}>
+                  사진 삭제하기
+                </Btn> */}
+                <Btn onClick={() => handleImgEdit()}>수정</Btn>
               </ProfilList>
               <ProfilList>
                 <ProfilTilte>닉네임</ProfilTilte>
@@ -324,7 +514,9 @@ const Mypage = () => {
                 <Btn className="change" onClick={() => handlePasswordEdit()}>
                   비밀번호 변경
                 </Btn>
-                <Btn className="delete">회원탈퇴</Btn>
+                <Btn className="delete" onClick={() => handleSignout()}>
+                  회원탈퇴
+                </Btn>
               </div>
             </>
           )}
