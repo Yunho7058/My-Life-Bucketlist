@@ -23,6 +23,7 @@ import {
   postImgOrigin,
   isS3PotoDownload,
   postBlobType,
+  presignPostUpload,
 } from '../redux/action';
 import Modal from '../components/Modal';
 import * as PS from './style/PostStyledComponents';
@@ -32,6 +33,7 @@ import DetailMode from './PostPage/DetailMode';
 import axiosInstance from '../utils/axios';
 import axios from 'axios';
 import Spinner from '../utils/spinner';
+
 //import { TypeProps } from '../App';
 
 //편집모드 클릭 시 수정 삭제 추가 버튼 보이게 하기
@@ -107,24 +109,14 @@ function Post() {
       .get(`/post/${postId}`)
       .then((res) => {
         dispatch(postEach(res.data));
-        let arr: { id: number; data: string; dataOrigin: string }[] = [];
         res.data.bucketlist.forEach((el: TypeBucketlist) => {
           s3Download(el.image_path, el.id);
-          arr.push({
-            id: el.id,
-            data: el.image_path,
-            dataOrigin: el.image_path,
-          });
         });
         setSpinner(false);
-        setBeforeBlobData(arr);
       })
       .catch((err) => console.log(err, '각 게시물 클릭 err'));
   }, []);
 
-  const [beforeBlobData, setBeforeBlobData] = useState<
-    { id: number; data: string; dataOrigin: string }[]
-  >([]);
   const s3Download = (data: string, id: number) => {
     if (data) {
       axios
@@ -328,6 +320,7 @@ function Post() {
   const [bucketlistSelect, setBucketlistSelect] = useState(0);
 
   const handleBucketlistSelect = (id: number) => {
+    dispatch(presignPostUpload(''));
     if (!isPost.isCreate) {
       if (bucketlistSelect === id) {
         setBucketlistSelect(0);

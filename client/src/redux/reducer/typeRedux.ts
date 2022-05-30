@@ -12,7 +12,7 @@ namespace TypeRedux {
   }
   export interface TypePosts {
     type: string;
-    payload: { postAlldata: TypePostsData[] };
+    payload: { postAlldata: TypePostsData[]; id: number; img?: string };
   }
   export interface TypePostsData {
     title: string;

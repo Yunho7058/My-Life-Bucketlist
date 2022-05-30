@@ -2,8 +2,8 @@ import styled from 'styled-components';
 
 export const HeaderBack = styled.div`
   width: 100%;
-  min-width: 400px;
-  height: 50px;
+  /* min-width: 400px; */
+  height: 80px;
   display: flex;
   justify-content: space-between;
   background-color: ${({ theme }) => theme.mode.background2};

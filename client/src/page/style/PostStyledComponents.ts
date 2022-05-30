@@ -12,7 +12,7 @@ export const PostBack = styled.div`
   overflow: auto;
 `;
 export const PostBox = styled.div`
-  margin-top: 15%;
+  margin-top: 8%;
 
   overflow-x: hidden;
   margin-bottom: 20px;
