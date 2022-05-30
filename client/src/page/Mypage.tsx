@@ -2,17 +2,22 @@ import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle, FaUserEdit } from 'react-icons/fa';
 import styled from 'styled-components';
 import axiosInstance from '../utils/axios';
 import Headers from '../components/Headers';
 import Modal from '../components/Modal';
 import { getUserInfo, modalOpen, userInfoSave } from '../redux/action';
+import { BiBook } from 'react-icons/bi';
+import { BsBucketFill } from 'react-icons/bs';
+
+import { dark } from '../components/style/theme';
 
 export const MypageBack = styled.div`
   width: 100%;
   height: 100%;
   min-height: 100vh;
+  padding-bottom: 30px;
   background-color: ${({ theme }) => theme.mode.background1};
   display: flex;
   justify-content: center;
@@ -21,7 +26,7 @@ export const MypageBack = styled.div`
 `;
 
 export const ListBox = styled.div`
-  margin-top: 20%;
+  margin-top: 10%;
   padding: 10px;
   width: 25%;
   height: 150px;
@@ -34,7 +39,7 @@ export const ListBox = styled.div`
 `;
 
 export const ContentBox = styled.div`
-  margin-top: 20%;
+  margin-top: 10%;
   display: flex;
   padding: 30px;
   flex-direction: column;
@@ -44,17 +49,27 @@ export const ContentBox = styled.div`
   border-radius: 20px;
   background-color: ${({ theme }) => theme.mode.background2};
   box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
+  &.profile {
+    height: 500px;
+  }
 `;
 
 export const ListTitle = styled.div`
   padding: 10px;
-  padding-left: 50px;
+  padding-left: 20px;
+  text-align: left;
   height: 40px;
   line-height: 40px;
   border-radius: 15px;
+  display: flex;
+  align-items: center;
   cursor: pointer;
   &:hover {
     background-color: ${({ theme }) => theme.mode.background1};
+  }
+  > svg {
+    margin-bottom: 5px;
+    padding-right: 15px;
   }
 `;
 export const MyBucketlist = styled.div`
@@ -64,12 +79,41 @@ export const MyBucketlist = styled.div`
     text-decoration: underline;
   }
 `;
-export const BookBucketlistBack = styled.div``;
-export const BookBucketlistBox = styled.div`
-  border: 1px solid;
-  width: 90%;
-  height: 160px;
+
+export const BookBucketlistBack = styled.div`
+  font-size: 20px;
+  padding: 10px;
+
+  line-height: 20px;
 `;
+export const BookTitle = styled.div`
+  font-size: 21px;
+  padding: 10px;
+  height: 30px;
+  line-height: 30px;
+
+  > svg {
+    padding-right: 5px;
+  }
+`;
+
+export const BookBucketlistBox = styled.div`
+  border-radius: 10px;
+  font-size: 15px;
+  padding: 10px;
+  background-color: ${({ theme }) => theme.mode.background4};
+  width: 95%;
+  height: 200px;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #ffffff;
+  }
+`;
+
 export const BookBucketlist = styled.div`
   padding: 10px;
   cursor: pointer;
@@ -79,11 +123,13 @@ export const BookBucketlist = styled.div`
   }
 `;
 export const ProfilList = styled.div`
+  width: 95%;
+  height: 50px;
   display: flex;
-  margin-left: 40px;
-  flex-direction: row;
-  justify-content: flex-start;
-  column-gap: 70px;
+
+  justify-content: space-around;
+  align-items: center;
+
   > svg {
     cursor: pointer;
     &:hover {
@@ -93,18 +139,20 @@ export const ProfilList = styled.div`
 `;
 export const ProfilTilte = styled.div`
   text-align: center;
-  width: 80px;
+  font-size: 16px;
+  width: 200px;
+  height: 20px;
 `;
 export const ProfilContent = styled.div`
-  padding: 8px;
-  width: 120px;
+  width: 200px;
   height: 40px;
+  font-size: 14px;
+  line-height: 40px;
+  text-align: center;
 `;
 export const ProfilContentInput = styled.input`
-  width: 140px;
+  width: 200px;
   height: 35px;
-  margin-right: -29px;
-  margin-bottom: 18px;
   border-radius: 10px;
   border: 1px solid #696969;
   padding-left: 10px;
@@ -127,7 +175,8 @@ export const Btn = styled.div`
   padding: 5px;
   border: 1px solid rgba(0, 0, 0, 0.4);
   cursor: pointer;
-  width: 70px;
+  font-size: 14px;
+  width: 80px;
   &.delete {
     background-color: #cd5c5c;
     width: 20%;
@@ -151,8 +200,8 @@ export const ImgInput = styled.input`
   display: none;
 `;
 export const PostPoto = styled.img`
-  width: 250px;
-  height: 200px;
+  width: 100px;
+  height: 100px;
   border-radius: 15px;
   cursor: pointer;
   &:hover {
@@ -160,15 +209,38 @@ export const PostPoto = styled.img`
     opacity: 0.7;
   }
 `;
-export const BucketlistImg = styled.div`
-  border: 1px solid;
-  text-align: center;
-  line-height: 200px;
-  border-radius: 30px;
-  width: 250px;
-  height: 200px;
+// export const BucketlistImg = styled.div`
+//   text-align: center;
+//   line-height: 200px;
+//   border-radius: 30px;
+//   width: 100px;
+//   height: 200px;
 
-  background-color: grey;
+//   background-color: grey;
+//   cursor: pointer;
+//   &:hover {
+//     opacity: 0.7;
+//   }
+// `;
+
+export const Line = styled.div`
+  width: 90%;
+  border-bottom: 1px solid rgba(94, 94, 94, 0.3);
+`;
+
+export const DivLine = styled.div`
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 50px;
+  > svg {
+    cursor: pointer;
+    &:hover {
+      opacity: 0.7;
+    }
+  }
 `;
 
 type bookBucketlistInfo = { nickname: string; id: number }[];
@@ -400,22 +472,29 @@ const Mypage = () => {
       <MypageBack>
         <ListBox>
           <ListTitle onClick={() => handleListChange(0)}>
+            <BsBucketFill size={20} />
             버킷리스트 관리
           </ListTitle>
-          <ListTitle onClick={() => handleListChange(1)}>프로필 설정</ListTitle>
+          <ListTitle onClick={() => handleListChange(1)}>
+            <FaUserEdit size={20} />
+            프로필 설정
+          </ListTitle>
         </ListBox>
-        <ContentBox>
+        <ContentBox className={list ? 'profile' : ''}>
           {list === 0 && (
             <>
-              <MyBucketlist
+              {/* <MyBucketlist
                 onClick={() => {
                   navigate(`/post/${userInfo.parse_post_id}`);
                 }}
               >
                 나의 버킷리스트 바로가기
-              </MyBucketlist>
+              </MyBucketlist> */}
               <BookBucketlistBack>
-                북마크한 버킷리스트
+                <BookTitle>
+                  <BiBook size={20} />
+                  북마크한 버킷리스트
+                </BookTitle>
                 <BookBucketlistBox>
                   {bookBucketlist &&
                     bookBucketlist.map((el, idx) => {
@@ -435,19 +514,23 @@ const Mypage = () => {
           {list === 1 && (
             <>
               <ProfilList>
-                <ProfilTilte>사진</ProfilTilte>
-                {userImg ? (
-                  <PostPoto
-                    alt="sample"
-                    src={userImg}
-                    onClick={() => handlePotoInput()}
-                  />
-                ) : (
-                  <FaUserCircle
-                    size={70}
-                    onClick={() => handlePotoInput()}
-                  ></FaUserCircle>
-                )}
+                <DivLine>
+                  <ProfilTilte>프로필 사진</ProfilTilte>
+                </DivLine>
+                <DivLine>
+                  {userImg ? (
+                    <PostPoto
+                      alt="sample"
+                      src={userImg}
+                      onClick={() => handlePotoInput()}
+                    />
+                  ) : (
+                    <FaUserCircle
+                      size={70}
+                      onClick={() => handlePotoInput()}
+                    ></FaUserCircle>
+                  )}
+                </DivLine>
                 <ImgInput
                   type="file"
                   accept="image/*"
@@ -458,58 +541,75 @@ const Mypage = () => {
                 {/* <Btn className="imgDelete" onClick={() => handleImgDelete()}>
                   사진 삭제하기
                 </Btn> */}
-                <Btn onClick={() => handleImgEdit()}>수정</Btn>
+                <DivLine>
+                  <Btn onClick={() => handleImgEdit()}>수정</Btn>
+                </DivLine>
               </ProfilList>
+              <Line></Line>
               <ProfilList>
-                <ProfilTilte>닉네임</ProfilTilte>
-                {nicknameChange.is ? (
-                  <ProfilContentInput
-                    type="text"
-                    value={nicknameChange.nickname}
-                    placeholder={`${userInfo.parse_user_nickname}`}
-                    onChange={handleNicknameInput('nickname')}
-                  />
-                ) : (
-                  <ProfilContent>{userInfo.parse_user_nickname}</ProfilContent>
-                )}
-
-                {nicknameChange.is ? (
-                  <div
-                    style={{
-                      display: 'flex',
-                      columnGap: '10px',
-                    }}
-                  >
-                    <Btn
-                      onClick={() => {
-                        handleNicknameEdit();
+                <DivLine>
+                  <ProfilTilte>닉네임</ProfilTilte>
+                </DivLine>
+                <DivLine>
+                  {nicknameChange.is ? (
+                    <ProfilContentInput
+                      type="text"
+                      value={nicknameChange.nickname}
+                      placeholder={`${userInfo.parse_user_nickname}`}
+                      onChange={handleNicknameInput('nickname')}
+                    />
+                  ) : (
+                    <ProfilContent>
+                      {userInfo.parse_user_nickname}
+                    </ProfilContent>
+                  )}
+                </DivLine>
+                <DivLine>
+                  {nicknameChange.is ? (
+                    <div
+                      style={{
+                        display: 'flex',
+                        columnGap: '10px',
                       }}
                     >
-                      수정
-                    </Btn>
+                      <Btn
+                        onClick={() => {
+                          handleNicknameEdit();
+                        }}
+                      >
+                        수정
+                      </Btn>
+                      <Btn
+                        onClick={() => {
+                          setNicknameChange({ ...nicknameChange, is: false });
+                        }}
+                      >
+                        취소
+                      </Btn>
+                    </div>
+                  ) : (
                     <Btn
+                      className="change"
                       onClick={() => {
-                        setNicknameChange({ ...nicknameChange, is: false });
+                        setNicknameChange({ ...nicknameChange, is: true });
                       }}
                     >
-                      취소
+                      닉네임 변경
                     </Btn>
-                  </div>
-                ) : (
-                  <Btn
-                    className="change"
-                    onClick={() => {
-                      setNicknameChange({ ...nicknameChange, is: true });
-                    }}
-                  >
-                    닉네임 변경
-                  </Btn>
-                )}
+                  )}
+                </DivLine>
               </ProfilList>
+              <Line></Line>
               <ProfilList>
-                <ProfilTilte>이메일</ProfilTilte>
-                <ProfilContent>{userInfo.parse_user_email}</ProfilContent>
+                <DivLine>
+                  <ProfilTilte>이메일</ProfilTilte>
+                </DivLine>
+                <DivLine>
+                  <ProfilContent>{userInfo.parse_user_email}</ProfilContent>
+                </DivLine>
+                <DivLine></DivLine>
               </ProfilList>
+              <Line></Line>
               <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <Btn className="change" onClick={() => handlePasswordEdit()}>
                   비밀번호 변경

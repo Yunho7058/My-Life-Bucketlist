@@ -1,4 +1,9 @@
-import { POST_ALL, POST_ALL_ADD } from '../action/index';
+import axios from 'axios';
+import {
+  POST_ALL,
+  POST_ALL_ADD,
+  POST_ALL_POTO_S3_DOWNLOAD,
+} from '../action/index';
 import TypeRedux from './typeRedux';
 
 const initialization: TypeRedux.TypePostsData[] = [];
@@ -21,11 +26,20 @@ const postsAllReducer = (
         return state.concat(allDataAdd);
       }
 
-    // case POST_TEST:
-    //   let copy = [...state];
-    //   console.log(action.payload);
+    case POST_ALL_POTO_S3_DOWNLOAD:
+      let copy_allPost = state;
 
-    //   return copy;
+      const allDataS3 = copy_allPost.map((el) => {
+        return {
+          ...el,
+          bucketlist: el.bucketlist.map((el) => {
+            return el.id === action.payload.id
+              ? { ...el, image_path: action.payload.img }
+              : { ...el };
+          }),
+        };
+      });
+      return allDataS3;
 
     default:
       return state;

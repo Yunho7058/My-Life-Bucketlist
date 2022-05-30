@@ -5,31 +5,33 @@ import 'styled-components';
 declare module 'styled-components' {
   export interface DefaultTheme {
     mode: {
-      mainBackground: string;
-      primaryText: string;
-      // secondaryText: string;
-      // disable: string;
-      border: string;
-      divider: string;
-      // background: string;
-      // tableHeader: string;
-      themeIcon: string;
-      // blue1: string;
-      // blue2: string;
-      // blue3: string;
-      // green: string;
-      // gray: string;
-      loginLine: string;
-      background1: string;
-      background2: string;
-      background3: string;
-      borderBox: string;
+      [key: string]: string;
+      // mainBackground: string;
+      // primaryText: string;
+      // // secondaryText: string;
+      // // disable: string;
+      // border: string;
+      // divider: string;
+      // // background: string;
+      // // tableHeader: string;
+      // themeIcon: string;
+      // // blue1: string;
+      // // blue2: string;
+      // // blue3: string;
+      // // green: string;
+      // // gray: string;
+      // loginLine: string;
+      // background1: string;
+      // background2: string;
+      // background3: string;
+      // background4: string;
+      // borderBox: string;
 
-      BGInput: string;
-      FCInput: string;
-      fontColor: string;
-      stepIconBackColor: string;
-      stepIconColor: string;
+      // BGInput: string;
+      // FCInput: string;
+      // fontColor: string;
+      // stepIconBackColor: string;
+      // stepIconColor: string;
     };
     // fontSizes: {
     //   xsm: string;

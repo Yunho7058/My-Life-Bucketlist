@@ -84,13 +84,6 @@ const PotoArea = ({
   const onLoadFile = (e: { target: HTMLInputElement }) => {
     if (e.target.files !== null && e.target.files.length > 0) {
       const fileList = e.target.files;
-      //   if (e.target.id === 'new') {
-      //     setNewImgUrl(URL.createObjectURL(fileList[0]));
-      //   } else {
-      //     const id = Number(e.target.id);
-      //     setImgUrl(URL.createObjectURL(fileList[0]));
-      //     setUserId(id);
-      //   }
       setFile(fileList);
       setPropsPoto(URL.createObjectURL(fileList[0]));
       setFileName(fileList[0].name);
@@ -131,13 +124,8 @@ const PotoArea = ({
             dispatch(isS3PotoDownload());
             if (propsPoto) {
               dispatch(postBucketlistImgUpload(bucketlistId, propsPoto));
-              console.log(bucketlistId, propsPoto);
-              //   setPropsPoto(propsPoto);
             }
-            //   setNewBucketlist({
-            //     ...newBucketlist,
-            //     image_path: presignedPost.fields.key,
-            //   });
+
             //s3에 저장을 끝냈으면 아까받은 resignedPost key를 다시 서버에 전송
             //요건 읽을수없음 (client에서 blob type으로 변경해야지 읽기 가능)
           })
@@ -172,7 +160,6 @@ const PotoArea = ({
           사진을 선택해주세요.
         </BinPotoZone>
       )}
-      {/* <PotoZone alt="sample" src={img} onClick={() => handlePotoInput()} /> */}
       <DeletePoto onClick={handleImgDelete}>삭제</DeletePoto>
       <PotoInput
         type="file"

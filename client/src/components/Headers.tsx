@@ -20,6 +20,7 @@ import axiosInstance from '../utils/axios';
 import ScrollTopBtn from '../utils/scrollTopBtn';
 import Toggle from './toggle';
 import Spinner from '../utils/spinner';
+import { dark } from './style/theme';
 
 export const CreatePostBtn = styled.div`
   position: fixed;
@@ -65,7 +66,8 @@ export const SidebarBack = styled.div`
   position: absolute;
   &.arrow_box {
     position: relative;
-    background-color: ${({ theme }) => theme.mode.background2};
+    background-color: ${({ theme }) =>
+      theme.mode === dark ? theme.mode.background4 : '#ffffff'};
   }
   &.arrow_box:after,
   &.arrow_box:before {

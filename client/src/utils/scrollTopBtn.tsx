@@ -6,6 +6,7 @@ export const ScrollBtn = styled.div`
   position: fixed;
   bottom: 100px;
   right: 30px;
+  z-index: 999;
   cursor: pointer;
 `;
 

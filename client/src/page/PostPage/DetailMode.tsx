@@ -79,10 +79,14 @@ const DetailMode = ({
               {bucketlistSelect === el.id ? (
                 <>
                   <div>
-                    <PotoArea
-                      img={el.image_path}
-                      bucketlistId={el.id}
-                    ></PotoArea>
+                    {spinnerImg ? (
+                      <Spinner type="img"></Spinner>
+                    ) : (
+                      <PotoArea
+                        img={el.image_path}
+                        bucketlistId={el.id}
+                      ></PotoArea>
+                    )}
 
                     <PS.BucketlistContent>
                       <PS.InputBox
@@ -127,11 +131,14 @@ const DetailMode = ({
                 <>
                   {/* 편집 off */}
                   <div>
-                    {el.image_path ? (
+                    {spinnerImg ? (
+                      <Spinner type="img"></Spinner>
+                    ) : el.image_path ? (
                       <PS.PostPoto src={el.image_path}></PS.PostPoto>
                     ) : (
                       <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
                     )}
+
                     <PS.BucketlistContent>
                       <div className="content">
                         {paginationStart >= 0 && paginationStart < 21

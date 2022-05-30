@@ -22,6 +22,17 @@ export const USER_INFO = 'USER_INFO';
 export const POST_POTO_PRESIGNPOST = 'POST_POTO_PRESIGNPOST';
 export const POST_POTO_S3_DOWNLOAD = 'POST_POTO_S3_DOWNLOAD';
 export const POST_POTO_BLOB = 'POST_POTO_BLOB';
+export const POST_ALL_POTO_S3_DOWNLOAD = 'POST_ALL_POTO_S3_DOWNLOAD';
+
+export const postAllpotoDownload = (id: number, img?: string) => {
+  return {
+    type: POST_ALL_POTO_S3_DOWNLOAD,
+    payload: {
+      id,
+      img,
+    },
+  };
+};
 
 export const postBlobType = (blob?: string) => {
   return {
