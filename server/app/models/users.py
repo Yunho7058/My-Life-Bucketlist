@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, event
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.attributes import get_history
 
