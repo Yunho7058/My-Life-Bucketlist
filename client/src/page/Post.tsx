@@ -140,7 +140,8 @@ function Post() {
           console.log(err, 's3 err');
         });
     } else {
-      dispatch(postImgOrigin('', id));
+      dispatch(postImgOrigin(null, id));
+      setSpinnerImg(false);
     }
   };
 

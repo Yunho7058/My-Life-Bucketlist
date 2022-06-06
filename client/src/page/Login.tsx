@@ -130,6 +130,7 @@ function Login() {
           dispatch(isLogin());
           //handleGetUserinfo();
           dispatch(getUserInfo());
+
           navigate('/');
           //! setCookie(client) 와 headers(server)에 담긴 cookie 차이는?
         })

@@ -6,10 +6,8 @@ import {
 } from '../action/index';
 import TypeRedux from './typeRedux';
 
-const initialization: TypeRedux.TypePostsData[] = [];
-
 const postsAllReducer = (
-  state: TypeRedux.TypePostsData[] = initialization,
+  state: TypeRedux.TypePostsData[] = [],
   action: TypeRedux.TypePosts
 ) => {
   switch (action.type) {
@@ -34,7 +32,7 @@ const postsAllReducer = (
           ...el,
           bucketlist: el.bucketlist.map((el) => {
             return el.id === action.payload.id
-              ? { ...el, image_path: action.payload.img }
+              ? { ...el, image_path: action.payload.url }
               : { ...el };
           }),
         };

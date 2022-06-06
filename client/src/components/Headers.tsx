@@ -8,11 +8,11 @@ import { MdEditCalendar } from 'react-icons/md';
 import { TypeRootReducer } from '../redux/store/store';
 import { HeaderBack, LoginBtn } from './style/HeadersS';
 import {
+  getUserInfo,
   isLogin,
   isLogout,
   modalOpen,
   postAll,
-  userInfoSave,
 } from '../redux/action';
 import axios from 'axios';
 import { FaUserCircle } from 'react-icons/fa';
@@ -153,40 +153,28 @@ function Headers() {
   const [isSidebar, setIsSiderbar] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  let getUserId = window.localStorage.getItem('user');
 
-  let parse_user_email: string = '';
-  let parse_user_nickname: string = '';
-  let parse_user_image_path = '';
-
-  if (getUserId !== null) {
-    parse_user_email = JSON.parse(getUserId).email;
-    parse_user_nickname = JSON.parse(getUserId).nickname;
-    parse_user_image_path = JSON.parse(getUserId).image_path;
-  }
   const stateIsLogin = useSelector(
     (state: TypeRootReducer) => state.isLoginReducer
   );
   const stateUserInfo = useSelector((state: TypeRootReducer) => state.userInfo);
 
-  useEffect(() => {
-    setTimeout(() => {
-      dispatch(userInfoSave());
-    }, 2000);
-  }, [stateIsLogin]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     dispatch(userInfoSave());
+  //   }, 2000);
+  // }, [stateIsLogin]);
 
   //! 새로고침
   useEffect(() => {
     if (window.localStorage.getItem('accessToken')) {
       dispatch(isLogin());
+      if (!stateUserInfo.user_id) {
+        dispatch(getUserInfo());
+      }
     }
     return;
   }, [dispatch]);
-
-  // //! 모든 게시물 불러오기
-  // useEffect(() => {
-  //   dispatch(postTest());
-  // }, [dispatch]);
 
   //! 로그아웃
   const handleLoginLogoutBtn = () => {
@@ -195,7 +183,7 @@ function Headers() {
         .get(`/logout`)
         .then((res) => {
           window.localStorage.removeItem('accessToken');
-          window.localStorage.removeItem('user');
+          //window.localStorage.removeItem('user');
           dispatch(isLogout());
           navigate('/');
         })
@@ -225,6 +213,7 @@ function Headers() {
   const handleIsSidebar = () => {
     setIsSiderbar(!isSidebar);
   };
+
   return (
     <div style={{ position: 'relative', zIndex: '1000px' }}>
       <HeaderBack>
@@ -239,7 +228,7 @@ function Headers() {
               }}
             >
               {stateUserInfo.image_path ? (
-                stateUserInfo.image_path !== 'none' ? (
+                stateUserInfo.image_path !== null ? (
                   <ProfileImg src={stateUserInfo.image_path} />
                 ) : (
                   <FaUserCircle size={40} />
@@ -256,8 +245,8 @@ function Headers() {
                   }}
                 >
                   <SideId>
-                    {parse_user_nickname}
-                    <div>{parse_user_email}</div>
+                    {stateUserInfo.nickname}
+                    <div>{stateUserInfo.email}</div>
                   </SideId>
                   <SideLine></SideLine>
                   <SideMenu

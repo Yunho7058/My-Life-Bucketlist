@@ -1,7 +1,7 @@
 import {
   POST_BUCKETLIST_EDIT,
   POST_EACH,
-  POST_BUCKETLIST_DELET,
+  POST_BUCKETLIST_DELETE,
   POST_BUCKETLIST_NEW,
   POST_EACH_LIKE,
   POST_EACH_BOOKMARK,
@@ -49,8 +49,6 @@ const postReducer = (
       return { ...state, bucketlist: copy_img_origin };
 
     case POST_IMG_DOWNLOAD:
-      console.log('4');
-
       let copy_img = state.bucketlist.map((el) => {
         return el.id === action.payload.id
           ? {
@@ -63,7 +61,7 @@ const postReducer = (
 
     case POST_EACH:
       let copy = action.payload.postEachData;
-      console.log('6');
+
       return { ...copy };
 
     case POST_EACH_LIKE:
@@ -109,7 +107,7 @@ const postReducer = (
           : { ...el };
       });
       return { ...state, bucketlist: content_copy };
-    case POST_BUCKETLIST_DELET:
+    case POST_BUCKETLIST_DELETE:
       let delete_copy = state.bucketlist.filter((el) => {
         return el.id !== action.payload.id;
       });
@@ -131,7 +129,7 @@ const postReducer = (
           ? { ...el, image_path: action.payload.image_path }
           : { ...el };
       });
-      console.log(img_copy);
+
       return { ...state, bucketlist: img_copy };
 
     default:
