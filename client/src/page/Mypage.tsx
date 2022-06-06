@@ -1,15 +1,21 @@
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { FaUserCircle, FaUserEdit } from 'react-icons/fa';
 import styled from 'styled-components';
 import axiosInstance from '../utils/axios';
 import Headers from '../components/Headers';
 import Modal from '../components/Modal';
-import { getUserInfo, modalOpen, userInfoSave } from '../redux/action';
+import {
+  getUserInfo,
+  modalOpen,
+  userNicknameEdit,
+  userPotoEdit,
+} from '../redux/action';
 import { BiBook } from 'react-icons/bi';
 import { BsBucketFill } from 'react-icons/bs';
+import { TypeRootReducer } from '../redux/store/store';
 
 import { dark } from '../components/style/theme';
 
@@ -44,7 +50,7 @@ export const ContentBox = styled.div`
   padding: 30px;
   flex-direction: column;
   justify-content: space-around;
-  width: 60%;
+  width: 50%;
   height: 300px;
   border-radius: 20px;
   background-color: ${({ theme }) => theme.mode.background2};
@@ -140,13 +146,14 @@ export const ProfilList = styled.div`
 export const ProfilTilte = styled.div`
   text-align: center;
   font-size: 16px;
+  opacity: 0.6;
   width: 200px;
   height: 20px;
 `;
 export const ProfilContent = styled.div`
   width: 200px;
   height: 40px;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 40px;
   text-align: center;
 `;
@@ -252,28 +259,30 @@ const Mypage = () => {
     setList(list);
   };
   const navigate = useNavigate();
-  let getUser = window.localStorage.getItem('user');
-  const [userInfo, setUserInfo] = useState({
-    parse_post_id: 0,
-    parse_user_id: 0,
-    parse_user_email: '',
-    parse_user_nickname: '',
-    parse_user_domain: '',
-    parse_user_image_path: '',
-  });
-  useEffect(() => {
-    if (getUser !== null) {
-      setUserInfo({
-        parse_user_email: JSON.parse(getUser).email,
-        parse_user_id: JSON.parse(getUser).id,
-        parse_post_id: Number(JSON.parse(getUser).post_id),
-        parse_user_nickname: JSON.parse(getUser).nickname,
-        parse_user_domain: JSON.parse(getUser).domain,
-        parse_user_image_path: JSON.parse(getUser).image_path,
-      });
-      setUserImg(JSON.parse(getUser).image_path);
-    }
-  }, []);
+  const stateUserInfo = useSelector((state: TypeRootReducer) => state.userInfo);
+
+  // let getUser = window.localStorage.getItem('user');
+  // const [userInfo, setUserInfo] = useState({
+  //   parse_post_id: 0,
+  //   parse_user_id: 0,
+  //   parse_user_email: '',
+  //   parse_user_nickname: '',
+  //   parse_user_domain: '',
+  //   parse_user_image_path: '',
+  // });
+  // useEffect(() => {
+  //   if (getUser !== null) {
+  //     setUserInfo({
+  //       parse_user_email: JSON.parse(getUser).email,
+  //       parse_user_id: JSON.parse(getUser).id,
+  //       parse_post_id: Number(JSON.parse(getUser).post_id),
+  //       parse_user_nickname: JSON.parse(getUser).nickname,
+  //       parse_user_domain: JSON.parse(getUser).domain,
+  //       parse_user_image_path: JSON.parse(getUser).image_path,
+  //     });
+  //     setUserImg(JSON.parse(getUser).image_path);
+  //   }
+  // }, []);
 
   //! 북마크 게시물 리스트
   useEffect(() => {
@@ -327,11 +336,11 @@ const Mypage = () => {
             is: false,
             isNickNameCheck: false,
           });
-          setUserInfo({
-            ...userInfo,
-            parse_user_nickname: nicknameChange.nickname,
-          });
-          dispatch(getUserInfo());
+          dispatch(userNicknameEdit(nicknameChange.nickname));
+          // setUserInfo({
+          //   ...userInfo,
+          //   parse_user_nickname: nicknameChange.nickname,
+          // });
         })
         .catch((err) => {
           console.log(err, 'nickname edit err');
@@ -340,7 +349,7 @@ const Mypage = () => {
   }, [nicknameChange.isNickNameCheck]);
 
   const handlePasswordEdit = () => {
-    if (!userInfo.parse_user_domain) {
+    if (!stateUserInfo.domain) {
       dispatch(modalOpen('password'));
     } else {
       dispatch(modalOpen('SNS이용자는 변경하실 수 없습니다.'));
@@ -355,8 +364,8 @@ const Mypage = () => {
       potoInput.current.click();
     }
   };
-  const [selectImg, setSelectImg] = useState('');
-  const [userImg, setUserImg] = useState(userInfo.parse_user_image_path);
+  //const [selectImg, setSelectImg] = useState('');
+  //const [userImg, setUserImg] = useState(userInfo.parse_user_image_path);
   const [file, setFile] = useState<FileList | undefined>();
   const [fileName, setFileName] = useState<string>('');
   const [presignedPost, setPresignedPost] = useState<TypePresignedPost>();
@@ -377,8 +386,9 @@ const Mypage = () => {
     if (e.target.files !== null && e.target.files.length > 0) {
       const fileList = e.target.files; //선택한 사진 파일
       let imgUrl = URL.createObjectURL(fileList[0]); //미리보기를 위한 파일 변경
-      console.log(imgUrl);
-      setUserImg(imgUrl);
+      // console.log(imgUrl);
+      // setUserImg(imgUrl);
+      dispatch(userPotoEdit(imgUrl));
       setFile(fileList);
       setFileName(fileList[0].name); //선택한 사진 파일 이름
     }
@@ -400,15 +410,15 @@ const Mypage = () => {
       });
   }, [fileName]);
 
-  useEffect(() => {
-    if (fileName) {
-      handleS3ImgUpload();
-      if (typeof presignedPost?.fields.key === 'string')
-        setSelectImg(presignedPost.fields.key);
-    } else {
-      setSelectImg('');
-    }
-  }, [userImg]);
+  // useEffect(() => {
+  //   if (fileName) {
+  //     handleS3ImgUpload();
+  //     if (typeof presignedPost?.fields.key === 'string')
+  //       setSelectImg(presignedPost.fields.key);
+  //   } else {
+  //     setSelectImg('');
+  //   }
+  // }, [stateUserInfo.image_path]);
 
   const handleS3ImgUpload = () => {
     const formData = new FormData(); //fromdata 생성
@@ -433,37 +443,38 @@ const Mypage = () => {
     }
   };
   //로컬에서 항상 가져오기 사진
+  //사진 수정 버튼 클릭 시
   const handleImgEdit = () => {
-    if (!userImg) {
+    if (!stateUserInfo.image_path) {
       dispatch(modalOpen('사진을 선택해주세요.'));
     } else {
+      handleS3ImgUpload();
       axiosInstance
-        .patch(`/profile`, { image_path: selectImg })
+        .patch(`/profile`, { image_path: presignedPost?.fields.key })
         .then((res) => {
-          window.localStorage.setItem(
-            'user',
-            JSON.stringify({
-              id: userInfo.parse_post_id,
-              email: userInfo.parse_user_email,
-              nickname: userInfo.parse_user_nickname,
-              post_id: userInfo.parse_post_id,
-              domain: userInfo.parse_user_domain,
-              image_path: userImg,
-            })
-            //! 읽을때 JSON.part()
-          );
+          // window.localStorage.setItem(
+          //   'user',
+          //   JSON.stringify({
+          //     id: userInfo.parse_post_id,
+          //     email: userInfo.parse_user_email,
+          //     nickname: userInfo.parse_user_nickname,
+          //     post_id: userInfo.parse_post_id,
+          //     domain: userInfo.parse_user_domain,
+          //     image_path: userImg,
+          //   })
+          //   //! 읽을때 JSON.part()
+          // );
           dispatch(modalOpen('수정되었습니다.'));
           navigate('/mypage');
-          dispatch(userInfoSave());
         })
         .catch((err) => {
           console.log(err, 'new bucketlist create err');
         });
     }
   };
-  useEffect(() => {
-    dispatch(getUserInfo());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(getUserInfo());
+  // }, []);
 
   return (
     <>
@@ -518,10 +529,10 @@ const Mypage = () => {
                   <ProfilTilte>프로필 사진</ProfilTilte>
                 </DivLine>
                 <DivLine>
-                  {userImg ? (
+                  {stateUserInfo.image_path ? (
                     <PostPoto
                       alt="sample"
-                      src={userImg}
+                      src={stateUserInfo.image_path}
                       onClick={() => handlePotoInput()}
                     />
                   ) : (
@@ -555,13 +566,11 @@ const Mypage = () => {
                     <ProfilContentInput
                       type="text"
                       value={nicknameChange.nickname}
-                      placeholder={`${userInfo.parse_user_nickname}`}
+                      placeholder={`${stateUserInfo.nickname}`}
                       onChange={handleNicknameInput('nickname')}
                     />
                   ) : (
-                    <ProfilContent>
-                      {userInfo.parse_user_nickname}
-                    </ProfilContent>
+                    <ProfilContent>{stateUserInfo.nickname}</ProfilContent>
                   )}
                 </DivLine>
                 <DivLine>
@@ -605,7 +614,7 @@ const Mypage = () => {
                   <ProfilTilte>이메일</ProfilTilte>
                 </DivLine>
                 <DivLine>
-                  <ProfilContent>{userInfo.parse_user_email}</ProfilContent>
+                  <ProfilContent>{stateUserInfo.email}</ProfilContent>
                 </DivLine>
                 <DivLine></DivLine>
               </ProfilList>

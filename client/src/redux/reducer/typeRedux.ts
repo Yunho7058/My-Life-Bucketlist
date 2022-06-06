@@ -12,7 +12,7 @@ namespace TypeRedux {
   }
   export interface TypePosts {
     type: string;
-    payload: { postAlldata: TypePostsData[]; id: number; img?: string };
+    payload: { postAlldata: TypePostsData[]; id: number; url?: string };
   }
   export interface TypePostsData {
     title: string;
@@ -70,6 +70,22 @@ namespace TypeRedux {
     presignPost: string;
     isPotoDownload: boolean;
     potoBlob: string;
+  }
+  export interface TypeComment {
+    content: string;
+    id: number;
+    nickname: string;
+    user_id: number;
+    updated_at: string;
+    image_path?: string;
+  }
+  export interface TypeUserInfo {
+    user_id: number;
+    post_id: number;
+    nickname: string;
+    email: string;
+    domain: string;
+    image_path: string | null;
   }
 }
 

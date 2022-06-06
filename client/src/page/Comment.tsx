@@ -4,7 +4,14 @@ import { MdModeEdit } from 'react-icons/md';
 import { BiDotsVerticalRounded } from 'react-icons/bi';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { modalOpen } from '../redux/action';
+import {
+  commentAllAdd,
+  commentDelete,
+  commentEdit,
+  commentNewContentAdd,
+  commentProfilePotoDownload,
+  modalOpen,
+} from '../redux/action';
 import axios from 'axios';
 
 import TypeRedux from '../redux/reducer/typeRedux';
@@ -16,17 +23,11 @@ import { useParams } from 'react-router-dom';
 
 const Comment = () => {
   const dispatch = useDispatch();
-  const accessToken = window.localStorage.getItem('accessToken');
+  const stateComment: TypeRedux.TypeComment[] = useSelector(
+    (state: TypeRootReducer) => state.commentAll
+  );
+  const stateUserInfo = useSelector((state: TypeRootReducer) => state.userInfo);
   //해당유저가 작성한 댓글 관리시 필요한 데이타(수성,삭제)
-  let getUserId = window.localStorage.getItem('user');
-  let parse_user_id: number;
-  let parse_user_nickname: string = '';
-  let parse_user_image_path = '';
-  if (getUserId !== null) {
-    parse_user_id = Number(JSON.parse(getUserId).post_id);
-    parse_user_nickname = JSON.parse(getUserId).nickname;
-    parse_user_image_path = JSON.parse(getUserId).image_path;
-  }
 
   const statePost: TypeRedux.TypePostData = useSelector(
     (state: TypeRootReducer) => state.postReducer
@@ -34,16 +35,7 @@ const Comment = () => {
   const stateIsLogin = useSelector(
     (state: TypeRootReducer) => state.isLoginReducer
   );
-  const [allComment, setAllComment] = useState([
-    {
-      id: 0,
-      user_id: 0,
-      nickname: '',
-      content: '',
-      updated_at: '',
-      image_path: '',
-    },
-  ]);
+  const [allComment, setAllComment] = useState<TypeRedux.TypeComment[]>([]);
   //신규 생성 state
   const [newComment, setNewComment] = useState({
     content: '',
@@ -60,21 +52,46 @@ const Comment = () => {
     axiosInstance
       .get(`/comment/${postURL.id}`)
       .then((res) => {
-        setAllComment([...res.data]);
+        dispatch(commentAllAdd(res.data));
+        res.data.forEach((el: TypeRedux.TypeComment) =>
+          s3Download(el.user_id, el.image_path)
+        );
+        //이미지만 s3 보내기
       })
       .catch((err) => console.log(err, 'comment get err'));
   }, []);
+
+  const s3Download = (id: number, image?: string) => {
+    if (image) {
+      axios
+        .post(
+          'https://p9m7fksvha.execute-api.ap-northeast-2.amazonaws.com/s3/presigned-url',
+          { key: image }
+        )
+        .then((res) => {
+          axios
+            .get(res.data.data, { responseType: 'blob' })
+            .then((res) => {
+              let url = window.URL.createObjectURL(new Blob([res.data]));
+              dispatch(commentProfilePotoDownload(id, url));
+            })
+            .catch((err) => console.log(err));
+        })
+        .catch((err) => {
+          console.log(err, 's3 err');
+        });
+    } else {
+      dispatch(commentProfilePotoDownload(id, ''));
+    }
+  };
 
   //!댓글 삭제
   const handleDelete = (commentId: number) => {
     axiosInstance
       .delete(`/comment/${commentId}`)
       .then((res) => {
-        setAllComment(
-          allComment.filter((el) => {
-            return el.id !== commentId;
-          })
-        );
+        dispatch(commentDelete(commentId));
+
         setCommentEditMiniModal2(0);
         setCommentEditMiniModal(0);
         dispatch(modalOpen('댓글이 삭제되었습니다.'));
@@ -91,17 +108,14 @@ const Comment = () => {
         content: editComment.content,
       })
       .then((res) => {
-        setAllComment(
-          allComment.map((el) => {
-            return el.id === editComment.comment_id
-              ? {
-                  ...el,
-                  content: editComment.content,
-                  updated_at: res.data.updated_at,
-                }
-              : { ...el };
-          })
+        dispatch(
+          commentEdit(
+            editComment.comment_id,
+            editComment.content,
+            res.data.updated_at
+          )
         );
+
         dispatch(modalOpen('수정이 완료됐습니다.'));
         setCommentEditMiniModal2(0);
       })
@@ -134,17 +148,16 @@ const Comment = () => {
       axiosInstance
         .post(`/comment/${statePost.id}`, newComment)
         .then((res) => {
-          setAllComment([
-            ...allComment,
-            {
-              id: res.data.id,
-              user_id: parse_user_id,
-              content: newComment.content,
-              nickname: parse_user_nickname,
-              updated_at: res.data.updated_at,
-              image_path: res.data.image_path,
-            },
-          ]);
+          let data = {
+            id: res.data.id,
+            user_id: stateUserInfo.user_id,
+            content: newComment.content,
+            nickname: stateUserInfo.nickname,
+            updated_at: res.data.updated_at,
+            image_path: stateUserInfo.image_path,
+          };
+          dispatch(commentNewContentAdd(data));
+
           setNewComment({ content: '' });
           dispatch(modalOpen('댓글이 작성됐습니다.'));
         })
@@ -180,8 +193,8 @@ const Comment = () => {
     <CS.CommentBox>
       <CS.CommentCreateBox>
         <CS.CommentProfile>
-          {parse_user_image_path ? (
-            <img src={parse_user_image_path} />
+          {stateUserInfo.image_path ? (
+            <img src={stateUserInfo.image_path} />
           ) : (
             <FaUserCircle className="my" size={50}></FaUserCircle>
           )}
@@ -204,7 +217,7 @@ const Comment = () => {
         </CS.CommentTextAreaBox>
       </CS.CommentCreateBox>
       <CS.CommentListBox>
-        {allComment
+        {stateComment
           .slice(0)
           .reverse()
           .map((el) => {
@@ -247,7 +260,7 @@ const Comment = () => {
                   </CS.CommentListBody>
                 )}
 
-                {el.user_id === parse_user_id && (
+                {el.user_id === stateUserInfo.user_id && (
                   <CS.CommentListBtn>
                     <BiDotsVerticalRounded
                       size={30}

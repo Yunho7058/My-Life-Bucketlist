@@ -11,6 +11,7 @@ import modal from './modal';
 import isDarkeMode from './isDarkMode';
 import userInfo from './userInfo';
 import s3Poto from './s3Poto';
+import commentAll from './comment';
 
 const rootReducer = combineReducers({
   testReducer,
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   isDarkeMode,
   userInfo,
   s3Poto,
+  commentAll,
 });
 
 export default rootReducer;

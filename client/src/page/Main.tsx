@@ -75,6 +75,7 @@ export const MainPost = styled.div`
   background-color: ${({ theme }) => theme.mode.background2};
   box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
   border-radius: 20px;
+  overflow: hidden;
   cursor: pointer;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
   transition: 600ms;
@@ -131,12 +132,14 @@ export const PostBucketlist = styled.div`
 export const PostBucketlistLine = styled.div`
   width: 95%;
   overflow: hidden;
+  font-weight: 300;
   white-space: nowrap;
   text-overflow: ellipsis;
   -webkit-line-clamp: 3;
 `;
 export const PostBucketlistNickname = styled.div`
   font-size: 12px;
+  color: #6495ed;
   text-align: right;
   padding: 10px;
   padding-right: 20px;
@@ -160,6 +163,7 @@ function Main() {
     axiosInstance
       .get(`/post`)
       .then((res) => {
+        console.log(res.data);
         dispatch(postAll(res.data));
         res.data.forEach((el: TypeRedux.TypePostsData) =>
           el.bucketlist.forEach((el) => s3Download(el.id, el.image_path))
@@ -195,7 +199,7 @@ function Main() {
           console.log(err, 's3 err');
         });
     } else {
-      dispatch(postAllpotoDownload(id, ''));
+      dispatch(postAllpotoDownload(id, null));
       //dispatch(postImgOrigin('', id));
     }
   };
@@ -232,7 +236,6 @@ function Main() {
       boxRef.current && observerRef.current.observe(boxRef.current);
     }
   }, [stateAllPost]);
-  console.log(stateAllPost);
   return (
     <>
       {!spinner && <Spinner />}
@@ -249,10 +252,13 @@ function Main() {
                   }}
                   ref={boxRef}
                 >
-                  {el.bucketlist.length && el.bucketlist[0].image_path ? (
+                  {el.bucketlist[0].image_path &&
+                  el.bucketlist[0].image_path.includes('blob') ? (
                     <PostImg src={el.bucketlist[0].image_path} />
+                  ) : el.bucketlist[0].image_path === null ? (
+                    <div>사진 없음</div>
                   ) : (
-                    <div>사진없음</div>
+                    <Spinner></Spinner>
                   )}
                   <PostContentBox>
                     <PostBucketlist>
@@ -280,7 +286,7 @@ function Main() {
                     </PostBucketlist>
                     <Line></Line>
                     <PostBucketlistNickname>
-                      {el.nickname}의 버킷리스트
+                      {el.nickname}
                     </PostBucketlistNickname>
                   </PostContentBox>
                 </MainPost>
@@ -293,10 +299,13 @@ function Main() {
                     handlePostClick(el.id);
                   }}
                 >
-                  {el.bucketlist.length && el.bucketlist[0].image_path ? (
+                  {el.bucketlist[0].image_path &&
+                  el.bucketlist[0].image_path.includes('blob') ? (
                     <PostImg src={el.bucketlist[0].image_path} />
+                  ) : el.bucketlist[0].image_path === null ? (
+                    <div>사진 없음</div>
                   ) : (
-                    <div>사진없음</div>
+                    <Spinner></Spinner>
                   )}
 
                   <PostContentBox>
@@ -330,7 +339,7 @@ function Main() {
                     </PostBucketlist>
                     <Line></Line>
                     <PostBucketlistNickname>
-                      {el.nickname}의 버킷리스트
+                      {el.nickname}
                     </PostBucketlistNickname>
                   </PostContentBox>
                 </MainPost>
