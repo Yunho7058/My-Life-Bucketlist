@@ -55,8 +55,8 @@ def update_bucketlist(db: Session, db_bucketlist: Bucketlist, bucketlist: schema
     return
 
 
-def delete_bucketlist(db: Session, bucketlist: Bucketlist):
-    db.delete(bucketlist)
+def delete_bucketlist(db: Session, db_bucketlist: Bucketlist):
+    db.delete(db_bucketlist)
     db.commit()
     return
 

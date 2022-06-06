@@ -13,9 +13,11 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.orm.attributes import get_history
 
 from app.db.database import Base
 from app.utils import get_now
+from app.core.aws_sqs import delete_s3_object_task
 
 
 class Post(Base):
@@ -89,9 +91,26 @@ class Bookmark(Base):
     post = relationship("Post", back_populates="bookmarks")
 
 
+
 def bucketlist_listener(mapper, connection, target):
     connection.execute(update(Post).values(updated_at=get_now()).where(Post.id == target.post_id))
 
-event.listen(Bucketlist, 'after_insert', bucketlist_listener)
-event.listen(Bucketlist, 'after_update', bucketlist_listener)
-event.listen(Bucketlist, 'after_delete', bucketlist_listener)
+
+def bucketlist_image_path_update_listener(mapper, connection, target):
+    history = get_history(target, "image_path")
+    if history.has_changes():
+        old_image_path = history.deleted[0] if history.deleted else None
+        new_image_path = target.image_path
+        delete_s3_object_task(old_image_path)
+
+
+def bucketlist_image_path_delete_listener(mapper, connection, target):
+    if target.image_path:
+        delete_s3_object_task(target.image_path)
+    
+
+event.listen(Bucketlist, "after_insert", bucketlist_listener)
+event.listen(Bucketlist, "after_update", bucketlist_listener)
+event.listen(Bucketlist, "after_update", bucketlist_image_path_update_listener)
+event.listen(Bucketlist, "after_delete", bucketlist_listener)
+event.listen(Bucketlist, "after_delete", bucketlist_image_path_delete_listener)

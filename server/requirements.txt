@@ -4,6 +4,8 @@ asgiref==3.5.0
 atomicwrites==1.4.0
 attrs==21.4.0
 bcrypt==3.2.0
+boto3==1.24.2
+botocore==1.27.2
 certifi==2021.10.8
 cffi==1.15.0
 charset-normalizer==2.0.11
@@ -17,6 +19,7 @@ h11==0.13.0
 httptools==0.3.0
 idna==3.3
 iniconfig==1.1.1
+jmespath==1.0.0
 Mako==1.2.0
 MarkupSafe==2.1.1
 mysqlclient==2.1.0
@@ -29,6 +32,7 @@ pycparser==2.21
 pydantic==1.9.0
 pyparsing==3.0.7
 pytest==7.0.0
+python-dateutil==2.8.2
 python-dotenv==0.19.2
 python-jose==3.3.0
 python-multipart==0.0.5
@@ -36,6 +40,7 @@ pytz==2022.1
 PyYAML==6.0
 requests==2.27.1
 rsa==4.8
+s3transfer==0.6.0
 six==1.16.0
 sniffio==1.2.0
 SQLAlchemy==1.4.31
