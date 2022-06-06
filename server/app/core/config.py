@@ -36,6 +36,8 @@ class Settings(BaseSettings):
     NAVER_CLIENT_ID: str
     NAVER_CLIENT_SECRET: str
 
+    AWS_SQS_URL: str
+
     class Config:
         env_file = "app/.env"
 
