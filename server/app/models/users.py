@@ -3,7 +3,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.attributes import get_history
 
 from app.db.database import Base
-from app.core.aws_sqs import delete_s3_object_task
+from app.core.aws_boto3 import delete_s3_object_task
+
+
 
 class User(Base):
     __tablename__ = "users"
