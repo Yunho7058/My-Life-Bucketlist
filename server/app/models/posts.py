@@ -17,7 +17,7 @@ from sqlalchemy.orm.attributes import get_history
 
 from app.db.database import Base
 from app.utils import get_now
-from app.core.aws_sqs import delete_s3_object_task
+from app.core.aws_boto3 import delete_s3_object_task
 
 
 class Post(Base):

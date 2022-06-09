@@ -5,10 +5,12 @@ from base64 import b64encode
 
 from app.api.dependencies import get_db, authenticate_by_token, get_current_user
 from app.core.config import settings
-from app.models.users import User
+from app.core.aws_boto3 import generate_presigned_post
 from app.crud.users import get_user
 from app.crud import posts as crud
+from app.models.users import User
 from app.schemas import posts as schemas
+from app.schemas.common import PresignedPost
 
 
 router = APIRouter()
@@ -165,14 +167,7 @@ def get_bookmarked_post_list(user: User = Depends(get_current_user), db: Session
     return bookmarked_posts
 
 
-@router.get("/bucketlist/presigned-post", summary="S3에 버킷리스트 이미지 업로드를 위한 Presigned POST 요청", tags=["버킷리스트"])
+@router.get("/bucketlist/presigned-post", response_model=PresignedPost, summary="S3에 버킷리스트 이미지 업로드를 위한 Presigned POST 요청", tags=["버킷리스트"])
 def get_presigned_post(file_name: str, user: User = Depends(get_current_user)):
-    response = requests.post(
-        f"{settings.AWS_API_GATEWAY_URL}/presigned-post",
-        headers={"Authorization": settings.AWS_AUTH_KEY},
-        json={"type": "bucketlist", "name": file_name, "id": user.post.id}
-    )
-    data = response.json()
-    if response.status_code == 500:
-        return data
-    return data.get("data")
+    presigned_post = generate_presigned_post("bucketlist", file_name, user.id)
+    return presigned_post

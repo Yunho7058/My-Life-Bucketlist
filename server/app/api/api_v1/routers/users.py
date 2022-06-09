@@ -16,7 +16,7 @@ from app.api.dependencies import (
     get_current_user
 )
 from app.schemas.users import User, UserCreate, Token, UserWithPostId
-from app.schemas.common import HTTPError
+from app.schemas.common import HTTPError, PresignedPost
 from app.crud.users import (
     create_user, 
     get_user, 
@@ -35,6 +35,7 @@ from app.core.security import (
     verify_password,
     decode_token
 )
+from app.core.aws_boto3 import generate_presigned_post
 from app.utils import send_email_code, generate_random_password, send_new_password
 
 
@@ -194,17 +195,10 @@ def find_password(user: User = Depends(get_current_user), db: Session = Depends(
     return
 
 
-@router.get("/profile/presigned-post", summary="S3에 프로필 이미지 업로드를 위한 Presigned POST 요청", tags=["마이페이지"])
+@router.get("/profile/presigned-post", response_model=PresignedPost, summary="S3에 프로필 이미지 업로드를 위한 Presigned POST 요청", tags=["마이페이지"])
 def get_presigned_post(file_name: str, user: User = Depends(get_current_user)):
-    file_type = file_name.split(".")[-1]
-    response = requests.post(
-        f"{settings.AWS_API_GATEWAY_URL}/presigned-post",
-        headers={"Authorization": settings.AWS_AUTH_KEY},
-        json={"type": "profile", "name": f"profile.{file_type}", "id": user.id}
-    ).json()
-    if response.get("error"):
-        return response.get("message")
-    return response.get("data")
+    presigned_post = generate_presigned_post("profile", file_name, user.id)
+    return presigned_post
 
 
 @router.patch("/profile", status_code=204, responses={401: {}}, summary="프로필 사진 경로 수정", tags=["마이페이지"])
