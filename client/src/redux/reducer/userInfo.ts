@@ -7,14 +7,7 @@ import {
   USER_INFO_POTO,
 } from '../action/index';
 
-const initialization = {
-  user_id: 0,
-  post_id: 0,
-  nickname: '',
-  email: '',
-  domain: '',
-  image_path: '',
-};
+const initialization = {};
 
 const userInfo = (state = initialization, action: any) => {
   switch (action.type) {
@@ -94,7 +87,7 @@ const userInfo = (state = initialization, action: any) => {
       //   .catch((err) => console.log(err, '로그인 후 해당유저 정보 불러오기'));
       // console.log(state);
       let copy = action.payload;
-      console.log(copy);
+
       return copy;
 
     case USER_INFO_NICKNAME_EDIT:

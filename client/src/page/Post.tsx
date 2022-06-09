@@ -34,46 +34,6 @@ import axiosInstance from '../utils/axios';
 import axios from 'axios';
 import Spinner from '../utils/spinner';
 
-//import { TypeProps } from '../App';
-
-//편집모드 클릭 시 수정 삭제 추가 버튼 보이게 하기
-//! 만약 로컬 아이디와 포스트 아이디 다르면 편집모드 숨기기
-//
-//
-
-export const BookAndlikeBtn = styled.div`
-  width: 90%;
-  height: 30px;
-  display: flex;
-  margin-top: 20px;
-  column-gap: 20px;
-  align-items: flex-start;
-  align-items: center;
-  > svg {
-    &:hover {
-      cursor: pointer;
-    }
-  }
-`;
-export const Pagination = styled.div`
-  display: flex;
-  width: 65%;
-  justify-content: space-around;
-`;
-
-export const PaginationBtn = styled.div`
-  border: 1px solid;
-  width: 80px;
-  text-align: center;
-  line-height: 30px;
-  height: 30px;
-  border-radius: 15px;
-  cursor: pointer;
-  &:hover {
-    background-color: #6495ed;
-  }
-`;
-
 function Post() {
   const postURL = useParams();
   const [postId, setPostId] = useState(postURL.id);
@@ -108,6 +68,7 @@ function Post() {
     axiosInstance
       .get(`/post/${postId}`)
       .then((res) => {
+        console.log(res.data);
         dispatch(postEach(res.data));
         res.data.bucketlist.forEach((el: TypeBucketlist) => {
           s3Download(el.image_path, el.id);
@@ -397,34 +358,42 @@ function Post() {
                 ></DetailMode>
               )}
 
-              <Pagination>
-                <PaginationBtn onClick={() => handlePaginationClick(0, 20)}>
+              <PS.Pagination>
+                <PS.PaginationBtn onClick={() => handlePaginationClick(0, 20)}>
                   1~20위
-                </PaginationBtn>
+                </PS.PaginationBtn>
                 {statePost.bucketlist.length > 20 && (
-                  <PaginationBtn onClick={() => handlePaginationClick(21, 41)}>
+                  <PS.PaginationBtn
+                    onClick={() => handlePaginationClick(21, 41)}
+                  >
                     21~40위
-                  </PaginationBtn>
+                  </PS.PaginationBtn>
                 )}
                 {statePost.bucketlist.length > 40 && (
-                  <PaginationBtn onClick={() => handlePaginationClick(41, 61)}>
+                  <PS.PaginationBtn
+                    onClick={() => handlePaginationClick(41, 61)}
+                  >
                     41~60위
-                  </PaginationBtn>
+                  </PS.PaginationBtn>
                 )}
 
                 {statePost.bucketlist.length > 60 && (
-                  <PaginationBtn onClick={() => handlePaginationClick(61, 81)}>
+                  <PS.PaginationBtn
+                    onClick={() => handlePaginationClick(61, 81)}
+                  >
                     61~80위
-                  </PaginationBtn>
+                  </PS.PaginationBtn>
                 )}
 
                 {statePost.bucketlist.length > 80 && (
-                  <PaginationBtn onClick={() => handlePaginationClick(81, 101)}>
+                  <PS.PaginationBtn
+                    onClick={() => handlePaginationClick(81, 101)}
+                  >
                     81~100위
-                  </PaginationBtn>
+                  </PS.PaginationBtn>
                 )}
-              </Pagination>
-              <BookAndlikeBtn>
+              </PS.Pagination>
+              <PS.BookAndlikeBtn>
                 {statePost.bookmark ? (
                   <BsBookmarkPlusFill
                     size={25}
@@ -456,7 +425,7 @@ function Post() {
                   />
                 )}
                 좋아요 {statePost.like_count}개
-              </BookAndlikeBtn>
+              </PS.BookAndlikeBtn>
 
               <Comment />
             </PS.PostBox>

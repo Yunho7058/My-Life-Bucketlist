@@ -16,47 +16,10 @@ import qs from 'qs';
 //components
 import Headers from '../components/Headers';
 import { getUserInfo, isLogin } from '../redux/action';
-import * as LS from './style/LoginS';
-import axiosInstance from '../utils/axios';
-import Modal from '../components/Modal';
+import * as LS from './style/LoginStyledComponents';
 import kakao from '../assets/oauth/kakao.png';
 import google from '../assets/oauth/google.png';
 import naver from '../assets/oauth/naver.png';
-
-export const LoginSNSBack = styled.div`
-  width: 100%;
-  padding: 10px;
-
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-`;
-
-export const LoginSNS = styled.img`
-  height: 60px;
-  width: 60px;
-  cursor: pointer;
-  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.5);
-  border-radius: 5px;
-  &.google {
-    height: 40px;
-    width: 40px;
-    box-shadow: 0px 0px 0px 0px;
-  }
-`;
-
-export const LoginSNSGoogleBack = styled.div`
-  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.5);
-  border: 1px solid;
-  background-color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  width: 60px;
-  height: 60px;
-`;
 
 function Login() {
   //유저정보
@@ -151,25 +114,6 @@ function Login() {
         });
     }
   };
-  //유저정보 저장
-  // const handleGetUserinfo = () => {
-  //   //let accessToken = window.localStorage.getItem('accessToken');
-  //   axiosInstance
-  //     .get(`/me`)
-  //     .then((res) => {
-  //       window.localStorage.setItem(
-  //         'user',
-  //         JSON.stringify({
-  //           id: res.data.id,
-  //           email: res.data.email,
-  //           nickname: res.data.nickname,
-  //           post_id: res.data.post_id,
-  //         })
-  //         //! 읽을때 JSON.part()
-  //       );
-  //     })
-  //     .catch((err) => console.log(err, '로그인 후 해당유저 정보 불러오기'));
-  // };
 
   const enterKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
@@ -240,29 +184,29 @@ function Login() {
           <LS.LoginBtn onClick={() => handleLogin()}>로그인</LS.LoginBtn>
           비밀번호 찾기
           <LS.LoginLine>or</LS.LoginLine>
-          <LoginSNSBack>
-            <LoginSNS
+          <LS.LoginSNSBack>
+            <LS.LoginSNS
               onClick={() => {
                 handleKakaoLogin();
               }}
               src={kakao}
-            ></LoginSNS>
-            <LoginSNSGoogleBack>
-              <LoginSNS
+            ></LS.LoginSNS>
+            <LS.LoginSNSGoogleBack>
+              <LS.LoginSNS
                 onClick={() => {
                   handleGoogleLogin();
                 }}
                 src={google}
                 className="google"
-              ></LoginSNS>
-            </LoginSNSGoogleBack>
-            <LoginSNS
+              ></LS.LoginSNS>
+            </LS.LoginSNSGoogleBack>
+            <LS.LoginSNS
               onClick={() => {
                 handleNaverLogin();
               }}
               src={naver}
-            ></LoginSNS>
-          </LoginSNSBack>
+            ></LS.LoginSNS>
+          </LS.LoginSNSBack>
         </LS.LoginBox>
         <LS.LoginSignupBtn
           onClick={() => {

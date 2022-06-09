@@ -26,8 +26,8 @@ const initialization = {
       id: 0,
       content: '',
       detaile: '',
-      image_path: '',
-      image_path_origin: '',
+      image_path: null,
+      image_path_origin: null,
     },
   ],
 };
@@ -124,6 +124,7 @@ const postReducer = (
       };
 
     case POST_BUCKETLIST_POTO_UPLOAD:
+      console.log(action.payload.image_path);
       let img_copy = state.bucketlist.map((el) => {
         return el.id === action.payload.id
           ? { ...el, image_path: action.payload.image_path }
