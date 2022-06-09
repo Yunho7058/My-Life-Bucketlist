@@ -7,248 +7,11 @@ import styled from 'styled-components';
 import axiosInstance from '../utils/axios';
 import Headers from '../components/Headers';
 import Modal from '../components/Modal';
-import {
-  getUserInfo,
-  modalOpen,
-  userNicknameEdit,
-  userPotoEdit,
-} from '../redux/action';
+import { modalOpen, userNicknameEdit, userPotoEdit } from '../redux/action';
 import { BiBook } from 'react-icons/bi';
 import { BsBucketFill } from 'react-icons/bs';
 import { TypeRootReducer } from '../redux/store/store';
-
-import { dark } from '../components/style/theme';
-
-export const MypageBack = styled.div`
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  padding-bottom: 30px;
-  background-color: ${({ theme }) => theme.mode.background1};
-  display: flex;
-  justify-content: center;
-  justify-content: space-around;
-  overflow: auto;
-`;
-
-export const ListBox = styled.div`
-  margin-top: 10%;
-  padding: 10px;
-  width: 25%;
-  height: 150px;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  background-color: ${({ theme }) => theme.mode.background2};
-  box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
-`;
-
-export const ContentBox = styled.div`
-  margin-top: 10%;
-  display: flex;
-  padding: 30px;
-  flex-direction: column;
-  justify-content: space-around;
-  width: 50%;
-  height: 300px;
-  border-radius: 20px;
-  background-color: ${({ theme }) => theme.mode.background2};
-  box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
-  &.profile {
-    height: 500px;
-  }
-`;
-
-export const ListTitle = styled.div`
-  padding: 10px;
-  padding-left: 20px;
-  text-align: left;
-  height: 40px;
-  line-height: 40px;
-  border-radius: 15px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  &:hover {
-    background-color: ${({ theme }) => theme.mode.background1};
-  }
-  > svg {
-    margin-bottom: 5px;
-    padding-right: 15px;
-  }
-`;
-export const MyBucketlist = styled.div`
-  cursor: pointer;
-  &:hover {
-    color: #6495ed;
-    text-decoration: underline;
-  }
-`;
-
-export const BookBucketlistBack = styled.div`
-  font-size: 20px;
-  padding: 10px;
-
-  line-height: 20px;
-`;
-export const BookTitle = styled.div`
-  font-size: 21px;
-  padding: 10px;
-  height: 30px;
-  line-height: 30px;
-
-  > svg {
-    padding-right: 5px;
-  }
-`;
-
-export const BookBucketlistBox = styled.div`
-  border-radius: 10px;
-  font-size: 15px;
-  padding: 10px;
-  background-color: ${({ theme }) => theme.mode.background4};
-  width: 95%;
-  height: 200px;
-  overflow-y: scroll;
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: #ffffff;
-  }
-`;
-
-export const BookBucketlist = styled.div`
-  padding: 10px;
-  cursor: pointer;
-  &:hover {
-    color: #6495ed;
-    text-decoration: underline;
-  }
-`;
-export const ProfilList = styled.div`
-  width: 95%;
-  height: 50px;
-  display: flex;
-
-  justify-content: space-around;
-  align-items: center;
-
-  > svg {
-    cursor: pointer;
-    &:hover {
-      opacity: 0.7;
-    }
-  }
-`;
-export const ProfilTilte = styled.div`
-  text-align: center;
-  font-size: 16px;
-  opacity: 0.6;
-  width: 200px;
-  height: 20px;
-`;
-export const ProfilContent = styled.div`
-  width: 200px;
-  height: 40px;
-  font-size: 16px;
-  line-height: 40px;
-  text-align: center;
-`;
-export const ProfilContentInput = styled.input`
-  width: 200px;
-  height: 35px;
-  border-radius: 10px;
-  border: 1px solid #696969;
-  padding-left: 10px;
-  background-color: ${({ theme }) => theme.mode.BGInput};
-  color: ${({ theme }) => theme.mode.FCInput};
-  outline: none;
-  &:hover {
-    border: 1px solid rgb(100, 100, 255);
-  }
-  &:focus {
-    border: 1px solid #4169e1;
-    background-color: ${({ theme }) => theme.mode.background2};
-  }
-`;
-export const Btn = styled.div`
-  border-radius: 10px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
-  padding: 5px;
-  border: 1px solid rgba(0, 0, 0, 0.4);
-  cursor: pointer;
-  font-size: 14px;
-  width: 80px;
-  &.delete {
-    background-color: #cd5c5c;
-    width: 20%;
-    &:hover {
-      background-color: #c77171;
-    }
-  }
-  &.change {
-    width: 40%;
-    width: 100px;
-    &:hover {
-      background-color: #6495ed;
-    }
-  }
-  &:hover {
-    background-color: #6495ed;
-  }
-`;
-export const ImgInput = styled.input`
-  cursor: pointer;
-  display: none;
-`;
-export const PostPoto = styled.img`
-  width: 100px;
-  height: 100px;
-  border-radius: 15px;
-  cursor: pointer;
-  &:hover {
-    //background-color: rgba(0, 0, 0, 0.6);
-    opacity: 0.7;
-  }
-`;
-// export const BucketlistImg = styled.div`
-//   text-align: center;
-//   line-height: 200px;
-//   border-radius: 30px;
-//   width: 100px;
-//   height: 200px;
-
-//   background-color: grey;
-//   cursor: pointer;
-//   &:hover {
-//     opacity: 0.7;
-//   }
-// `;
-
-export const Line = styled.div`
-  width: 90%;
-  border-bottom: 1px solid rgba(94, 94, 94, 0.3);
-`;
-
-export const DivLine = styled.div`
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80px;
-  height: 50px;
-  > svg {
-    cursor: pointer;
-    &:hover {
-      opacity: 0.7;
-    }
-  }
-`;
+import * as MS from './style/MypageStyledComponents';
 
 type bookBucketlistInfo = { nickname: string; id: number }[];
 const Mypage = () => {
@@ -260,29 +23,6 @@ const Mypage = () => {
   };
   const navigate = useNavigate();
   const stateUserInfo = useSelector((state: TypeRootReducer) => state.userInfo);
-
-  // let getUser = window.localStorage.getItem('user');
-  // const [userInfo, setUserInfo] = useState({
-  //   parse_post_id: 0,
-  //   parse_user_id: 0,
-  //   parse_user_email: '',
-  //   parse_user_nickname: '',
-  //   parse_user_domain: '',
-  //   parse_user_image_path: '',
-  // });
-  // useEffect(() => {
-  //   if (getUser !== null) {
-  //     setUserInfo({
-  //       parse_user_email: JSON.parse(getUser).email,
-  //       parse_user_id: JSON.parse(getUser).id,
-  //       parse_post_id: Number(JSON.parse(getUser).post_id),
-  //       parse_user_nickname: JSON.parse(getUser).nickname,
-  //       parse_user_domain: JSON.parse(getUser).domain,
-  //       parse_user_image_path: JSON.parse(getUser).image_path,
-  //     });
-  //     setUserImg(JSON.parse(getUser).image_path);
-  //   }
-  // }, []);
 
   //! 북마크 게시물 리스트
   useEffect(() => {
@@ -337,10 +77,6 @@ const Mypage = () => {
             isNickNameCheck: false,
           });
           dispatch(userNicknameEdit(nicknameChange.nickname));
-          // setUserInfo({
-          //   ...userInfo,
-          //   parse_user_nickname: nicknameChange.nickname,
-          // });
         })
         .catch((err) => {
           console.log(err, 'nickname edit err');
@@ -364,8 +100,7 @@ const Mypage = () => {
       potoInput.current.click();
     }
   };
-  //const [selectImg, setSelectImg] = useState('');
-  //const [userImg, setUserImg] = useState(userInfo.parse_user_image_path);
+
   const [file, setFile] = useState<FileList | undefined>();
   const [fileName, setFileName] = useState<string>('');
   const [presignedPost, setPresignedPost] = useState<TypePresignedPost>();
@@ -386,18 +121,13 @@ const Mypage = () => {
     if (e.target.files !== null && e.target.files.length > 0) {
       const fileList = e.target.files; //선택한 사진 파일
       let imgUrl = URL.createObjectURL(fileList[0]); //미리보기를 위한 파일 변경
-      // console.log(imgUrl);
-      // setUserImg(imgUrl);
+
       dispatch(userPotoEdit(imgUrl));
       setFile(fileList);
       setFileName(fileList[0].name); //선택한 사진 파일 이름
     }
   };
-  // const handleImgDelete = () => {
-  //   setFile(undefined);
-  //   setFileName('');
-  //   setUserImg('');
-  // };
+
   //server로 부터 s3접급 key 받아오기
   useEffect(() => {
     axiosInstance
@@ -409,16 +139,6 @@ const Mypage = () => {
         console.log('poto err');
       });
   }, [fileName]);
-
-  // useEffect(() => {
-  //   if (fileName) {
-  //     handleS3ImgUpload();
-  //     if (typeof presignedPost?.fields.key === 'string')
-  //       setSelectImg(presignedPost.fields.key);
-  //   } else {
-  //     setSelectImg('');
-  //   }
-  // }, [stateUserInfo.image_path]);
 
   const handleS3ImgUpload = () => {
     const formData = new FormData(); //fromdata 생성
@@ -434,9 +154,7 @@ const Mypage = () => {
           //server로 부터 받은 정보 url
           headers: { 'Content-Type': 'multipart/form-data' },
         })
-        .then((res) => {
-          //setSelectImg(presignedPost.fields.key);
-        })
+        .then((res) => {})
         .catch((err) => {
           console.log(err);
         });
@@ -452,18 +170,6 @@ const Mypage = () => {
       axiosInstance
         .patch(`/profile`, { image_path: presignedPost?.fields.key })
         .then((res) => {
-          // window.localStorage.setItem(
-          //   'user',
-          //   JSON.stringify({
-          //     id: userInfo.parse_post_id,
-          //     email: userInfo.parse_user_email,
-          //     nickname: userInfo.parse_user_nickname,
-          //     post_id: userInfo.parse_post_id,
-          //     domain: userInfo.parse_user_domain,
-          //     image_path: userImg,
-          //   })
-          //   //! 읽을때 JSON.part()
-          // );
           dispatch(modalOpen('수정되었습니다.'));
           navigate('/mypage');
         })
@@ -472,65 +178,55 @@ const Mypage = () => {
         });
     }
   };
-  // useEffect(() => {
-  //   dispatch(getUserInfo());
-  // }, []);
 
   return (
     <>
       <Headers></Headers>
       <Modal></Modal>
-      <MypageBack>
-        <ListBox>
-          <ListTitle onClick={() => handleListChange(0)}>
+      <MS.MypageBack>
+        <MS.ListBox>
+          <MS.ListTitle onClick={() => handleListChange(0)}>
             <BsBucketFill size={20} />
             버킷리스트 관리
-          </ListTitle>
-          <ListTitle onClick={() => handleListChange(1)}>
+          </MS.ListTitle>
+          <MS.ListTitle onClick={() => handleListChange(1)}>
             <FaUserEdit size={20} />
             프로필 설정
-          </ListTitle>
-        </ListBox>
-        <ContentBox className={list ? 'profile' : ''}>
+          </MS.ListTitle>
+        </MS.ListBox>
+        <MS.ContentBox className={list ? 'profile' : ''}>
           {list === 0 && (
             <>
-              {/* <MyBucketlist
-                onClick={() => {
-                  navigate(`/post/${userInfo.parse_post_id}`);
-                }}
-              >
-                나의 버킷리스트 바로가기
-              </MyBucketlist> */}
-              <BookBucketlistBack>
-                <BookTitle>
+              <MS.BookBucketlistBack>
+                <MS.BookTitle>
                   <BiBook size={20} />
                   북마크한 버킷리스트
-                </BookTitle>
-                <BookBucketlistBox>
+                </MS.BookTitle>
+                <MS.BookBucketlistBox>
                   {bookBucketlist &&
                     bookBucketlist.map((el, idx) => {
                       return (
-                        <BookBucketlist
+                        <MS.BookBucketlist
                           key={el.id}
                           onClick={() => navigate(`/post/${el.id}`)}
                         >
                           {idx + 1}. {el.nickname}님의 버킷리스트
-                        </BookBucketlist>
+                        </MS.BookBucketlist>
                       );
                     })}
-                </BookBucketlistBox>
-              </BookBucketlistBack>
+                </MS.BookBucketlistBox>
+              </MS.BookBucketlistBack>
             </>
           )}
           {list === 1 && (
             <>
-              <ProfilList>
-                <DivLine>
-                  <ProfilTilte>프로필 사진</ProfilTilte>
-                </DivLine>
-                <DivLine>
+              <MS.ProfilList>
+                <MS.DivLine>
+                  <MS.ProfilTilte>프로필 사진</MS.ProfilTilte>
+                </MS.DivLine>
+                <MS.DivLine>
                   {stateUserInfo.image_path ? (
-                    <PostPoto
+                    <MS.PostPoto
                       alt="sample"
                       src={stateUserInfo.image_path}
                       onClick={() => handlePotoInput()}
@@ -541,8 +237,8 @@ const Mypage = () => {
                       onClick={() => handlePotoInput()}
                     ></FaUserCircle>
                   )}
-                </DivLine>
-                <ImgInput
+                </MS.DivLine>
+                <MS.ImgInput
                   type="file"
                   accept="image/*"
                   name="file"
@@ -552,28 +248,30 @@ const Mypage = () => {
                 {/* <Btn className="imgDelete" onClick={() => handleImgDelete()}>
                   사진 삭제하기
                 </Btn> */}
-                <DivLine>
-                  <Btn onClick={() => handleImgEdit()}>수정</Btn>
-                </DivLine>
-              </ProfilList>
-              <Line></Line>
-              <ProfilList>
-                <DivLine>
-                  <ProfilTilte>닉네임</ProfilTilte>
-                </DivLine>
-                <DivLine>
+                <MS.DivLine>
+                  <MS.Btn onClick={() => handleImgEdit()}>수정</MS.Btn>
+                </MS.DivLine>
+              </MS.ProfilList>
+              <MS.Line></MS.Line>
+              <MS.ProfilList>
+                <MS.DivLine>
+                  <MS.ProfilTilte>닉네임</MS.ProfilTilte>
+                </MS.DivLine>
+                <MS.DivLine>
                   {nicknameChange.is ? (
-                    <ProfilContentInput
+                    <MS.ProfilContentInput
                       type="text"
                       value={nicknameChange.nickname}
                       placeholder={`${stateUserInfo.nickname}`}
                       onChange={handleNicknameInput('nickname')}
                     />
                   ) : (
-                    <ProfilContent>{stateUserInfo.nickname}</ProfilContent>
+                    <MS.ProfilContent>
+                      {stateUserInfo.nickname}
+                    </MS.ProfilContent>
                   )}
-                </DivLine>
-                <DivLine>
+                </MS.DivLine>
+                <MS.DivLine>
                   {nicknameChange.is ? (
                     <div
                       style={{
@@ -581,56 +279,56 @@ const Mypage = () => {
                         columnGap: '10px',
                       }}
                     >
-                      <Btn
+                      <MS.Btn
                         onClick={() => {
                           handleNicknameEdit();
                         }}
                       >
                         수정
-                      </Btn>
-                      <Btn
+                      </MS.Btn>
+                      <MS.Btn
                         onClick={() => {
                           setNicknameChange({ ...nicknameChange, is: false });
                         }}
                       >
                         취소
-                      </Btn>
+                      </MS.Btn>
                     </div>
                   ) : (
-                    <Btn
+                    <MS.Btn
                       className="change"
                       onClick={() => {
                         setNicknameChange({ ...nicknameChange, is: true });
                       }}
                     >
                       닉네임 변경
-                    </Btn>
+                    </MS.Btn>
                   )}
-                </DivLine>
-              </ProfilList>
-              <Line></Line>
-              <ProfilList>
-                <DivLine>
-                  <ProfilTilte>이메일</ProfilTilte>
-                </DivLine>
-                <DivLine>
-                  <ProfilContent>{stateUserInfo.email}</ProfilContent>
-                </DivLine>
-                <DivLine></DivLine>
-              </ProfilList>
-              <Line></Line>
+                </MS.DivLine>
+              </MS.ProfilList>
+              <MS.Line></MS.Line>
+              <MS.ProfilList>
+                <MS.DivLine>
+                  <MS.ProfilTilte>이메일</MS.ProfilTilte>
+                </MS.DivLine>
+                <MS.DivLine>
+                  <MS.ProfilContent>{stateUserInfo.email}</MS.ProfilContent>
+                </MS.DivLine>
+                <MS.DivLine></MS.DivLine>
+              </MS.ProfilList>
+              <MS.Line></MS.Line>
               <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                <Btn className="change" onClick={() => handlePasswordEdit()}>
+                <MS.Btn className="change" onClick={() => handlePasswordEdit()}>
                   비밀번호 변경
-                </Btn>
-                <Btn className="delete" onClick={() => handleSignout()}>
+                </MS.Btn>
+                <MS.Btn className="delete" onClick={() => handleSignout()}>
                   회원탈퇴
-                </Btn>
+                </MS.Btn>
               </div>
             </>
           )}
-        </ContentBox>
-      </MypageBack>
+        </MS.ContentBox>
+      </MS.MypageBack>
     </>
   );
 };

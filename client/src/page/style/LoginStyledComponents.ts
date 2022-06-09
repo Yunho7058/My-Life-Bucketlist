@@ -139,3 +139,38 @@ export const LoginSignupBtn = styled.div`
     }
   }
 `;
+
+export const LoginSNSBack = styled.div`
+  width: 100%;
+  padding: 10px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+`;
+
+export const LoginSNS = styled.img`
+  height: 60px;
+  width: 60px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  &.google {
+    height: 40px;
+    width: 40px;
+    box-shadow: 0px 0px 0px 0px;
+  }
+`;
+
+export const LoginSNSGoogleBack = styled.div`
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.5);
+  border: 1px solid;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  width: 60px;
+  height: 60px;
+`;

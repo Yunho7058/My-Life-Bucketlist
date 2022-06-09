@@ -310,3 +310,36 @@ export const ImgDelete = styled.button`
 export const ImgUploadBack = styled.div`
   margin-top: 10px;
 `;
+
+export const BookAndlikeBtn = styled.div`
+  width: 90%;
+  height: 30px;
+  display: flex;
+  margin-top: 20px;
+  column-gap: 20px;
+  align-items: flex-start;
+  align-items: center;
+  > svg {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+`;
+export const Pagination = styled.div`
+  display: flex;
+  width: 65%;
+  justify-content: space-around;
+`;
+
+export const PaginationBtn = styled.div`
+  border: 1px solid;
+  width: 80px;
+  text-align: center;
+  line-height: 30px;
+  height: 30px;
+  border-radius: 15px;
+  cursor: pointer;
+  &:hover {
+    background-color: #6495ed;
+  }
+`;

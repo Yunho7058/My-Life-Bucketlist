@@ -3,147 +3,18 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-//components
+//components or efc
 import Headers from '../components/Headers';
 import { TypeRootReducer } from '../redux/store/store';
 import TypeRedux from '../redux/reducer/typeRedux';
-import {
-  postAll,
-  postAllAdd,
-  postAllpotoDownload,
-  postEach,
-} from '../redux/action';
+import { postAll, postAllAdd, postAllpotoDownload } from '../redux/action';
 import { useEffect, useRef, useState } from 'react';
 import Spinner from '../utils/spinner';
 import axiosInstance from '../utils/axios';
 import finger1 from '../assets/poto/손1.png';
 import finger2 from '../assets/poto/손2.png';
 import finger3 from '../assets/poto/손3.png';
-
-export const MainDiv = styled.div`
-  background-color: ${({ theme }) => theme.mode.background1};
-  height: 100px;
-`;
-export const MainBack = styled.div`
-  width: 100%;
-  height: 100%;
-  padding-top: 30px;
-  padding-bottom: 30px;
-  background-color: ${({ theme }) => theme.mode.background1};
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-
-  min-width: 200px;
-`;
-export const MainPostBack = styled.div`
-  //flex-grow: 3;
-  height: 100%;
-  width: 80%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  //  justify-content: space-around;
-
-  flex-flow: row wrap;
-  row-gap: 30px;
-  column-gap: 30px;
-  text-align: center;
-`;
-
-// export const MainRankingBox = styled.div`
-//  // flex-grow: 1;
-//   width: 200px;
-//   height: 400px;
-//   border-radius: 10px;
-//   margin-right: 50px;
-//   background-color: ${({ theme }) => theme.mode.background2};
-//   box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
-//   @media screen and (max-width: 950px) {
-//     width: 0px;
-//     height: 0px;
-//     box-shadow: 0px 0px 0px 0px;
-//     overflow: hidden;
-//   }
-// `;
-export const MainPostSort = styled.div``;
-export const MainPost = styled.div`
-  height: 350px;
-  width: 300px;
-  z-index: 0px;
-  background-color: ${({ theme }) => theme.mode.background2};
-  box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
-  border-radius: 20px;
-  overflow: hidden;
-  cursor: pointer;
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
-  transition: 600ms;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-  opacity: 0.8;
-  &:hover {
-    opacity: 1;
-    transform: translateY(-15px);
-    transition: 500ms;
-  }
-  @media screen and (max-width: 1170px) {
-    height: 270px;
-    width: 210px;
-  }
-  @media screen and (max-width: 600px) {
-    height: 400px;
-    width: 360px;
-    min-width: 300px;
-  }
-`;
-
-export const PostImg = styled.img`
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  width: 100%;
-  height: 50%;
-`;
-export const PostContentBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  width: 100%;
-  height: 50%;
-`;
-export const PostBoxNickname = styled.div`
-  border: 1px solid;
-  text-align: right;
-
-  width: 100%;
-  height: 60px;
-`;
-export const Line = styled.div`
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  width: 100%;
-`;
-export const PostBucketlist = styled.div`
-  padding-left: 20px;
-  line-height: 22px;
-  text-align: left;
-`;
-export const PostBucketlistLine = styled.div`
-  width: 95%;
-  overflow: hidden;
-  font-weight: 300;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  -webkit-line-clamp: 3;
-`;
-export const PostBucketlistNickname = styled.div`
-  font-size: 12px;
-  color: #6495ed;
-  text-align: right;
-  padding: 10px;
-  padding-right: 20px;
-`;
+import * as MS from './style/MainStyledComponents';
 
 function Main() {
   const stateAllPost: TypeRedux.TypePostsData[] = useSelector(
@@ -175,7 +46,7 @@ function Main() {
       });
   }, []);
 
-  const s3Download = (id: number, data?: string) => {
+  const s3Download = (id: number, data?: string | null) => {
     if (data) {
       axios
         .post(
@@ -188,10 +59,6 @@ function Main() {
             .then((res) => {
               let url = window.URL.createObjectURL(new Blob([res.data]));
               dispatch(postAllpotoDownload(id, url));
-              // dispatch(postImgDownload(url, id));
-              // dispatch(postImgOrigin(url, id));
-
-              // setSpinnerImg(false);
             })
             .catch((err) => console.log(err));
         })
@@ -240,12 +107,12 @@ function Main() {
     <>
       {!spinner && <Spinner />}
       <Headers></Headers>
-      <MainBack>
-        <MainPostBack>
+      <MS.MainBack>
+        <MS.MainPostBack>
           {stateAllPost.map((el: TypeRedux.TypePostsData, idx) => {
             if (stateAllPost.length - 5 === idx) {
               return (
-                <MainPost
+                <MS.MainPost
                   key={el.id}
                   onClick={() => {
                     handlePostClick(el.id);
@@ -254,21 +121,21 @@ function Main() {
                 >
                   {el.bucketlist[0].image_path &&
                   el.bucketlist[0].image_path.includes('blob') ? (
-                    <PostImg src={el.bucketlist[0].image_path} />
+                    <MS.PostImg src={el.bucketlist[0].image_path} />
                   ) : el.bucketlist[0].image_path === null ? (
                     <div>사진 없음</div>
                   ) : (
                     <Spinner></Spinner>
                   )}
-                  <PostContentBox>
-                    <PostBucketlist>
+                  <MS.PostContentBox>
+                    <MS.PostBucketlist>
                       {el.bucketlist
                         .filter((el, idx) => {
                           return idx < 3;
                         })
                         .map((el, idx) => {
                           return (
-                            <PostBucketlistLine key={idx}>
+                            <MS.PostBucketlistLine key={idx}>
                               <img
                                 src={
                                   idx === 0
@@ -280,20 +147,20 @@ function Main() {
                                 style={{ width: '15px', height: '22px' }}
                               />
                               . {el.content}
-                            </PostBucketlistLine>
+                            </MS.PostBucketlistLine>
                           );
                         })}
-                    </PostBucketlist>
-                    <Line></Line>
-                    <PostBucketlistNickname>
+                    </MS.PostBucketlist>
+                    <MS.Line></MS.Line>
+                    <MS.PostBucketlistNickname>
                       {el.nickname}
-                    </PostBucketlistNickname>
-                  </PostContentBox>
-                </MainPost>
+                    </MS.PostBucketlistNickname>
+                  </MS.PostContentBox>
+                </MS.MainPost>
               );
             } else {
               return (
-                <MainPost
+                <MS.MainPost
                   key={el.id}
                   onClick={() => {
                     handlePostClick(el.id);
@@ -301,22 +168,22 @@ function Main() {
                 >
                   {el.bucketlist[0].image_path &&
                   el.bucketlist[0].image_path.includes('blob') ? (
-                    <PostImg src={el.bucketlist[0].image_path} />
+                    <MS.PostImg src={el.bucketlist[0].image_path} />
                   ) : el.bucketlist[0].image_path === null ? (
                     <div>사진 없음</div>
                   ) : (
                     <Spinner></Spinner>
                   )}
 
-                  <PostContentBox>
-                    <PostBucketlist>
+                  <MS.PostContentBox>
+                    <MS.PostBucketlist>
                       {el.bucketlist
                         .filter((el, idx) => {
                           return idx < 3;
                         })
                         .map((el, idx) => {
                           return (
-                            <PostBucketlistLine key={idx}>
+                            <MS.PostBucketlistLine key={idx}>
                               <img
                                 src={
                                   idx === 0
@@ -333,21 +200,21 @@ function Main() {
                                 }}
                               />
                               {el.content}
-                            </PostBucketlistLine>
+                            </MS.PostBucketlistLine>
                           );
                         })}
-                    </PostBucketlist>
-                    <Line></Line>
-                    <PostBucketlistNickname>
+                    </MS.PostBucketlist>
+                    <MS.Line></MS.Line>
+                    <MS.PostBucketlistNickname>
                       {el.nickname}
-                    </PostBucketlistNickname>
-                  </PostContentBox>
-                </MainPost>
+                    </MS.PostBucketlistNickname>
+                  </MS.PostContentBox>
+                </MS.MainPost>
               );
             }
           })}
-        </MainPostBack>
-      </MainBack>
+        </MS.MainPostBack>
+      </MS.MainBack>
     </>
   );
 }

@@ -2,30 +2,16 @@
 import styled, { ThemeProvider } from 'styled-components';
 import { Reset } from 'styled-reset';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import React, {
-  lazy,
-  Suspense,
-  useState,
-  Dispatch,
-  SetStateAction,
-} from 'react';
+import { lazy, Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import { TypeRootReducer } from './redux/store/store';
 import ScrollToTop from './utils/scrollTopFix';
 
 //components
-//import ReduxTest from './page/ReduxTest';
+
 import { light, dark } from './components/style/theme';
 import Spinner from './utils/spinner';
-import Toggle from './components/toggle';
-//import { useDarkMode } from './components/hook/useDarkMode';
-import Modal from './components/Modal';
-import Headers from './components/Headers';
-//import Main from './page/Main';
-// import Signup from './page/Signup';
-// import Post from './page/Post';
-//import Login from './page/Login';
-let ReduxTest = lazy(() => import('./page/ReduxTest'));
+
 let Main = lazy(() => import('./page/Main'));
 let Login = lazy(() => import('./page/Login'));
 let Signup = lazy(() => import('./page/Signup'));
@@ -58,7 +44,6 @@ function App() {
                 <Route path="/oauth/naver" element={<Naver />} />
                 <Route path="/oauth/kakao" element={<Kakao />} />
                 <Route path="/oauth/google" element={<Google />} />
-                <Route path="/reduxtest" element={<ReduxTest />} />
               </Routes>
             </Suspense>
           </Backgound>

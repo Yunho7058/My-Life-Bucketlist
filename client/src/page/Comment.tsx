@@ -225,40 +225,43 @@ const Comment = () => {
               <CS.CommentList key={el.id}>
                 <CS.CommentProfile className="list">
                   {el.image_path ? (
-                    <img src={el.image_path} />
+                    <img src={el.image_path} className="comments" />
                   ) : (
-                    <FaUserCircle size={30} />
+                    <FaUserCircle size={80} />
                   )}
-                  <div>{el.nickname}</div>
                 </CS.CommentProfile>
-                {el.id === commentEditMiniModal2 ? (
-                  <CS.CommentEditBox>
-                    <CS.CommentTextArea
-                      onChange={handleInputEditComment('content')}
-                      name={el.content}
-                      id={`${el.id}`}
-                      defaultValue={el.content}
-                    />
-                    <CS.CommentEditBtn>
-                      <div onClick={() => setCommentEditMiniModal2(0)}>
-                        취소
-                      </div>
-                      <div
-                        className="edit"
-                        onClick={() => {
-                          handleTextCommentEdit();
-                        }}
-                      >
-                        수정
-                      </div>
-                    </CS.CommentEditBtn>
-                  </CS.CommentEditBox>
-                ) : (
-                  <CS.CommentListBody>
-                    {el.content}
+                <CS.CommentDiv>
+                  <CS.CommentUser>
+                    {el.nickname}
                     <div className="date">{el.updated_at.split('T')[0]}</div>
-                  </CS.CommentListBody>
-                )}
+                  </CS.CommentUser>
+                  {el.id === commentEditMiniModal2 ? (
+                    <CS.CommentEditBox>
+                      <CS.CommentTextArea
+                        className="list"
+                        onChange={handleInputEditComment('content')}
+                        name={el.content}
+                        id={`${el.id}`}
+                        defaultValue={el.content}
+                      />
+                      <CS.CommentEditBtn>
+                        <div onClick={() => setCommentEditMiniModal2(0)}>
+                          취소
+                        </div>
+                        <div
+                          className="edit"
+                          onClick={() => {
+                            handleTextCommentEdit();
+                          }}
+                        >
+                          수정
+                        </div>
+                      </CS.CommentEditBtn>
+                    </CS.CommentEditBox>
+                  ) : (
+                    <CS.CommentListBody>{el.content}</CS.CommentListBody>
+                  )}
+                </CS.CommentDiv>
 
                 {el.user_id === stateUserInfo.user_id && (
                   <CS.CommentListBtn>

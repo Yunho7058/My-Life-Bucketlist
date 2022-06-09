@@ -244,7 +244,7 @@ export const getUserInfo = () => {
     nickname: '',
     post_id: 0,
     domain: '',
-    image_path: '',
+    image_path: null,
   };
 
   axiosInstance

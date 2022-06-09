@@ -1,8 +1,5 @@
 import { combineReducers } from 'redux';
 
-//test
-import isReducer from './isReducer';
-import testReducer from './testReducer';
 //Reducer
 import isLoginReducer from './isLogin';
 import postsReducer from './postsAll';
@@ -14,8 +11,6 @@ import s3Poto from './s3Poto';
 import commentAll from './comment';
 
 const rootReducer = combineReducers({
-  testReducer,
-  isReducer,
   isLoginReducer,
   postsReducer,
   postReducer,

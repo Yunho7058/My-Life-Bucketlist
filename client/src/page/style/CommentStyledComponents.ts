@@ -29,20 +29,20 @@ export const CommentListBox = styled.div`
 `;
 export const CommentList = styled.div`
   border-radius: 15px;
-  margin-top: 40px;
+  margin-top: 20px;
   padding: 10px;
   width: 95%;
   height: 30%;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+
   &:hover {
     background-color: rgba(0, 0, 0, 0.4);
   }
 `;
 export const CommentProfile = styled.div`
-  width: 120px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   > svg.my {
@@ -50,9 +50,14 @@ export const CommentProfile = styled.div`
   }
   > img {
     border-radius: 45px;
-    width: 90px;
-    height: 90px;
+    width: 110px;
+    height: 110px;
     margin-bottom: 30px;
+    &.comments {
+      margin: 0px;
+      width: 90px;
+      height: 90px;
+    }
   }
   &.list {
     width: 150px;
@@ -64,15 +69,19 @@ export const CommentProfile = styled.div`
   }
 `;
 export const CommentTextArea = styled.textarea`
+  display: flex;
   width: 95%;
   height: 60px;
   border-radius: 10px;
   border: 1px solid #696969;
-  padding: 10px;
+  padding: 5px;
   resize: none;
   background-color: ${({ theme }) => theme.mode.BGInput};
   color: ${({ theme }) => theme.mode.FCInput};
   outline: none;
+  &.list {
+    width: 100%;
+  }
 `;
 export const CommentTextAreaBox = styled.div`
   flex-grow: 5;
@@ -87,19 +96,13 @@ export const CommentListProfile = styled.div`
 `;
 export const CommentListBody = styled.div`
   flex-grow: 1;
+
+  border-radius: 15px;
+
   position: relative;
-  padding: 5px;
-  height: 60px;
+  padding: 15px;
+  height: 91px;
   font-size: 18px;
-  > div.date {
-    width: 100%;
-    text-align: right;
-    position: absolute;
-    font-size: 12px;
-    opacity: 0.7;
-    bottom: -15px;
-    left: 0px;
-  }
 `;
 export const CommentListBtn = styled.div`
   position: relative;
@@ -149,9 +152,10 @@ export const CommentBtnBack = styled.div`
 `;
 
 export const CommentEditBox = styled.div`
-  width: 100%;
+  width: 95%;
   display: flex;
   flex-direction: column;
+  align-items: right;
 `;
 export const CommentEditBtn = styled.div`
   display: flex;
@@ -160,7 +164,7 @@ export const CommentEditBtn = styled.div`
   justify-content: flex-end;
   > div {
     padding: 10px;
-    width: 60px;
+    width: 50px;
     height: 15px;
     border-radius: 15px;
     border: 2px solid rgba(0, 0, 0, 0.2);
@@ -175,5 +179,19 @@ export const CommentEditBtn = styled.div`
         background-color: #6495ed;
       }
     }
+  }
+`;
+
+export const CommentDiv = styled.div`
+  width: 80%;
+`;
+export const CommentUser = styled.div`
+  display: flex;
+  column-gap: 12px;
+  margin-bottom: 5px;
+  > div.date {
+    line-height: 18px;
+    font-size: 12px;
+    opacity: 0.7;
   }
 `;
