@@ -27,9 +27,6 @@ class Settings(BaseSettings):
     ISSUER: str
     AUDIENCE: str 
 
-    AWS_API_GATEWAY_URL: str
-    AWS_AUTH_KEY: str
-
     KAKAO_CLIENT_ID: str
     KAKAO_REDIRECT_URI: str
 

@@ -188,7 +188,10 @@ def update_password(password: str = Body(..., embed=True), new_password: str = B
 
 
 @router.post("/password", status_code=204, responses={401: {}}, summary="비밀번호 찾기", tags=["마이페이지"])
-def find_password(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def find_password(email: str = Body(..., embed=True), db: Session = Depends(get_db)):
+    user = get_user(db, email)
+    if user is None:
+        HTTPException(status_code=400)
     new_password = generate_random_password()
     update_user_password(db, user.id, new_password)
     send_new_password(user.email, new_password)
@@ -223,10 +226,12 @@ def kakao_login(response: Response, code: str = Body(..., embed=True), db: Sessi
     if res.status_code != 200:
         raise HTTPException(status_code=401, detail="invalid code")
     data = res.json()
+    print("카카오1", data)
     res = get_kakao_user_email(data.get("access_token"))
     if res.status_code != 200:
         raise HTTPException(status_code=401, detail="invalid token")
     data = res.json()
+    print("카카오2", data)
     email = data.get("kakao_account").get("email")
     user = get_user(db, email)
     if user is None:
@@ -257,6 +262,7 @@ def google_login(response: Response, token: str = Body(..., embed=True), db: Ses
     if res.status_code != 200:
         raise HTTPException(status_code=401, detail="invalid token")
     data = res.json()
+    print("구글1", data)
     email = data.get("email")
     user = get_user(db, email)
     if user is None:
@@ -292,6 +298,7 @@ def naver_login(response: Response, code: str = Body(..., embed=True), state: st
     )
     if res.status_code != 200:
         raise HTTPException(status_code=401, detail="invalid code")
+    print("네이버1", data)
     data = res.json()
     access_token = data.get("access_token")
     res = requests.get(
@@ -300,6 +307,7 @@ def naver_login(response: Response, code: str = Body(..., embed=True), state: st
     )
     if res.status_code != 200:
         raise HTTPException(status_code=401, detail="invalid token")
+    print("네이버2", data)
     data = res.json()
     email = data.get("response").get("email")
     user = get_user(db, email)
