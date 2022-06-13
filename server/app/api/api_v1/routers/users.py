@@ -187,11 +187,13 @@ def update_password(password: str = Body(..., embed=True), new_password: str = B
     return
 
 
-@router.post("/password", status_code=204, responses={401: {}}, summary="비밀번호 찾기", tags=["마이페이지"])
+@router.post("/password", status_code=204, responses={400: {}}, summary="비밀번호 찾기", tags=["마이페이지"])
 def find_password(email: str = Body(..., embed=True), db: Session = Depends(get_db)):
     user = get_user(db, email)
     if user is None:
-        HTTPException(status_code=400)
+        raise HTTPException(status_code=400)
+    if user.domain:
+        raise HTTPException(status_code=400, detail=user.domain)
     new_password = generate_random_password()
     update_user_password(db, user.id, new_password)
     send_new_password(user.email, new_password)
@@ -244,7 +246,8 @@ def kakao_login(response: Response, code: str = Body(..., embed=True), db: Sessi
             email=email,
             nickname=nickname[:30],
             password="",
-            domain="kakao"
+            domain="kakao",
+            image_path=profile_image
         )
         create_user(db, user)
     token = create_token(email)
@@ -267,15 +270,16 @@ def google_login(response: Response, token: str = Body(..., embed=True), db: Ses
     user = get_user(db, email)
     if user is None:
         nickname = email.split("@")[0]
+        profile_image = data.get("picture")
         user = get_user_by_nickname(db, nickname)
         if user:
-            nickname = "google-"
-            nickname += uuid.uuid4().hex
+            nickname += "-google-" + uuid.uuid4().hex
         user = UserCreate(
             email=email,
             nickname=nickname[:30],
             password="",
-            domain="google"
+            domain="google",
+            image_path=profile_image
         )
         create_user(db, user)
     token = create_token(email)
@@ -321,7 +325,8 @@ def naver_login(response: Response, code: str = Body(..., embed=True), state: st
             email=email,
             nickname=nickname[:30],
             password="",
-            domain="naver"
+            domain="naver",
+            image_path=profile_image
         )
         create_user(db, user)
     token = create_token(email)
