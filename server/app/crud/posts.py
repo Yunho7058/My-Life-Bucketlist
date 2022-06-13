@@ -7,11 +7,12 @@ from app.schemas import posts as schemas
 
 
 
-def get_post_list(db: Session, last_id: int | None):
+def get_post_list(db: Session, last_id: int | None, nickname: str | None):
     size = 20
-    if last_id is None:
-        return db.query(Post).filter(Post.is_public == True).order_by(desc(Post.id)).limit(size).all()
-    return db.query(Post).filter(Post.is_public == True, Post.id < last_id).order_by(desc(Post.id)).limit(size).all()
+    pattern = f"%{nickname if nickname else ''}%"
+    if last_id is None:    
+        return db.query(Post).filter(Post.is_public == True, Post.nickname.like(pattern)).order_by(desc(Post.id)).limit(size).all()
+    return db.query(Post).filter(Post.is_public == True, Post.nickname.like(pattern), Post.id < last_id).order_by(desc(Post.id)).limit(size).all()
 
 
 def get_post_detail(db: Session, post_id: int):

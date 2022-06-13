@@ -17,16 +17,18 @@ router = APIRouter()
 
 
 @router.get("/post", response_model=list[schemas.Post], summary="게시글 목록 조회", tags=["버킷리스트"])
-def get_post_list(last_id: int | None = None, db: Session = Depends(get_db)):
+def get_post_list(last_id: int | None = None, nickname: str | None = None, db: Session = Depends(get_db)):
     """
     **설명**
     - 전체 게시글 중 최근 20개를 응답
     - last_id가 주어지면 그 다음 20개의 게시글을 응답
+    - nickname이 주어지면 게시글의 닉네임에 nickname을 포함하고 있는 게시글의 목록을 응답
 
     **query**
     - last_id: 마지막 게시글의 id
+    - nickname: 검색한 닉네임
     """
-    posts = crud.get_post_list(db, last_id)
+    posts = crud.get_post_list(db, last_id, nickname)
     for post in posts:
         post.bucketlist = post.bucketlist[:3]
     return posts
