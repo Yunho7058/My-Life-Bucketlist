@@ -1,5 +1,5 @@
 //library
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -16,7 +16,7 @@ import Toggle from './toggle';
 import Spinner from '../utils/spinner';
 import TypeRedux from '../redux/reducer/typeRedux';
 
-function Headers() {
+const Headers = function () {
   const [isSidebar, setIsSiderbar] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -55,6 +55,7 @@ function Headers() {
           //window.localStorage.removeItem('user');
           dispatch(isLogout());
           navigate('/');
+          window.location.reload();
         })
         .catch((err) => {
           console.log(err, '로그아웃 err');
@@ -82,7 +83,7 @@ function Headers() {
   const handleIsSidebar = () => {
     setIsSiderbar(!isSidebar);
   };
-  console.log(stateUserInfo);
+
   return (
     <div style={{ position: 'relative', zIndex: '1000px' }}>
       <HS.HeaderBack>
@@ -98,7 +99,7 @@ function Headers() {
                 handleIsSidebar();
               }}
             >
-              {stateUserInfo.image_path ? (
+              {/* {stateUserInfo.image_path ? (
                 stateUserInfo.image_path !== null ? (
                   <HS.ProfileImg src={stateUserInfo.image_path} />
                 ) : (
@@ -106,6 +107,15 @@ function Headers() {
                 )
               ) : (
                 <Spinner type="profilePoto" />
+              )} */}
+              {stateUserInfo.image_path !== null ? (
+                stateUserInfo.image_path ? (
+                  <HS.ProfileImg src={stateUserInfo.image_path} />
+                ) : (
+                  <Spinner type="profilePoto" />
+                )
+              ) : (
+                <FaUserCircle size={40} />
               )}
 
               {isSidebar && (
@@ -158,6 +168,6 @@ function Headers() {
       </HS.HeaderBack>
     </div>
   );
-}
+};
 
 export default Headers;

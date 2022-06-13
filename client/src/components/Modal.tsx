@@ -12,6 +12,7 @@ import axiosInstance from '../utils/axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as MS from './style/ModalStyledComponents';
+import axios from 'axios';
 
 const Modal = () => {
   const stateModal = useSelector((state: TypeRootReducer) => state.modal);
@@ -56,6 +57,8 @@ const Modal = () => {
       setModalList(1);
     } else if (stateModal.msg === 'signout') {
       setModalList(2);
+    } else if (stateModal.msg === 'passwordFind') {
+      setModalList(3);
     } else {
       setModalList(0);
     }
@@ -69,7 +72,11 @@ const Modal = () => {
     newPassword: '',
     newPasswordConfirm: '',
   });
-
+  const [passwordFind, setPasswordFind] = useState({
+    email: '',
+    msg: '',
+    isSendCode: false,
+  });
   //! input 입력 이벤트
   const handleInput = (key: string) => (e: { target: HTMLInputElement }) => {
     if (key === 'newPassword') {
@@ -106,6 +113,8 @@ const Modal = () => {
           [key]: e.target.value,
         });
       }
+    } else if (key === 'email') {
+      setPasswordFind({ ...passwordFind, [key]: e.target.value });
     } else {
       setPasswordEdit({ ...passwordEdit, [key]: e.target.value });
     }
@@ -145,9 +154,8 @@ const Modal = () => {
           },
         })
         .then((res) => {
-          dispatch(modalOpen('회원탈퇴가 완료 됐습니다.😢'));
           window.localStorage.removeItem('accessToken');
-          window.localStorage.removeItem('user');
+
           dispatch(isLogout());
           setPasswordEdit({
             isPassword: false,
@@ -158,10 +166,46 @@ const Modal = () => {
             newPasswordConfirm: '',
           });
           navigate('/');
+          window.location.reload();
+          //dispatch(modalOpen('회원탈퇴가 완료 됐습니다.😢'));
         })
         .catch((err) => {
           setPasswordEdit({ ...passwordEdit, msg: '비밀번호를 확인해주세요.' });
           console.log(err, 'signout err');
+        });
+    }
+  };
+
+  const handlePasswordFind = () => {
+    if (!passwordFind.email.length) {
+      setPasswordFind({ ...passwordFind, msg: '이메일을 입력해주세요.' });
+    } else {
+      axios
+        .post(`${process.env.REACT_APP_SERVER_URI}/password`, {
+          email: passwordFind.email,
+        })
+        .then((res) =>
+          dispatch(modalOpen('이메일로 임시비밀번호가 전송되었습니다.'))
+        )
+        .catch((err) => {
+          if (err.response.data.detail === 'kakao') {
+            setPasswordFind({
+              ...passwordFind,
+              msg: '카카오 로그인을 해주세요.',
+            });
+          } else if (err.response.data.detail === 'google') {
+            setPasswordFind({
+              ...passwordFind,
+              msg: '구글 로그인을 해주세요.',
+            });
+          } else if (err.response.data.detail === 'naver') {
+            setPasswordFind({
+              ...passwordFind,
+              msg: '네이버 로그인을 해주세요.',
+            });
+          } else {
+            setPasswordFind({ ...passwordFind, msg: '이메일을 확인해주세요.' });
+          }
         });
     }
   };
@@ -249,6 +293,30 @@ const Modal = () => {
             </MS.ModalPasswordBack>
             <MS.ModalBtnBack>
               <MS.ModalBtn onClick={() => handleSignout()}>확인</MS.ModalBtn>
+              <MS.ModalBtn onClick={() => handleClose()}>취소</MS.ModalBtn>
+            </MS.ModalBtnBack>
+          </MS.ModalBox>
+        </MS.ModalBack>
+      )}
+      {stateModal.show && modalList === 3 && (
+        <MS.ModalBack>
+          <MS.ModalBox className="passwordFind">
+            <MS.ModalText>비밀번호 찾기</MS.ModalText>
+            <MS.ModalPasswordBack>
+              <MS.ModalPassword>
+                이메일
+                <MS.ModalPasswordInput
+                  type="email"
+                  value={passwordFind.email}
+                  onChange={handleInput('email')}
+                ></MS.ModalPasswordInput>
+              </MS.ModalPassword>
+              <MS.ModalPasswordMSG>{passwordFind.msg}</MS.ModalPasswordMSG>
+            </MS.ModalPasswordBack>
+            <MS.ModalBtnBack>
+              <MS.ModalBtn onClick={() => handlePasswordFind()}>
+                확인
+              </MS.ModalBtn>
               <MS.ModalBtn onClick={() => handleClose()}>취소</MS.ModalBtn>
             </MS.ModalBtnBack>
           </MS.ModalBox>

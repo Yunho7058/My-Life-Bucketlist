@@ -34,7 +34,6 @@ function Main() {
     axiosInstance
       .get(`/post`)
       .then((res) => {
-        console.log(res.data);
         dispatch(postAll(res.data));
         res.data.forEach((el: TypeRedux.TypePostsData) =>
           el.bucketlist.forEach((el) => s3Download(el.id, el.image_path))
@@ -105,8 +104,8 @@ function Main() {
   }, [stateAllPost]);
   return (
     <>
-      {!spinner && <Spinner />}
-      <Headers></Headers>
+      {!spinner ? <Spinner /> : <Headers></Headers>}
+
       <MS.MainBack>
         <MS.MainPostBack>
           {stateAllPost.map((el: TypeRedux.TypePostsData, idx) => {

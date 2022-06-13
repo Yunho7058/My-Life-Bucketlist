@@ -12,7 +12,7 @@ import { FaUserTag } from 'react-icons/fa';
 import Headers from '../components/Headers';
 import { Terms_2 } from '../components/terms/Terms_2';
 import { Terms_1 } from '../components/terms/Terms_1';
-import * as SS from './style/SignupS';
+import * as SS from './style/SignupStyledComponents';
 import axiosInstance from '../utils/axios';
 import Modal from '../components/Modal';
 
