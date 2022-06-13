@@ -31,7 +31,7 @@ def generate_presigned_post(image_type, file_name, user_id):
     s3_client = boto3.client("s3")
     key = generate_s3_key(image_type, file_name, user_id)
     conditions = [
-      ["content-length-range", 0, 1048576],
+      ["content-length-range", 0, 5242880],
       ["starts-with", "$key", image_type],
     ]
     presigned_post = s3_client.generate_presigned_post(Bucket="mylifebucketlist", Key=key, Conditions=conditions, ExpiresIn=180)

@@ -5,6 +5,7 @@ class UserBase(BaseModel):
     email: str 
     nickname: str 
     domain: str | None = None
+    image_path: str | None = None
 
 
 class UserCreate(UserBase):
@@ -22,7 +23,6 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    image_path: str | None
 
     class Config:
         orm_mode = True

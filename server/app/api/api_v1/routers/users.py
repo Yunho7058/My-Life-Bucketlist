@@ -302,8 +302,8 @@ def naver_login(response: Response, code: str = Body(..., embed=True), state: st
     )
     if res.status_code != 200:
         raise HTTPException(status_code=401, detail="invalid code")
-    print("네이버1", data)
     data = res.json()
+    print("네이버1", data)
     access_token = data.get("access_token")
     res = requests.get(
         "https://openapi.naver.com/v1/nid/me",
@@ -311,8 +311,8 @@ def naver_login(response: Response, code: str = Body(..., embed=True), state: st
     )
     if res.status_code != 200:
         raise HTTPException(status_code=401, detail="invalid token")
-    print("네이버2", data)
     data = res.json()
+    print("네이버2", data)
     email = data.get("response").get("email")
     user = get_user(db, email)
     if user is None:
