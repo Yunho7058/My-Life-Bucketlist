@@ -50,8 +50,8 @@ export const CommentProfile = styled.div`
   }
   > img {
     border-radius: 45px;
-    width: 110px;
-    height: 110px;
+    width: 90px;
+    height: 90px;
     margin-bottom: 30px;
     &.comments {
       margin: 0px;

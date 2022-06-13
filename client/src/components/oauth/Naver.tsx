@@ -12,11 +12,11 @@ const NaverLogin = () => {
   const urlSplit = url.href.split('=');
   const code = urlSplit[1].split('&')[0];
   const state = urlSplit[2];
-  console.log(state);
+  console.log(code, state);
   useEffect(() => {
     axios
       .post(
-        `${process.env.REACT_APP_SERVER_URI}/oauth/google`,
+        `${process.env.REACT_APP_SERVER_URI}/oauth/naver`,
         { code, state },
         {
           headers: { 'Content-Type': 'application/json' },

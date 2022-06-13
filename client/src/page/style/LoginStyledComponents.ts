@@ -174,3 +174,14 @@ export const LoginSNSGoogleBack = styled.div`
   width: 60px;
   height: 60px;
 `;
+
+export const LoginPasswordFind = styled.div`
+  width: 100%;
+  text-align: right;
+  margin-right: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  &:hover {
+    color: #6495ed;
+  }
+`;
