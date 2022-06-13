@@ -12,6 +12,7 @@ import { BiBook } from 'react-icons/bi';
 import { BsBucketFill } from 'react-icons/bs';
 import { TypeRootReducer } from '../redux/store/store';
 import * as MS from './style/MypageStyledComponents';
+import TypeRedux from '../redux/reducer/typeRedux';
 
 type bookBucketlistInfo = { nickname: string; id: number }[];
 const Mypage = () => {
@@ -22,7 +23,9 @@ const Mypage = () => {
     setList(list);
   };
   const navigate = useNavigate();
-  const stateUserInfo = useSelector((state: TypeRootReducer) => state.userInfo);
+  const stateUserInfo: TypeRedux.TypeUserInfo = useSelector(
+    (state: TypeRootReducer) => state.userInfo
+  );
 
   //! 북마크 게시물 리스트
   useEffect(() => {
@@ -92,6 +95,13 @@ const Mypage = () => {
     }
   };
   const handleSignout = () => {
+    console.log(stateUserInfo.domain);
+    if (stateUserInfo.domain) {
+      axiosInstance
+        .post('/user/email')
+        .then((res) => {})
+        .catch((err) => console.log(err));
+    }
     dispatch(modalOpen('signout'));
   };
   const potoInput = useRef<HTMLInputElement>(null);

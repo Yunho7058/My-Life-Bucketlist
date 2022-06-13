@@ -256,7 +256,9 @@ export const getUserInfo = () => {
       userInfo.post_id = res.data.post_id;
       userInfo.domain = res.data.domain;
 
-      if (res.data.image_path) {
+      if (res.data.image_path.search('profile') === -1) {
+        userInfo.image_path = res.data.image_path;
+      } else if (res.data.image_path) {
         axios
           .post(
             'https://p9m7fksvha.execute-api.ap-northeast-2.amazonaws.com/s3/presigned-url',

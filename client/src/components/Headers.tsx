@@ -7,7 +7,13 @@ import styled from 'styled-components';
 //components
 import { TypeRootReducer } from '../redux/store/store';
 import * as HS from './style/HeadersStyledComponents';
-import { getUserInfo, isLogin, isLogout } from '../redux/action';
+import {
+  getUserInfo,
+  isLogin,
+  isLogout,
+  postAll,
+  postAllpotoDownload,
+} from '../redux/action';
 
 import { FaUserCircle } from 'react-icons/fa';
 import axiosInstance from '../utils/axios';
@@ -15,9 +21,17 @@ import ScrollTopBtn from '../utils/scrollTopBtn';
 import Toggle from './toggle';
 import Spinner from '../utils/spinner';
 import TypeRedux from '../redux/reducer/typeRedux';
+import axios from 'axios';
 
-const Headers = function () {
+const Headers = function ({
+  search,
+  handleInput,
+}: {
+  search?: { nickname: string };
+  handleInput?: (key: string) => (e: { target: HTMLInputElement }) => void;
+}) {
   const [isSidebar, setIsSiderbar] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -27,12 +41,6 @@ const Headers = function () {
   const stateUserInfo: TypeRedux.TypeUserInfo = useSelector(
     (state: TypeRootReducer) => state.userInfo
   );
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     dispatch(userInfoSave());
-  //   }, 2000);
-  // }, [stateIsLogin]);
 
   //! 새로고침
   useEffect(() => {
@@ -67,21 +75,55 @@ const Headers = function () {
 
   //! useEffect 더 공부해보기
   //참고 링크 https://www.rinae.dev/posts/a-complete-guide-to-useeffect-ko
-  //useReducer, useCallback, useMemo 배우기
-  // let getPostId = window.localStorage.getItem('user');
-  // let parse_post_id: number;
-  // if (getPostId !== null) {
-  //   parse_post_id = Number(JSON.parse(getPostId).post_id);
-  // }
+
   const handleMyPostBtn = () => {
     window.location.replace(`/post/${stateUserInfo.post_id}`);
-    //navigate(`/post/${parse_post_id}`);
   };
   const handleMypageMove = () => {
     navigate('/mypage');
   };
   const handleIsSidebar = () => {
     setIsSiderbar(!isSidebar);
+  };
+
+  const handlePostNicknameSearch = () => {
+    if (search && search.nickname) {
+      axiosInstance.get(`/post?nickname=${search.nickname}`).then((res) => {
+        dispatch(postAll(res.data));
+        res.data.forEach((el: TypeRedux.TypePostsData) =>
+          el.bucketlist.forEach((el) => s3Download(el.id, el.image_path))
+        );
+      });
+    }
+  };
+  const s3Download = (id: number, data?: string | null) => {
+    if (data) {
+      axios
+        .post(
+          'https://p9m7fksvha.execute-api.ap-northeast-2.amazonaws.com/s3/presigned-url',
+          { key: data }
+        )
+        .then((res) => {
+          axios
+            .get(res.data.data, { responseType: 'blob' })
+            .then((res) => {
+              let url = window.URL.createObjectURL(new Blob([res.data]));
+              dispatch(postAllpotoDownload(id, url));
+            })
+            .catch((err) => console.log(err));
+        })
+        .catch((err) => {
+          console.log(err, 's3 err');
+        });
+    } else {
+      dispatch(postAllpotoDownload(id, null));
+      //dispatch(postImgOrigin('', id));
+    }
+  };
+  const enterKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      return handlePostNicknameSearch();
+    }
   };
 
   return (
@@ -91,7 +133,18 @@ const Headers = function () {
         <HS.LogoTitle onClick={() => navigate('/')}>
           My Life Bucketlist
         </HS.LogoTitle>
-
+        <HS.SearchBack>
+          <HS.SearchSelect>닉네임</HS.SearchSelect>
+          <HS.SearchInput
+            type="text"
+            value={search && search.nickname}
+            onChange={handleInput && handleInput('nickname')}
+            onKeyPress={enterKey}
+          ></HS.SearchInput>
+          <HS.SearchBtn onClick={() => handlePostNicknameSearch()}>
+            검색
+          </HS.SearchBtn>
+        </HS.SearchBack>
         {stateIsLogin ? (
           <>
             <HS.SideBtn
@@ -99,15 +152,6 @@ const Headers = function () {
                 handleIsSidebar();
               }}
             >
-              {/* {stateUserInfo.image_path ? (
-                stateUserInfo.image_path !== null ? (
-                  <HS.ProfileImg src={stateUserInfo.image_path} />
-                ) : (
-                  <FaUserCircle size={40} />
-                )
-              ) : (
-                <Spinner type="profilePoto" />
-              )} */}
               {stateUserInfo.image_path !== null ? (
                 stateUserInfo.image_path ? (
                   <HS.ProfileImg src={stateUserInfo.image_path} />

@@ -7,6 +7,7 @@ export const HeaderBack = styled.div`
   height: 80px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   background-color: ${({ theme }) => theme.mode.background2};
   box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
 `;
@@ -147,5 +148,55 @@ export const ProfileImg = styled.img`
   cursor: pointer;
   &:hover {
     opacity: 0.7;
+  }
+`;
+
+export const SearchBack = styled.div`
+  width: 30%;
+  height: 40px;
+  border: 1px solid #696969;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+`;
+export const SearchSelect = styled.div`
+  width: 20%;
+  opacity: 0.6;
+  text-align: center;
+  line-height: 40px;
+  padding: 1px;
+  font-size: 12px;
+`;
+export const SearchInput = styled.input`
+  width: 60%;
+  font-size: 16px;
+
+  //border: 1px solid #696969;
+  border-right: 1px solid #696969;
+  border-left: 1px solid #696969;
+  border-bottom: none;
+  border-top: none;
+  padding-left: 10px;
+  padding-right: 10px;
+
+  background-color: ${({ theme }) => theme.mode.BGInput};
+  color: ${({ theme }) => theme.mode.FCInput};
+  outline: none;
+  &:hover {
+    border: 1px solid rgb(100, 100, 255);
+  }
+  &:focus {
+    border: 1px solid #4169e1;
+    background-color: ${({ theme }) => theme.mode.background2};
+  }
+`;
+export const SearchBtn = styled.div`
+  width: 20%;
+  opacity: 0.6;
+  text-align: center;
+  line-height: 40px;
+  cursor: pointer;
+  &:hover {
+    opacity: 1;
   }
 `;

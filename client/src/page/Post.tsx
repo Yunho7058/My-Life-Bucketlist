@@ -68,7 +68,6 @@ function Post() {
     axiosInstance
       .get(`/post/${postId}`)
       .then((res) => {
-        console.log(res.data);
         dispatch(postEach(res.data));
         res.data.bucketlist.forEach((el: TypeBucketlist) => {
           s3Download(el.image_path, el.id);
@@ -237,7 +236,7 @@ function Post() {
       dispatch(modalOpen('로그인을 진행해주세요.'));
     } else {
       axiosInstance
-        .put(`/like/${post_id}`, {})
+        .put(`/like/${post_id}`)
         .then((res) => {
           dispatch(postEachLike());
         })
@@ -255,7 +254,7 @@ function Post() {
     } else if (statePost.owner) {
     } else {
       axiosInstance
-        .put(`/bookmark/${post_id}`, {})
+        .put(`/bookmark/${post_id}`)
         .then((res) => {
           dispatch(postEachBookMark());
           if (statePost.bookmark) {
