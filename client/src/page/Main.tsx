@@ -20,6 +20,9 @@ function Main() {
   const stateAllPost: TypeRedux.TypePostsData[] = useSelector(
     (state: TypeRootReducer) => state.postsReducer
   );
+  const [search, setSearch] = useState({
+    nickname: '',
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -73,7 +76,11 @@ function Main() {
   const [postInfiniteScrollEnd, setPostInfiniteScrollEnd] = useState(false);
   const getAllpost = () => {
     axiosInstance
-      .get(`/post?last_id=${stateAllPost[stateAllPost.length - 1].id}`)
+      .get(
+        `/post?last_id=${stateAllPost[stateAllPost.length - 1].id}&nickname=${
+          search.nickname
+        }`
+      )
       .then((res) => {
         if (res.data.length !== 0) {
           dispatch(postAllAdd(res.data));
@@ -86,8 +93,9 @@ function Main() {
       });
   };
 
-  const observerRef = useRef<IntersectionObserver>();
-  const boxRef = useRef(null);
+  //! Intersection Observer API 블로깅 하기
+  const observerRef = useRef<IntersectionObserver>(); //뷰포트
+  const boxRef = useRef(null); //target 관찰자
 
   useEffect(() => {
     if (!postInfiniteScrollEnd) {
@@ -101,116 +109,72 @@ function Main() {
       });
       boxRef.current && observerRef.current.observe(boxRef.current);
     }
-  }, [stateAllPost]);
+  }, [boxRef.current]);
+
+  const handleInput = (key: string) => (e: { target: HTMLInputElement }) => {
+    setSearch({ ...search, [key]: e.target.value });
+  };
   return (
     <>
-      {!spinner ? <Spinner /> : <Headers></Headers>}
+      {!spinner ? (
+        <Spinner />
+      ) : (
+        <Headers search={search} handleInput={handleInput}></Headers>
+      )}
 
       <MS.MainBack>
+        {!stateAllPost.length && (
+          <MS.SearchFail>조건에 맞는 버킷리스트가 없습니다.</MS.SearchFail>
+        )}
         <MS.MainPostBack>
           {stateAllPost.map((el: TypeRedux.TypePostsData, idx) => {
-            if (stateAllPost.length - 5 === idx) {
-              return (
-                <MS.MainPost
-                  key={el.id}
-                  onClick={() => {
-                    handlePostClick(el.id);
-                  }}
-                  ref={boxRef}
-                >
-                  {el.bucketlist[0].image_path &&
-                  el.bucketlist[0].image_path.includes('blob') ? (
-                    <MS.PostImg src={el.bucketlist[0].image_path} />
-                  ) : el.bucketlist[0].image_path === null ? (
-                    <div>사진 없음</div>
-                  ) : (
-                    <Spinner></Spinner>
-                  )}
-                  <MS.PostContentBox>
-                    <MS.PostBucketlist>
-                      {el.bucketlist
-                        .filter((el, idx) => {
-                          return idx < 3;
-                        })
-                        .map((el, idx) => {
-                          return (
-                            <MS.PostBucketlistLine key={idx}>
-                              <img
-                                src={
-                                  idx === 0
-                                    ? finger1
-                                    : idx === 1
-                                    ? finger2
-                                    : finger3
-                                }
-                                style={{ width: '15px', height: '22px' }}
-                              />
-                              . {el.content}
-                            </MS.PostBucketlistLine>
-                          );
-                        })}
-                    </MS.PostBucketlist>
-                    <MS.Line></MS.Line>
-                    <MS.PostBucketlistNickname>
-                      {el.nickname}
-                    </MS.PostBucketlistNickname>
-                  </MS.PostContentBox>
-                </MS.MainPost>
-              );
-            } else {
-              return (
-                <MS.MainPost
-                  key={el.id}
-                  onClick={() => {
-                    handlePostClick(el.id);
-                  }}
-                >
-                  {el.bucketlist[0].image_path &&
-                  el.bucketlist[0].image_path.includes('blob') ? (
-                    <MS.PostImg src={el.bucketlist[0].image_path} />
-                  ) : el.bucketlist[0].image_path === null ? (
-                    <div>사진 없음</div>
-                  ) : (
-                    <Spinner></Spinner>
-                  )}
-
-                  <MS.PostContentBox>
-                    <MS.PostBucketlist>
-                      {el.bucketlist
-                        .filter((el, idx) => {
-                          return idx < 3;
-                        })
-                        .map((el, idx) => {
-                          return (
-                            <MS.PostBucketlistLine key={idx}>
-                              <img
-                                src={
-                                  idx === 0
-                                    ? finger1
-                                    : idx === 1
-                                    ? finger2
-                                    : finger3
-                                }
-                                style={{
-                                  width: '15px',
-                                  height: '22px',
-                                  marginRight: '10px',
-                                  marginTop: '12px',
-                                }}
-                              />
-                              {el.content}
-                            </MS.PostBucketlistLine>
-                          );
-                        })}
-                    </MS.PostBucketlist>
-                    <MS.Line></MS.Line>
-                    <MS.PostBucketlistNickname>
-                      {el.nickname}
-                    </MS.PostBucketlistNickname>
-                  </MS.PostContentBox>
-                </MS.MainPost>
-              );
-            }
+            return (
+              <MS.MainPost
+                key={el.id}
+                onClick={() => {
+                  handlePostClick(el.id);
+                }}
+                ref={stateAllPost.length - 5 === idx ? boxRef : null}
+              >
+                {el.bucketlist[0].image_path &&
+                el.bucketlist[0].image_path.includes('blob') ? (
+                  <MS.PostImg src={el.bucketlist[0].image_path} />
+                ) : el.bucketlist[0].image_path === null ? (
+                  <div>사진 없음</div>
+                ) : (
+                  <Spinner></Spinner>
+                )}
+                <MS.PostContentBox>
+                  <MS.PostBucketlist>
+                    {el.bucketlist
+                      .filter((el, idx) => {
+                        return idx < 3;
+                      })
+                      .map((el, idx) => {
+                        return (
+                          <MS.PostBucketlistLine key={idx}>
+                            <img
+                              src={
+                                idx === 0
+                                  ? finger1
+                                  : idx === 1
+                                  ? finger2
+                                  : finger3
+                              }
+                              style={{ width: '15px', height: '22px' }}
+                            />
+                            . {el.content}
+                          </MS.PostBucketlistLine>
+                        );
+                      })}
+                  </MS.PostBucketlist>
+                  <MS.Line></MS.Line>
+                  <MS.PostBucketlistNickname>
+                    {el.nickname}
+                  </MS.PostBucketlistNickname>
+                </MS.PostContentBox>
+              </MS.MainPost>
+            );
           })}
         </MS.MainPostBack>
       </MS.MainBack>

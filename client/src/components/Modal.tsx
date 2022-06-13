@@ -13,9 +13,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as MS from './style/ModalStyledComponents';
 import axios from 'axios';
+import TypeRedux from '../redux/reducer/typeRedux';
 
 const Modal = () => {
   const stateModal = useSelector((state: TypeRootReducer) => state.modal);
+  const stateUserInfo: TypeRedux.TypeUserInfo = useSelector(
+    (state: TypeRootReducer) => state.userInfo
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -28,6 +32,7 @@ const Modal = () => {
       password: '',
       newPassword: '',
       newPasswordConfirm: '',
+      snsMsg: '',
     });
   };
   //!모달 open 후 버킷리스트 항목,댓글 삭제
@@ -71,6 +76,7 @@ const Modal = () => {
     password: '',
     newPassword: '',
     newPasswordConfirm: '',
+    snsMsg: '이메일로 전송된 인증코드를 입력해주세요.',
   });
   const [passwordFind, setPasswordFind] = useState({
     email: '',
@@ -120,6 +126,7 @@ const Modal = () => {
     }
   };
 
+  //비밀번호 찾기
   const handlePasswordEdit = () => {
     axiosInstance
       .patch('/password', {
@@ -135,6 +142,7 @@ const Modal = () => {
           password: '',
           newPassword: '',
           newPasswordConfirm: '',
+          snsMsg: '',
         });
       })
       .catch((err) => {
@@ -143,9 +151,17 @@ const Modal = () => {
       });
   };
 
+  //회원탈퇴
   const handleSignout = () => {
     if (!passwordEdit.password) {
-      setPasswordEdit({ ...passwordEdit, msg: '비밀번호를 입력해주세요.' });
+      if (stateUserInfo.domain) {
+        setPasswordEdit({
+          ...passwordEdit,
+          snsMsg: '인증코드를 입력해주세요.',
+        });
+      } else {
+        setPasswordEdit({ ...passwordEdit, msg: '비밀번호를 입력해주세요.' });
+      }
     } else {
       axiosInstance
         .delete('/user', {
@@ -164,13 +180,24 @@ const Modal = () => {
             password: '',
             newPassword: '',
             newPasswordConfirm: '',
+            snsMsg: '',
           });
           navigate('/');
           window.location.reload();
           //dispatch(modalOpen('회원탈퇴가 완료 됐습니다.😢'));
         })
         .catch((err) => {
-          setPasswordEdit({ ...passwordEdit, msg: '비밀번호를 확인해주세요.' });
+          if (stateUserInfo.domain) {
+            setPasswordEdit({
+              ...passwordEdit,
+              snsMsg: '인증코드를 확인해주세요.',
+            });
+          } else {
+            setPasswordEdit({
+              ...passwordEdit,
+              msg: '비밀번호를 확인해주세요.',
+            });
+          }
           console.log(err, 'signout err');
         });
     }
@@ -282,14 +309,16 @@ const Modal = () => {
             <MS.ModalText>회원탈퇴</MS.ModalText>
             <MS.ModalPasswordBack>
               <MS.ModalPassword>
-                비밀번호
+                {stateUserInfo.domain ? '인증코드' : '비밀번호'}
                 <MS.ModalPasswordInput
                   type="password"
                   value={passwordEdit.password}
                   onChange={handleInput('password')}
                 ></MS.ModalPasswordInput>
               </MS.ModalPassword>
-              <MS.ModalPasswordMSG>{passwordEdit.msg}</MS.ModalPasswordMSG>
+              <MS.ModalPasswordMSG>
+                {stateUserInfo.domain ? passwordEdit.snsMsg : passwordEdit.msg}
+              </MS.ModalPasswordMSG>
             </MS.ModalPasswordBack>
             <MS.ModalBtnBack>
               <MS.ModalBtn onClick={() => handleSignout()}>확인</MS.ModalBtn>

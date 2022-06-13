@@ -12,9 +12,9 @@ export const MainBack = styled.div`
   background-color: ${({ theme }) => theme.mode.background1};
   display: flex;
   flex-direction: row;
-
   justify-content: center;
   min-width: 200px;
+  min-height: 100vh;
 `;
 
 export const MainPostBack = styled.div`
@@ -104,4 +104,11 @@ export const PostBucketlistNickname = styled.div`
   text-align: right;
   padding: 10px;
   padding-right: 20px;
+`;
+
+export const SearchFail = styled.div`
+  position: absolute;
+  width: 100%;
+  font-size: 25px;
+  text-align: center;
 `;
