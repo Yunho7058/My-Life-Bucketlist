@@ -15,11 +15,12 @@ import qs from 'qs';
 
 //components
 import Headers from '../components/Headers';
-import { getUserInfo, isLogin } from '../redux/action';
+import { getUserInfo, isLogin, modalOpen } from '../redux/action';
 import * as LS from './style/LoginStyledComponents';
 import kakao from '../assets/oauth/kakao.png';
 import google from '../assets/oauth/google.png';
 import naver from '../assets/oauth/naver.png';
+import Modal from '../components/Modal';
 
 function Login() {
   //유저정보
@@ -101,7 +102,7 @@ function Login() {
           if (err.response.data.detail === 'email') {
             setMsg({
               ...msg,
-              emailMsg: '이메일이 틀렸습니다. 다시 입력해주세요.',
+              emailMsg: '등록되지 않은 이메일입니다. ',
             });
           } else if (err.response.data.detail === 'password') {
             setMsg({
@@ -119,6 +120,9 @@ function Login() {
     if (e.key === 'Enter') {
       return handleLogin();
     }
+  };
+  const handlePasswordFind = () => {
+    dispatch(modalOpen('passwordFind'));
   };
 
   //구글 로그인
@@ -143,6 +147,7 @@ function Login() {
   return (
     <>
       <Headers></Headers>
+      <Modal></Modal>
       <LS.LoginBack>
         <LS.LoginBox>
           <LS.LoginInputBox>
@@ -182,7 +187,9 @@ function Login() {
             <AiFillLock className="loginIcon" size={18} />
           </LS.LoginInputBox>
           <LS.LoginBtn onClick={() => handleLogin()}>로그인</LS.LoginBtn>
-          비밀번호 찾기
+          <LS.LoginPasswordFind onClick={() => handlePasswordFind()}>
+            비밀번호 찾기
+          </LS.LoginPasswordFind>
           <LS.LoginLine>or</LS.LoginLine>
           <LS.LoginSNSBack>
             <LS.LoginSNS

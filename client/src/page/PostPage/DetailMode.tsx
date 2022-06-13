@@ -61,7 +61,7 @@ const DetailMode = ({
       potoInput.current.click();
     }
   };
-  console.log(statePost);
+
   return (
     <PS.BucketlistBox>
       {/*편집 on */}

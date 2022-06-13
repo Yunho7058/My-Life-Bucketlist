@@ -196,7 +196,7 @@ const Comment = () => {
           {stateUserInfo.image_path ? (
             <img src={stateUserInfo.image_path} />
           ) : (
-            <FaUserCircle className="my" size={50}></FaUserCircle>
+            <FaUserCircle className="my" size={60}></FaUserCircle>
           )}
         </CS.CommentProfile>
         <CS.CommentTextAreaBox>
@@ -227,7 +227,7 @@ const Comment = () => {
                   {el.image_path ? (
                     <img src={el.image_path} className="comments" />
                   ) : (
-                    <FaUserCircle size={80} />
+                    <FaUserCircle size={60} />
                   )}
                 </CS.CommentProfile>
                 <CS.CommentDiv>

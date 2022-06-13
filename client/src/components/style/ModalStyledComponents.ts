@@ -29,6 +29,10 @@ export const ModalBox = styled.div`
     height: 250px;
     width: 300px;
   }
+  &.passwordFind {
+    height: 250px;
+    width: 300px;
+  }
 `;
 export const ModalText = styled.div`
   padding: 30px;
@@ -46,12 +50,12 @@ export const ModalBtnBack = styled.div`
 export const ModalBtn = styled.div`
   margin: 10px;
   margin-bottom: 20px;
-  width: 40%;
-  height: 50px;
+  width: 90px;
+  height: 40px;
   border-radius: 20px;
   border: 2px solid rgba(0, 0, 0, 0.2);
   text-align: center;
-  line-height: 50px;
+  line-height: 40px;
   z-index: 991;
   cursor: pointer;
   &:hover {
