@@ -125,7 +125,18 @@ const Headers = function ({
       return handlePostNicknameSearch();
     }
   };
-
+  console.log(window.location.href);
+  const [test1, setTest1] = useState(false);
+  useEffect(() => {
+    if (
+      window.location.href === 'http://localhost:3000/' ||
+      window.location.href === 'https://mylifebucketlist.shop/'
+    ) {
+      setTest1(true);
+    } else {
+      setTest1(false);
+    }
+  }, [window.location.href]);
   return (
     <div style={{ position: 'relative', zIndex: '1000px' }}>
       <HS.HeaderBack>
@@ -133,18 +144,20 @@ const Headers = function ({
         <HS.LogoTitle onClick={() => navigate('/')}>
           My Life Bucketlist
         </HS.LogoTitle>
-        <HS.SearchBack>
-          <HS.SearchSelect>닉네임</HS.SearchSelect>
-          <HS.SearchInput
-            type="text"
-            value={search && search.nickname}
-            onChange={handleInput && handleInput('nickname')}
-            onKeyPress={enterKey}
-          ></HS.SearchInput>
-          <HS.SearchBtn onClick={() => handlePostNicknameSearch()}>
-            검색
-          </HS.SearchBtn>
-        </HS.SearchBack>
+        {test1 && (
+          <HS.SearchBack>
+            <HS.SearchSelect>닉네임</HS.SearchSelect>
+            <HS.SearchInput
+              type="text"
+              value={search && search.nickname}
+              onChange={handleInput && handleInput('nickname')}
+              onKeyPress={enterKey}
+            ></HS.SearchInput>
+            <HS.SearchBtn onClick={() => handlePostNicknameSearch()}>
+              검색
+            </HS.SearchBtn>
+          </HS.SearchBack>
+        )}
         {stateIsLogin ? (
           <>
             <HS.SideBtn
