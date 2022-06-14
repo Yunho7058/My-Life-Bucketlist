@@ -1,8 +1,8 @@
 //library
-import { memo, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
+import { AiOutlineSearch } from 'react-icons/ai';
 
 //components
 import { TypeRootReducer } from '../redux/store/store';
@@ -50,8 +50,7 @@ const Headers = function ({
         dispatch(getUserInfo());
       }
     }
-    return;
-  }, [dispatch]);
+  }, []);
 
   //! 로그아웃
   const handleLoginLogoutBtn = () => {
@@ -125,16 +124,16 @@ const Headers = function ({
       return handlePostNicknameSearch();
     }
   };
-  console.log(window.location.href);
-  const [test1, setTest1] = useState(false);
+
+  const [locationHref, setLocationHref] = useState(false);
   useEffect(() => {
     if (
       window.location.href === 'http://localhost:3000/' ||
       window.location.href === 'https://mylifebucketlist.shop/'
     ) {
-      setTest1(true);
+      setLocationHref(true);
     } else {
-      setTest1(false);
+      setLocationHref(false);
     }
   }, [window.location.href]);
   return (
@@ -144,9 +143,8 @@ const Headers = function ({
         <HS.LogoTitle onClick={() => navigate('/')}>
           My Life Bucketlist
         </HS.LogoTitle>
-        {test1 && (
+        {locationHref && (
           <HS.SearchBack>
-            <HS.SearchSelect>닉네임</HS.SearchSelect>
             <HS.SearchInput
               type="text"
               value={search && search.nickname}
@@ -154,7 +152,7 @@ const Headers = function ({
               onKeyPress={enterKey}
             ></HS.SearchInput>
             <HS.SearchBtn onClick={() => handlePostNicknameSearch()}>
-              검색
+              <AiOutlineSearch size={25} />
             </HS.SearchBtn>
           </HS.SearchBack>
         )}

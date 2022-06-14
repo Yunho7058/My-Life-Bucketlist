@@ -15,7 +15,7 @@ interface TypeProps {
   handleDelete: (id: number) => void;
   handleEdit: (id: number) => void;
   handleBucketlistCreate: () => void;
-  handleBucketlistcancel: () => void;
+  handleBucketlistCancel: () => void;
   handleInputNewItem: (
     key: string
   ) => (e: { target: HTMLInputElement | HTMLTextAreaElement }) => void;
@@ -45,7 +45,7 @@ const DetailMode = ({
   handleNewBucketlist,
   paginationStart,
   paginationEnd,
-  handleBucketlistcancel,
+  handleBucketlistCancel,
   bucketlistSelect,
   handleBucketlistSelect,
 
@@ -205,7 +205,7 @@ const DetailMode = ({
               <PS.Btn
                 className="createBtn"
                 onClick={() => {
-                  handleBucketlistcancel();
+                  handleBucketlistCancel();
                 }}
               >
                 취소
