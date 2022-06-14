@@ -152,9 +152,9 @@ export const ProfileImg = styled.img`
 `;
 
 export const SearchBack = styled.div`
-  width: 30%;
+  width: 20%;
   height: 40px;
-  border: 1px solid #696969;
+  /* border: 1px solid #696969; */
   border-radius: 10px;
   display: flex;
   flex-direction: row;
@@ -168,14 +168,17 @@ export const SearchSelect = styled.div`
   font-size: 12px;
 `;
 export const SearchInput = styled.input`
-  width: 60%;
+  width: 70%;
   font-size: 16px;
 
   //border: 1px solid #696969;
-  border-right: 1px solid #696969;
-  border-left: 1px solid #696969;
-  border-bottom: none;
-  border-top: none;
+  border: 1px solid #696969;
+  //border-left: 1px solid #696969;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+
+  /* border-bottom: none;
+  border-top: none; */
   padding-left: 10px;
   padding-right: 10px;
 
@@ -191,10 +194,17 @@ export const SearchInput = styled.input`
   }
 `;
 export const SearchBtn = styled.div`
-  width: 20%;
+  border: 1px solid #696969;
+  border-left: none;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  width: 15%;
   opacity: 0.6;
   text-align: center;
   line-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   &:hover {
     opacity: 1;

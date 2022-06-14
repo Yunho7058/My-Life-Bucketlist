@@ -68,6 +68,7 @@ function Post() {
     axiosInstance
       .get(`/post/${postId}`)
       .then((res) => {
+        setIsPost({ ...isPost, isPublic: res.data.is_public });
         dispatch(postEach(res.data));
         res.data.bucketlist.forEach((el: TypeBucketlist) => {
           s3Download(el.image_path, el.id);
@@ -169,7 +170,7 @@ function Post() {
       setIsPost({ ...isPost, isCreate: true });
     }
   };
-  const handleBucketlistcancel = () => {
+  const handleBucketlistCancel = () => {
     setIsPost({ ...isPost, isCreate: false });
   };
 
@@ -353,7 +354,7 @@ function Post() {
                   bucketlistSelect={bucketlistSelect}
                   handleBucketlistSelect={handleBucketlistSelect}
                   spinnerImg={spinnerImg}
-                  handleBucketlistcancel={handleBucketlistcancel}
+                  handleBucketlistCancel={handleBucketlistCancel}
                 ></DetailMode>
               )}
 
