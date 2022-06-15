@@ -58,11 +58,10 @@ const Headers = function ({
       axiosInstance
         .get(`/logout`)
         .then((res) => {
-          window.localStorage.removeItem('accessToken');
-          //window.localStorage.removeItem('user');
-          dispatch(isLogout());
           navigate('/');
+          window.localStorage.removeItem('accessToken');
           window.location.reload();
+          dispatch(isLogout());
         })
         .catch((err) => {
           console.log(err, '로그아웃 err');
