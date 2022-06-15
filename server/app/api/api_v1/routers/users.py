@@ -49,7 +49,7 @@ def check_email(response: Response, email: str = Body(..., embed=True), db: Sess
         raise HTTPException(status_code=400)
     try:
         code = send_email_code(email)
-        response.set_cookie(key="email_code", value=code, max_age=600, httponly=True)
+        response.set_cookie(key="email_code", value=code, max_age=180, httponly=True)
     except:
         raise HTTPException(status_code=400)
     return
@@ -214,11 +214,30 @@ def update_profile(image_path: str | None = Body(None, embed=True), user: User =
     return
 
 
+@router.post("/user/email", status_code=204, responses={400: {}, 401: {}}, summary="sns 사용자 탈퇴 전 인증코드 발송", tags=["마이페이지"])
+def send_email_for_deleting_sns_user(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        code = send_email_code(email)
+        response.set_cookie(key="email_code", value=code, max_age=180, httponly=True)
+    except:
+        raise HTTPException(status_code=400)
+    return
+
+
 @router.delete("/user", status_code=204, responses={401: {}, 403: {}}, summary="회원 탈퇴", tags=["마이페이지"])
-def delete_user_info(password: str = Body(..., embed=True), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    if not verify_password(password, user.password):
+def delete_user_info(
+    response: Response,
+    password: str | None = Body(None, embed=True), 
+    code: str | None = Body(None, embed=True), 
+    email_code: str | None = Cookie(None), 
+    user: User = Depends(get_current_user), 
+    db: Session = Depends(get_db)
+):
+    if (user.domain and code and code != email_code) or (not user.domain and password and not verify_password(password, user.password)):
         raise HTTPException(status_code=403)
     delete_user(db, user.id)
+    if email_code:
+        response.delete_cookie("email_code")
     return
 
 
