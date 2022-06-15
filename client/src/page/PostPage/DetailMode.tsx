@@ -62,7 +62,7 @@ const DetailMode = ({
     }
   };
 
-  console.log(statePost.bucketlist[0].image_path);
+  console.log(statePost);
   return (
     <PS.BucketlistBox>
       {/*편집 on */}
