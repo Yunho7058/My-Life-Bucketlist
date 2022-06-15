@@ -148,8 +148,8 @@ function Post() {
       dispatch(isS3PotoDownload());
       data[0].image_path = stateS3.presignPost;
     } else {
-      dispatch(postBucketlistImgUpload(id, ''));
-      data[0].image_path = '';
+      dispatch(postBucketlistImgUpload(id, null));
+      data[0].image_path = null;
     }
     axiosInstance
       .put(`/bucketlist/${id}`, data[0])
