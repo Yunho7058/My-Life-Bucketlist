@@ -130,7 +130,9 @@ const DetailMode = ({
                 <>
                   {/* 편집 off */}
                   <div>
-                    {!spinnerImg && !el.image_path?.includes('bucketlist') ? (
+                    {/* {!spinnerImg &&
+                    el.image_path &&
+                    !/^bucketlist/.test(el.image_path) ? (
                       el.image_path !== null ? (
                         <PS.PostPoto src={el.image_path}></PS.PostPoto>
                       ) : (
@@ -140,6 +142,16 @@ const DetailMode = ({
                       )
                     ) : (
                       <Spinner type="img"></Spinner>
+                    )} */}
+
+                    {el.image_path ? (
+                      /^bucketlist/.test(el.image_path) ? (
+                        <Spinner type="img"></Spinner>
+                      ) : (
+                        <PS.PostPoto src={el.image_path}></PS.PostPoto>
+                      )
+                    ) : (
+                      <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
                     )}
 
                     <PS.BucketlistContent>
