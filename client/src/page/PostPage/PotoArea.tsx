@@ -11,54 +11,11 @@ import {
 import { TypeRootReducer } from '../../redux/store/store';
 import axiosInstance from '../../utils/axios';
 
-export const PotoBack = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-export const PotoZone = styled.img`
-  width: 250px;
-  height: 200px;
-  padding: 0px;
-
-  border-radius: 15px;
-`;
-
-export const BinPotoZone = styled.div`
-  border: 1px solid;
-  text-align: center;
-  line-height: 200px;
-  border-radius: 30px;
-  min-width: 250px;
-  height: 200px;
-  background-color: grey;
-`;
-
-export const DeletePoto = styled.div`
-  width: 150px;
-  height: 30px;
-  border-radius: 20px;
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  text-align: center;
-  margin-top: 10px;
-  line-height: 30px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #c77171;
-  }
-`;
-
-export const PotoInput = styled.input`
-  display: none;
-`;
-
 const PotoArea = ({
   img,
   bucketlistId,
 }: {
-  img?: string;
+  img: string | null;
   bucketlistId: number;
 }) => {
   const stateS3Poto = useSelector((state: TypeRootReducer) => state.s3Poto);
@@ -143,10 +100,11 @@ const PotoArea = ({
     }
   };
   const handleImgDelete = () => {
-    setPropsPoto('');
+    console.log('삭제');
+    setPropsPoto(null);
+    dispatch(postBucketlistImgUpload(bucketlistId, null));
     dispatch(presignPostUpload(''));
   };
-
   return (
     <PotoBack>
       {propsPoto ? (
@@ -160,7 +118,13 @@ const PotoArea = ({
           사진을 선택해주세요.
         </BinPotoZone>
       )}
-      <DeletePoto onClick={handleImgDelete}>삭제</DeletePoto>
+      <DeletePoto
+        onClick={() => {
+          handleImgDelete();
+        }}
+      >
+        삭제
+      </DeletePoto>
       <PotoInput
         type="file"
         accept="image/*"
@@ -173,3 +137,46 @@ const PotoArea = ({
 };
 
 export default PotoArea;
+
+export const PotoBack = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const PotoZone = styled.img`
+  width: 250px;
+  height: 200px;
+  padding: 0px;
+
+  border-radius: 15px;
+`;
+
+export const BinPotoZone = styled.div`
+  border: 1px solid;
+  text-align: center;
+  line-height: 200px;
+  border-radius: 30px;
+  min-width: 250px;
+  height: 200px;
+  background-color: grey;
+`;
+
+export const DeletePoto = styled.div`
+  width: 150px;
+  height: 30px;
+  border-radius: 20px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  text-align: center;
+  margin-top: 10px;
+  line-height: 30px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #c77171;
+  }
+`;
+
+export const PotoInput = styled.input`
+  display: none;
+`;

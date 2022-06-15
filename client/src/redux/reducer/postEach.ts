@@ -125,12 +125,14 @@ const postReducer = (
 
     case POST_BUCKETLIST_POTO_UPLOAD:
       console.log(action.payload.image_path);
+      console.log('ㅎㅏ이');
       let img_copy = state.bucketlist.map((el) => {
+        console.log(el.id, action.payload.id);
         return el.id === action.payload.id
           ? { ...el, image_path: action.payload.image_path }
           : { ...el };
       });
-
+      console.log(img_copy);
       return { ...state, bucketlist: img_copy };
 
     default:

@@ -78,7 +78,7 @@ export const postAllpotoDownload = (id: number, url: string | null) => {
   };
 };
 
-export const postBlobType = (blob?: string) => {
+export const postBlobType = (blob: string | null) => {
   return {
     type: POST_POTO_BLOB,
     payload: blob,
@@ -174,8 +174,7 @@ export const postEachBookMark = () => {
   };
 };
 
-export const postBucketlistImgUpload = (id: number, img: string) => {
-  console.log(id, img);
+export const postBucketlistImgUpload = (id: number, img: string | null) => {
   return {
     type: POST_BUCKETLIST_POTO_UPLOAD,
     payload: { id: id, image_path: img },

@@ -62,6 +62,7 @@ const DetailMode = ({
     }
   };
 
+  console.log(statePost.bucketlist[0].image_path);
   return (
     <PS.BucketlistBox>
       {/*편집 on */}
@@ -79,14 +80,11 @@ const DetailMode = ({
               {bucketlistSelect === el.id ? (
                 <>
                   <div>
-                    {!spinnerImg &&
-                    el.image_path &&
-                    el.image_path.includes('blob') ? (
-                      <PS.PostPoto src={el.image_path}></PS.PostPoto>
-                    ) : el.image_path !== null ? (
-                      <Spinner type="img"></Spinner>
-                    ) : (
-                      <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
+                    {!spinnerImg && (
+                      <PotoArea
+                        img={el.image_path || null}
+                        bucketlistId={el.id}
+                      ></PotoArea>
                     )}
 
                     <PS.BucketlistContent>
@@ -132,34 +130,17 @@ const DetailMode = ({
                 <>
                   {/* 편집 off */}
                   <div>
-                    {!spinnerImg &&
-                    el.image_path &&
-                    el.image_path.includes('blob') ? (
-                      <PS.PostPoto src={el.image_path}></PS.PostPoto>
-                    ) : el.image_path !== null ? (
-                      <Spinner type="img"></Spinner>
+                    {!spinnerImg && !el.image_path?.includes('bucketlist') ? (
+                      el.image_path !== null ? (
+                        <PS.PostPoto src={el.image_path}></PS.PostPoto>
+                      ) : (
+                        <PS.BucketlistImg>
+                          사진을 선택해주세요.
+                        </PS.BucketlistImg>
+                      )
                     ) : (
-                      <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
-                    )}
-
-                    {/* {spinnerImg &&
-                    el.image_path &&
-                    el.image_path.includes('blob') ? (
                       <Spinner type="img"></Spinner>
-                    ) : el.image_path ? (
-                      <PS.PostPoto src={el.image_path}></PS.PostPoto>
-                    ) : (
-                      <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
                     )}
-
-{el.bucketlist[0].image_path &&
-                  el.bucketlist[0].image_path.includes('blob') ? (
-                    <PostImg src={el.bucketlist[0].image_path} />
-                  ) : el.bucketlist[0].image_path === null ? (
-                    <div>사진 없음</div>
-                  ) : (
-                    <Spinner></Spinner>
-                  )} */}
 
                     <PS.BucketlistContent>
                       <div className="content">
