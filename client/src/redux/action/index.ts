@@ -30,6 +30,20 @@ export const COMMENT_CONTENT_EDIT = 'COMMENT_CONTENT_EDIT';
 export const COMMENT_CONTENT_DELETE = 'COMMENT_CONTENT_DELETE';
 export const USER_INFO_NICKNAME_EDIT = 'USER_INFO_NICKNAME_EDIT';
 export const USER_INFO_POTO = 'USER_INFO_POTO';
+export const IS_SELECT_BUCKETLIST_POTO = 'IS_SELECT_BUCKETLIST_POTO';
+export const IS_NOT_SELECT_BUCKETLIST_POTO = 'IS_NOT_SELECT_BUCKETLIST_POTO';
+
+export const isNotSelectPoto = () => {
+  return {
+    type: IS_NOT_SELECT_BUCKETLIST_POTO,
+  };
+};
+
+export const isSelectPoto = () => {
+  return {
+    type: IS_SELECT_BUCKETLIST_POTO,
+  };
+};
 
 export const commentEdit = (id: number, content: string, date: string) => {
   return {
@@ -330,7 +344,7 @@ export const getUserInfo = () => {
       }
     })
     .catch((err) => console.log(err, '로그인 후 해당유저 정보 불러오기'));
-  console.log(userInfo.user_id);
+
   return {
     type: GET_USER_INFO,
     payload: userInfo,

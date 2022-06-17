@@ -95,7 +95,6 @@ const Mypage = () => {
     }
   };
   const handleSignout = () => {
-    console.log(stateUserInfo.domain);
     if (stateUserInfo.domain) {
       axiosInstance
         .post('/user/email')

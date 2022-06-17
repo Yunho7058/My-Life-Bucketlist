@@ -24,6 +24,7 @@ import {
   isS3PotoDownload,
   postBlobType,
   presignPostUpload,
+  isNotSelectPoto,
 } from '../redux/action';
 import Modal from '../components/Modal';
 import * as PS from './style/PostStyledComponents';
@@ -49,7 +50,7 @@ function Post() {
     (state: TypeRootReducer) => state.isLoginReducer
   );
   const stateS3 = useSelector((state: TypeRootReducer) => state.s3Poto);
-
+  const stateBoolean = useSelector((state: TypeRootReducer) => state.boolean);
   const [isPost, setIsPost] = useState({
     isEditMode: false,
     isSimple: false,
@@ -147,7 +148,11 @@ function Post() {
     if (stateS3.presignPost) {
       dispatch(isS3PotoDownload());
       data[0].image_path = stateS3.presignPost;
-    } else {
+    } else if (stateBoolean.isPoto) {
+      //선택한 사진이 없음
+
+      //사진이 없는 경우와 원래 있었던 경우
+      //dispatch(postBucketlistImgUpload(id, null));
       dispatch(postBucketlistImgUpload(id, null));
       data[0].image_path = null;
     }
@@ -156,6 +161,7 @@ function Post() {
       .then((res) => {
         dispatch(modalOpen('수정이 완료되었습니다.'));
         setBucketlistSelect(0);
+        dispatch(isNotSelectPoto());
       })
       .catch((err) => {
         console.log(err, 'bucketlist edit err');
@@ -283,6 +289,7 @@ function Post() {
 
   const handleBucketlistSelect = (id: number) => {
     dispatch(presignPostUpload(''));
+    dispatch(isNotSelectPoto());
     if (!isPost.isCreate) {
       if (bucketlistSelect === id) {
         setBucketlistSelect(0);
@@ -293,7 +300,6 @@ function Post() {
       dispatch(modalOpen('추가한 버킷리스트를 생성해주세요.'));
     }
   };
-
   return (
     <>
       {spinner && <Spinner></Spinner>}
