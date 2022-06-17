@@ -8,7 +8,11 @@ import * as PS from '../style/PostStyledComponents';
 import Spinner from '../../utils/spinner';
 import PotoArea from './PotoArea';
 interface TypeProps {
-  isPost: { isEditMode: boolean; isSimple: boolean; isCreate: boolean };
+  isPost: {
+    isEditMode: boolean;
+    isSimple: boolean;
+    isCreate: boolean;
+  };
   handleInputItem: (
     key: string
   ) => (e: { target: HTMLInputElement | HTMLTextAreaElement }) => void;
@@ -62,7 +66,6 @@ const DetailMode = ({
     }
   };
 
-  console.log(statePost);
   return (
     <PS.BucketlistBox>
       {/*편집 on */}

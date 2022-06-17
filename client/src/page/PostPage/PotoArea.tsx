@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   isS3PotoDownload,
+  isSelectPoto,
   postBlobType,
   postBucketlistImgUpload,
   presignPostUpload,
@@ -100,10 +101,9 @@ const PotoArea = ({
     }
   };
   const handleImgDelete = () => {
-    console.log('삭제');
     setPropsPoto(null);
-    dispatch(postBucketlistImgUpload(bucketlistId, null));
     dispatch(presignPostUpload(''));
+    dispatch(isSelectPoto());
   };
   return (
     <PotoBack>

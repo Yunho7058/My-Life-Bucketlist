@@ -84,6 +84,9 @@ function Main() {
       .then((res) => {
         if (res.data.length !== 0) {
           dispatch(postAllAdd(res.data));
+          res.data.forEach((el: TypeRedux.TypePostsData) =>
+            el.bucketlist.forEach((el) => s3Download(el.id, el.image_path))
+          );
         } else {
           setPostInfiniteScrollEnd(true);
         }
@@ -114,6 +117,7 @@ function Main() {
   const handleInput = (key: string) => (e: { target: HTMLInputElement }) => {
     setSearch({ ...search, [key]: e.target.value });
   };
+  console.log(stateAllPost);
   return (
     <>
       {!spinner ? (

@@ -20,7 +20,7 @@ const modal = (
       };
       return copy;
     case MODAL_CLOSE:
-      let copy_close = { ...state, show: false };
+      let copy_close = { msg: '', id: NaN, item: '', show: false };
       return copy_close;
     default:
       return state;

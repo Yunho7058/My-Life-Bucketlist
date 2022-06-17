@@ -105,3 +105,15 @@ export const ModalPasswordMSG = styled.div`
 
   color: #c77171;
 `;
+
+export const TimerBox = styled.div`
+  position: absolute;
+  padding: 5px;
+  left: 20px;
+  top: 60px;
+  > svg {
+    top: 5px;
+    left: -15px;
+    position: absolute;
+  }
+`;

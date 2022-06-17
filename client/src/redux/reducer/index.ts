@@ -9,6 +9,7 @@ import isDarkeMode from './isDarkMode';
 import userInfo from './userInfo';
 import s3Poto from './s3Poto';
 import commentAll from './comment';
+import boolean from './boolean';
 
 const rootReducer = combineReducers({
   isLoginReducer,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   userInfo,
   s3Poto,
   commentAll,
+  boolean,
 });
 
 export default rootReducer;
