@@ -67,8 +67,6 @@ function Signup() {
 
   //! input 입력 이벤트
   const handleInput = (key: string) => (e: { target: HTMLInputElement }) => {
-    console.log(e.target.id);
-
     if (e.target.id === 'password') {
       const passwordReplace =
         /^.*(?=.{8,})(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]).*$/;
@@ -152,10 +150,10 @@ function Signup() {
         isEmail: false,
       });
     } else {
-      console.log(signupInfo.emailCode);
       axiosInstance
         .post(`/email/code`, { code: signupInfo.emailCode })
         .then((res) => {
+          console.log('실행');
           setValidityCheck({
             ...validityCheck,
             msgEmail: `인증이 완료되었습니다. 다음 단계로 넘어가세요.`,

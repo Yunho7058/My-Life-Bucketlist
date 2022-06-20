@@ -146,7 +146,7 @@ function Post() {
     let data = statePost.bucketlist.filter((el) => el.id === id);
 
     if (stateS3.presignPost) {
-      dispatch(isS3PotoDownload());
+      dispatch(isS3PotoDownload(true));
       data[0].image_path = stateS3.presignPost;
     } else if (stateBoolean.isPoto) {
       //선택한 사진이 없음
@@ -162,6 +162,7 @@ function Post() {
         dispatch(modalOpen('수정이 완료되었습니다.'));
         setBucketlistSelect(0);
         dispatch(isNotSelectPoto());
+        dispatch(isS3PotoDownload(false));
       })
       .catch((err) => {
         console.log(err, 'bucketlist edit err');
@@ -200,7 +201,7 @@ function Post() {
       dispatch(modalOpen('버킷리스트를 작성해주세요.'));
     } else {
       if (stateS3.presignPost) {
-        dispatch(isS3PotoDownload());
+        dispatch(isS3PotoDownload(true));
       }
 
       axiosInstance
@@ -224,7 +225,7 @@ function Post() {
             detail: '',
             image_path: '',
           });
-          dispatch(isS3PotoDownload());
+          dispatch(isS3PotoDownload(false));
           setBucketlistSelect(0);
           dispatch(postBlobType(''));
         })
