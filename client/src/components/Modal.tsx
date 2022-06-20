@@ -62,6 +62,8 @@ const Modal = () => {
       setModalList(1);
     } else if (stateModal.msg === 'signout') {
       setModalList(2);
+      setMinutes(3);
+      setSeconds(0);
     } else if (stateModal.msg === 'passwordFind') {
       setModalList(3);
     } else {
@@ -83,7 +85,7 @@ const Modal = () => {
     msg: '',
     isSendCode: false,
   });
-  //! input 입력 이벤트
+  // input 입력 이벤트
   const handleInput = (key: string) => (e: { target: HTMLInputElement }) => {
     if (key === 'newPassword') {
       const passwordReplace =
@@ -341,12 +343,14 @@ const Modal = () => {
                   value={passwordEdit.password}
                   onChange={handleInput('password')}
                 ></MS.ModalPasswordInput>
-                <MS.TimerBox>
-                  <MdTimer />
-                  <>
-                    {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-                  </>
-                </MS.TimerBox>
+                {stateUserInfo.domain && (
+                  <MS.TimerBox>
+                    <MdTimer />
+                    <>
+                      {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+                    </>
+                  </MS.TimerBox>
+                )}
               </MS.ModalPassword>
               <MS.ModalPasswordMSG>
                 {stateUserInfo.domain ? passwordEdit.snsMsg : passwordEdit.msg}

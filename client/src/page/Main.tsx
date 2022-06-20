@@ -123,65 +123,66 @@ function Main() {
       {!spinner ? (
         <Spinner />
       ) : (
-        <Headers search={search} handleInput={handleInput}></Headers>
+        <>
+          <Headers search={search} handleInput={handleInput}></Headers>
+          <MS.MainBack>
+            {!stateAllPost.length && (
+              <MS.SearchFail>조건에 맞는 버킷리스트가 없습니다.</MS.SearchFail>
+            )}
+            <MS.MainPostBack>
+              {stateAllPost.map((el: TypeRedux.TypePostsData, idx) => {
+                return (
+                  <MS.MainPost
+                    key={el.id}
+                    onClick={() => {
+                      handlePostClick(el.id);
+                    }}
+                    ref={stateAllPost.length - 5 === idx ? boxRef : null}
+                  >
+                    {el.bucketlist[0].image_path &&
+                    el.bucketlist[0].image_path.includes('blob') ? (
+                      <MS.PostImg src={el.bucketlist[0].image_path} />
+                    ) : el.bucketlist[0].image_path === null ? (
+                      <div>사진 없음</div>
+                    ) : (
+                      <Spinner></Spinner>
+                    )}
+                    <MS.PostContentBox>
+                      <MS.PostBucketlist>
+                        {el.bucketlist
+                          .filter((el, idx) => {
+                            return idx < 3;
+                          })
+                          .map((el, idx) => {
+                            return (
+                              <MS.PostBucketlistLine key={idx}>
+                                <img
+                                  src={
+                                    idx === 0
+                                      ? finger1
+                                      : idx === 1
+                                      ? finger2
+                                      : finger3
+                                  }
+                                  style={{ width: '15px', height: '22px' }}
+                                />
+                                . {el.content}
+                              </MS.PostBucketlistLine>
+                            );
+                          })}
+                      </MS.PostBucketlist>
+                      <MS.Line></MS.Line>
+                      <MS.PostBucketlistNickname>
+                        {el.nickname}
+                      </MS.PostBucketlistNickname>
+                    </MS.PostContentBox>
+                  </MS.MainPost>
+                );
+              })}
+            </MS.MainPostBack>
+          </MS.MainBack>
+        </>
       )}
-
-      <MS.MainBack>
-        {!stateAllPost.length && (
-          <MS.SearchFail>조건에 맞는 버킷리스트가 없습니다.</MS.SearchFail>
-        )}
-        <MS.MainPostBack>
-          {stateAllPost.map((el: TypeRedux.TypePostsData, idx) => {
-            return (
-              <MS.MainPost
-                key={el.id}
-                onClick={() => {
-                  handlePostClick(el.id);
-                }}
-                ref={stateAllPost.length - 5 === idx ? boxRef : null}
-              >
-                {el.bucketlist[0].image_path &&
-                el.bucketlist[0].image_path.includes('blob') ? (
-                  <MS.PostImg src={el.bucketlist[0].image_path} />
-                ) : el.bucketlist[0].image_path === null ? (
-                  <div>사진 없음</div>
-                ) : (
-                  <Spinner></Spinner>
-                )}
-                <MS.PostContentBox>
-                  <MS.PostBucketlist>
-                    {el.bucketlist
-                      .filter((el, idx) => {
-                        return idx < 3;
-                      })
-                      .map((el, idx) => {
-                        return (
-                          <MS.PostBucketlistLine key={idx}>
-                            <img
-                              src={
-                                idx === 0
-                                  ? finger1
-                                  : idx === 1
-                                  ? finger2
-                                  : finger3
-                              }
-                              style={{ width: '15px', height: '22px' }}
-                            />
-                            . {el.content}
-                          </MS.PostBucketlistLine>
-                        );
-                      })}
-                  </MS.PostBucketlist>
-                  <MS.Line></MS.Line>
-                  <MS.PostBucketlistNickname>
-                    {el.nickname}
-                  </MS.PostBucketlistNickname>
-                </MS.PostContentBox>
-              </MS.MainPost>
-            );
-          })}
-        </MS.MainPostBack>
-      </MS.MainBack>
     </>
   );
 }

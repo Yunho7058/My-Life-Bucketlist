@@ -22,6 +22,8 @@ import Toggle from './toggle';
 import Spinner from '../utils/spinner';
 import TypeRedux from '../redux/reducer/typeRedux';
 import axios from 'axios';
+import logoBlack from '../assets/poto/logo_black.png';
+import logoWhite from '../assets/poto/logo_white.png';
 
 const Headers = function ({
   search,
@@ -41,11 +43,15 @@ const Headers = function ({
   const stateUserInfo: TypeRedux.TypeUserInfo = useSelector(
     (state: TypeRootReducer) => state.userInfo
   );
+  const stateDarkMode = useSelector(
+    (state: TypeRootReducer) => state.isDarkeMode
+  );
 
   //! 새로고침
   useEffect(() => {
     if (window.localStorage.getItem('accessToken')) {
       dispatch(isLogin());
+      // dispatch(getUserInfo());
       if (!stateUserInfo.user_id) {
         dispatch(getUserInfo());
       }
@@ -140,7 +146,7 @@ const Headers = function ({
       <HS.HeaderBack>
         <ScrollTopBtn></ScrollTopBtn>
         <HS.LogoTitle onClick={() => navigate('/')}>
-          My Life Bucketlist
+          <img src={stateDarkMode === 'dark' ? logoBlack : logoWhite} />
         </HS.LogoTitle>
         {locationHref && (
           <HS.SearchBack>
