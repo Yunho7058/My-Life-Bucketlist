@@ -98,7 +98,9 @@ const Mypage = () => {
     if (stateUserInfo.domain) {
       axiosInstance
         .post('/user/email')
-        .then((res) => {})
+        .then((res) => {
+          console.log('하이');
+        })
         .catch((err) => console.log(err));
     }
     dispatch(modalOpen('signout'));

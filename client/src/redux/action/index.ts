@@ -99,9 +99,10 @@ export const postBlobType = (blob: string | null) => {
   };
 };
 
-export const isS3PotoDownload = () => {
+export const isS3PotoDownload = (boolean: boolean) => {
   return {
     type: POST_POTO_S3_DOWNLOAD,
+    payload: boolean,
   };
 };
 
@@ -293,7 +294,7 @@ export const getUserInfoAction = () => {
       }
     })
     .catch((err) => console.log(err, '로그인 후 해당유저 정보 불러오기'));
-  console.log(userInfo.user_id);
+
   return {
     type: GET_USER_INFO,
     payload: userInfo,
@@ -364,106 +365,3 @@ export const userPotoEdit = (poto: string) => {
     payload: poto,
   };
 };
-
-// export const userInfoSave = () => {
-//   return {
-//     type: USER_INFO,
-//   };
-// };
-
-// try {
-//   let userInfo: TypeRedux.TypeUserInfo = {
-//     user_id: 0,
-//     email: '',
-//     nickname: '',
-//     post_id: 0,
-//     domain: '',
-//     image_path: '',
-//   };
-//   const res = await axiosInstance.get(`/me`);
-
-//   userInfo.user_id = res.data.id;
-//   userInfo.email = res.data.email;
-//   userInfo.nickname = res.data.nickname;
-//   userInfo.post_id = res.data.post_id;
-//   userInfo.domain = res.data.domain;
-//   if (res.data.image_path) {
-//     const res1 = await axios.post(
-//       'https://p9m7fksvha.execute-api.ap-northeast-2.amazonaws.com/s3/presigned-url',
-//       { key: res.data.image_path }
-//     );
-//     const res2 = await axios.get(res1.data.data, { responseType: 'blob' });
-//     const url = window.URL.createObjectURL(new Blob([res2.data]));
-//     userInfo.image_path = url;
-//   } else {
-//     userInfo.image_path = null;
-//   }
-//   return {
-//     type: GET_USER_INFO,
-//     payload: userInfo,
-//   };
-
-// } catch (err) {
-//   console.log(err);
-// }
-
-// export const getUserInfo = () => {
-//   let userInfo: TypeRedux.TypeUserInfo = {
-//     user_id: 0,
-//     email: '',
-//     nickname: '',
-//     post_id: 0,
-//     domain: '',
-//     image_path: null,
-//   };
-
-// export const getUserInfoAction = () => {
-//   let userInfo: TypeRedux.TypeUserInfo = {
-//     user_id: 0,
-//     email: '',
-//     nickname: '',
-//     post_id: 0,
-//     domain: '',
-//     image_path: null,
-//   };
-
-//   axiosInstance
-//     .get(`/me`)
-//     .then((res) => {
-//       userInfo.user_id = res.data.id;
-//       userInfo.email = res.data.email;
-//       userInfo.nickname = res.data.nickname;
-//       userInfo.post_id = res.data.post_id;
-//       userInfo.domain = res.data.domain;
-
-//       if (
-//         res.data.image_path !== null &&
-//         res.data.image_path.search('profile') === -1
-//       ) {
-//         userInfo.image_path = res.data.image_path;
-//       } else if (res.data.image_path) {
-//         axios
-//           .post(
-//             'https://p9m7fksvha.execute-api.ap-northeast-2.amazonaws.com/s3/presigned-url',
-//             { key: res.data.image_path }
-//           )
-//           .then((res) => {
-//             axios
-//               .get(res.data.data, { responseType: 'blob' })
-//               .then((res) => {
-//                 const url = window.URL.createObjectURL(new Blob([res.data]));
-
-//                 userInfo.image_path = url;
-//               })
-//               .catch((err) => console.log(err));
-//           })
-//           .catch((err) => console.log(err));
-//       }
-//     })
-//     .catch((err) => console.log(err, '로그인 후 해당유저 정보 불러오기'));
-//   console.log(userInfo.user_id);
-//   return {
-//     type: GET_USER_INFO,
-//     payload: userInfo,
-//   };
-// };
