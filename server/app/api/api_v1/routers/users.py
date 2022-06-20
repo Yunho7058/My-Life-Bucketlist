@@ -217,7 +217,7 @@ def update_profile(image_path: str | None = Body(None, embed=True), user: User =
 @router.post("/user/email", status_code=204, responses={400: {}, 401: {}}, summary="sns 사용자 탈퇴 전 인증코드 발송", tags=["마이페이지"])
 def send_email_for_deleting_sns_user(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
-        code = send_email_code(email)
+        code = send_email_code(user.email)
         response.set_cookie(key="email_code", value=code, max_age=180, httponly=True)
     except:
         raise HTTPException(status_code=400)
