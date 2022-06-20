@@ -243,7 +243,7 @@ const Modal = () => {
   const [minutes, setMinutes] = useState(3);
   const [seconds, setSeconds] = useState(0);
   useEffect(() => {
-    if (!stateUserInfo.domain) {
+    if (stateUserInfo.domain && stateModal.msg === 'signout') {
       const countdown = setInterval(() => {
         if (seconds > 0) {
           setSeconds(seconds - 1);
@@ -270,7 +270,11 @@ const Modal = () => {
       {stateModal.show && !modalList && (
         <MS.ModalBack>
           <MS.ModalBox>
-            <MS.ModalText>{stateModal.msg}</MS.ModalText>
+            <MS.ModalText>
+              {setTimeout(() => {
+                return stateModal.msg;
+              }, 500)}
+            </MS.ModalText>
             {stateModal.id ? (
               <MS.ModalBtnBack>
                 <MS.ModalBtn onClick={() => handleClose()}>취소</MS.ModalBtn>

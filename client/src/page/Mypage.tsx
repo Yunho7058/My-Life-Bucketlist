@@ -94,6 +94,7 @@ const Mypage = () => {
       dispatch(modalOpen('SNS이용자는 변경하실 수 없습니다.'));
     }
   };
+  //회원탈퇴 클릭
   const handleSignout = () => {
     if (stateUserInfo.domain) {
       axiosInstance
