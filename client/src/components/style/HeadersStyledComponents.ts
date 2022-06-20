@@ -44,10 +44,10 @@ export const CreatePostBtn = styled.div`
   }
 `;
 export const LogoTitle = styled.div`
-  text-align: center;
-  padding-left: 15px;
-  height: 50px;
-  line-height: 50px;
+  > img {
+    width: 150px;
+    height: 100px;
+  }
 `;
 
 //https://cssarrowplease.com/ 말풍선 커스텀 사이트

@@ -74,7 +74,7 @@ export const CommentTextArea = styled.textarea`
   height: 60px;
   border-radius: 10px;
   border: 1px solid #696969;
-  padding: 5px;
+  padding: 10px;
   resize: none;
   background-color: ${({ theme }) => theme.mode.BGInput};
   color: ${({ theme }) => theme.mode.FCInput};

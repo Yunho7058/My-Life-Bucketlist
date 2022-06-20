@@ -107,13 +107,8 @@ export const ModalPasswordMSG = styled.div`
 `;
 
 export const TimerBox = styled.div`
-  position: absolute;
   padding: 5px;
-  left: 20px;
-  top: 60px;
+  display: flex;
   > svg {
-    top: 5px;
-    left: -15px;
-    position: absolute;
   }
 `;
