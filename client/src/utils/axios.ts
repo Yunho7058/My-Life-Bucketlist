@@ -35,7 +35,6 @@ axiosInstance.interceptors.response.use(
       axiosInstance
         .get('/refresh')
         .then((res) => {
-          console.log('토큰 새로 발급 받았어');
           originalRequest._retry = true;
           let accessToken = res.data.access_token;
           window.localStorage.setItem('accessToken', accessToken);

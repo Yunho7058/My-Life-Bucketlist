@@ -117,7 +117,7 @@ function Main() {
   const handleInput = (key: string) => (e: { target: HTMLInputElement }) => {
     setSearch({ ...search, [key]: e.target.value });
   };
-  console.log(stateAllPost);
+
   return (
     <>
       {!spinner ? (

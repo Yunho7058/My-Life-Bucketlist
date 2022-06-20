@@ -66,7 +66,7 @@ const PotoArea = ({
   //상위 컴포넌트에서 생성/수정 버튼 클릭시 실행 (formdata로 변경 후 s3전송)
 
   useEffect(() => {
-    if (stateS3Poto.isPotoDownload) {
+    if (stateS3Poto.isPotoDownload && stateS3Poto.presignPost) {
       const formData = new FormData();
       if (presignedPost && file) {
         Object.entries(presignedPost.fields).forEach((entry) => {
@@ -79,7 +79,7 @@ const PotoArea = ({
             headers: { 'Content-Type': 'multipart/form-data' },
           })
           .then((res) => {
-            dispatch(isS3PotoDownload());
+            dispatch(isS3PotoDownload(false));
             if (propsPoto) {
               dispatch(postBucketlistImgUpload(bucketlistId, propsPoto));
             }

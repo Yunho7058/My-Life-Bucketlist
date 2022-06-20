@@ -23,7 +23,7 @@ const s3Poto = (
       let copy = action.payload;
       return { ...state, presignPost: copy };
     case POST_POTO_S3_DOWNLOAD:
-      return { ...state, isPotoDownload: !state.isPotoDownload };
+      return { ...state, isPotoDownload: action.payload };
     default:
       return state;
   }
