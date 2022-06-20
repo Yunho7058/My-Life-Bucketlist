@@ -215,7 +215,7 @@ def update_profile(image_path: str | None = Body(None, embed=True), user: User =
 
 
 @router.post("/user/email", status_code=204, responses={400: {}, 401: {}}, summary="sns 사용자 탈퇴 전 인증코드 발송", tags=["마이페이지"])
-def send_email_for_deleting_sns_user(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def send_email_for_deleting_sns_user(response: Response, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         code = send_email_code(user.email)
         response.set_cookie(key="email_code", value=code, max_age=180, httponly=True)
@@ -233,12 +233,13 @@ def delete_user_info(
     user: User = Depends(get_current_user), 
     db: Session = Depends(get_db)
 ):
-    if (user.domain and code and code != email_code) or (not user.domain and password and not verify_password(password, user.password)):
+    if (user.domain and email_code and email_code == password) or (not user.domain and verify_password(password, user.password)):
+        delete_user(db, user.id)
+        if email_code:
+            response.delete_cookie("email_code")
+        return
+    else:
         raise HTTPException(status_code=403)
-    delete_user(db, user.id)
-    if email_code:
-        response.delete_cookie("email_code")
-    return
 
 
 @router.post("/oauth/kakao", response_model=Token, responses={401: {}}, summary="카카오 로그인", tags=["유저"])
