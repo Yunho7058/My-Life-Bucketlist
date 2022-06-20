@@ -82,6 +82,7 @@ def send_email(message):
 
 
 def send_email_code(user_email):
+    user_email = convert_email(user_email)
     code = generate_email_code()
     html = get_email_code_html(code)
     message = get_email_message(user_email, "mylifebucketlist 이메일 인증 안내입니다.", html)
@@ -90,7 +91,15 @@ def send_email_code(user_email):
 
 
 def send_new_password(user_email, new_password):
+    user_email = convert_email(user_email)
     html = get_new_password_html(new_password)
     message = get_email_message(user_email, "mylifebucketlist 비밀번호 찾기 안내입니다.", html)
     send_email(message)
     return
+
+
+def convert_email(email):
+    username, address = email.split("@")
+    if address == "jr.naver.com":
+        address = "naver.com"
+    return f"{username}@{address}"
