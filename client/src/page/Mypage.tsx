@@ -100,7 +100,7 @@ const Mypage = () => {
       axiosInstance
         .post('/user/email')
         .then((res) => {
-          console.log('하이');
+         
         })
         .catch((err) => console.log(err));
     }

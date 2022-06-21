@@ -243,7 +243,7 @@ const Modal = () => {
   const [minutes, setMinutes] = useState(3);
   const [seconds, setSeconds] = useState(0);
   useEffect(() => {
-    if (stateUserInfo.domain && stateModal.msg === 'signout') {
+    if (stateUserInfo.domain) {
       const countdown = setInterval(() => {
         if (seconds > 0) {
           setSeconds(seconds - 1);
