@@ -270,11 +270,7 @@ const Modal = () => {
       {stateModal.show && !modalList && (
         <MS.ModalBack>
           <MS.ModalBox>
-            <MS.ModalText>
-              {setTimeout(() => {
-                return stateModal.msg;
-              }, 500)}
-            </MS.ModalText>
+            <MS.ModalText>{stateModal.msg}</MS.ModalText>
             {stateModal.id ? (
               <MS.ModalBtnBack>
                 <MS.ModalBtn onClick={() => handleClose()}>취소</MS.ModalBtn>

@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 const baseURL = `${process.env.REACT_APP_SERVER_URI}`;
 
 const axiosInstance = axios.create();
@@ -42,6 +43,8 @@ axiosInstance.interceptors.response.use(
         })
         .catch((err) => {
           console.log(err, 'refreshToken renewal err');
+          window.localStorage.removeItem('accessToken');
+          window.location.reload();
         });
       return axios(originalRequest);
     }
