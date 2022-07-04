@@ -12,6 +12,7 @@ import ScrollToTop from './utils/scrollTopFix';
 import { light, dark } from './components/style/theme';
 import Spinner from './utils/spinner';
 
+let Intro = lazy(() => import('./page/Intro'));
 let Main = lazy(() => import('./page/Main'));
 let Login = lazy(() => import('./page/Login'));
 let Signup = lazy(() => import('./page/Signup'));
@@ -36,7 +37,8 @@ function App() {
           <Backgound>
             <Suspense fallback={<Spinner />}>
               <Routes>
-                <Route path="/" element={<Main />} />
+                <Route path="/" element={<Intro />} />
+                <Route path="/main" element={<Main />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/post/:id" element={<Post />} />
@@ -53,7 +55,6 @@ function App() {
   );
 }
 
-//추가 수정 필요(다크모드) global style로 구분하기?
 const Backgound = styled.div`
   background-color: ${({ theme }) => theme.mode.mainBackground};
   color: ${({ theme }) => theme.mode.primaryText};

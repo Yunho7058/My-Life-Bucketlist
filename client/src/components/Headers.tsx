@@ -64,7 +64,7 @@ const Headers = function ({
       axiosInstance
         .get(`/logout`)
         .then((res) => {
-          navigate('/');
+          navigate('/main');
           window.localStorage.removeItem('accessToken');
           window.location.reload();
           dispatch(isLogout());
@@ -145,7 +145,7 @@ const Headers = function ({
     <div style={{ position: 'relative', zIndex: '1000px' }}>
       <HS.HeaderBack>
         <ScrollTopBtn></ScrollTopBtn>
-        <HS.LogoTitle onClick={() => navigate('/')}>
+        <HS.LogoTitle onClick={() => navigate('/main')}>
           <img src={stateDarkMode === 'dark' ? logoBlack : logoWhite} />
         </HS.LogoTitle>
         {locationHref && (

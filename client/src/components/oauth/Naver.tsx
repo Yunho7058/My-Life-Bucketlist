@@ -28,7 +28,7 @@ const NaverLogin = () => {
         window.localStorage.setItem('accessToken', accessToken);
         dispatch(isLogin());
         dispatch(getUserInfo());
-        navigate('/');
+        navigate('/main');
       })
       .catch((err) => {
         console.log(err, 'naver login err');
