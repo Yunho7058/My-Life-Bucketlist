@@ -1,5 +1,10 @@
 import styled, { keyframes } from 'styled-components';
 
+export const Test12 = styled.div`
+  background-color: white;
+  color: white;
+`;
+
 export const FirstIntro = styled.div`
   background-color: white;
 
@@ -30,42 +35,33 @@ export const TextBox = styled.div`
 
 export const SecondIntro = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 80vh;
   background-color: white;
   @media screen and (max-width: 600px) {
     height: 60vh;
+    display: flex;
   }
 `;
 
 export const TreeIntro = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 80vh;
   background-color: white;
 
   @media screen and (max-width: 600px) {
     height: 60vh;
-  }
-`;
-
-export const textAnimation = keyframes`
-  0% {
-    transform: translateY(0);
-    transform-origin: 50% 50%;
-    text-shadow: none;
-  }
-  100% {
-    transform: translateY(-40px);
-    transform-origin: 50% 50%;
-    text-shadow: 0 1px 0 #cccccc, 0 2px 0 #cccccc, 0 3px 0 #cccccc, 0 1px 0 #cccccc, 0 1px 0 #cccccc, 0 1px 0 #cccccc, 0 1px 0 #cccccc, 0 1px 0 #cccccc, 0 1px 0 #cccccc, 0 20px 20px rgba(255, 255, 255, 0.2);
+    display: flex;
   }
 `;
 
 export const TextLogo = styled.div`
-  animation: ${textAnimation} 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   z-index: 999;
   font-size: 80px;
+  margin-bottom: 50px;
+  margin-top: -60px;
+  text-shadow: 15px 15px 10px rgba(0, 0, 0, 0.7);
   @media screen and (max-width: 600px) {
-    font-size: 32px;
+    font-size: 35px;
     height: 50px;
   }
 `;
@@ -73,11 +69,14 @@ export const TextLogo = styled.div`
 export const TextContent = styled.div`
   color: black;
   font-size: 21px;
-  line-height: 30px;
+  line-height: 15px;
   z-index: 10;
   &.black {
     font-size: 15px;
     color: white;
+  }
+  &.content {
+    line-height: 30px;
   }
 `;
 export const StartBtn = styled.div`
@@ -99,22 +98,33 @@ export const StartBtn = styled.div`
     line-height: 80px;
     background-color: #3f3e3e;
     font-size: 20px;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+  }
+  @media screen and (max-width: 600px) {
+    width: 160px;
+    height: 50px;
   }
 `;
 export const GifBox = styled.div`
   display: flex;
+
   justify-content: center;
   align-items: center;
   > img {
     width: 65%;
+    height: 500px;
     border-radius: 5px;
   }
   @media screen and (max-width: 600px) {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    &.Tree {
+      flex-direction: column-reverse;
+    }
     > img {
       width: 80%;
+      height: 300px;
       border-radius: 5px;
     }
   }

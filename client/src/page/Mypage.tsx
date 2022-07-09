@@ -99,9 +99,7 @@ const Mypage = () => {
     if (stateUserInfo.domain) {
       axiosInstance
         .post('/user/email')
-        .then((res) => {
-         
-        })
+        .then((res) => {})
         .catch((err) => console.log(err));
     }
     dispatch(modalOpen('signout'));
@@ -245,7 +243,7 @@ const Mypage = () => {
                     />
                   ) : (
                     <FaUserCircle
-                      size={70}
+                      size={40}
                       onClick={() => handlePotoInput()}
                     ></FaUserCircle>
                   )}
@@ -257,9 +255,7 @@ const Mypage = () => {
                   ref={potoInput}
                   onChange={onLoadFile}
                 />
-                {/* <Btn className="imgDelete" onClick={() => handleImgDelete()}>
-                  사진 삭제하기
-                </Btn> */}
+
                 <MS.DivLine>
                   <MS.Btn onClick={() => handleImgEdit()}>수정</MS.Btn>
                 </MS.DivLine>
@@ -285,12 +281,7 @@ const Mypage = () => {
                 </MS.DivLine>
                 <MS.DivLine>
                   {nicknameChange.is ? (
-                    <div
-                      style={{
-                        display: 'flex',
-                        columnGap: '10px',
-                      }}
-                    >
+                    <MS.NicknameBtn>
                       <MS.Btn
                         onClick={() => {
                           handleNicknameEdit();
@@ -305,7 +296,7 @@ const Mypage = () => {
                       >
                         취소
                       </MS.Btn>
-                    </div>
+                    </MS.NicknameBtn>
                   ) : (
                     <MS.Btn
                       className="change"

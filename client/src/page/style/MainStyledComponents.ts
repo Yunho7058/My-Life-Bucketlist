@@ -20,12 +20,14 @@ export const MainBack = styled.div`
 export const MainPostBack = styled.div`
   height: 100%;
   width: 80%;
-
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 2rem;
-
   justify-items: center;
+  @media screen and (max-width: 600px) {
+    display: flex;
+    flex-direction: column;
+  }
 `;
 
 export const MainPostSort = styled.div``;
@@ -56,7 +58,7 @@ export const MainPost = styled.div`
   }
   @media screen and (max-width: 600px) {
     height: 400px;
-    width: 360px;
+    width: 100%;
     min-width: 300px;
   }
 `;

@@ -3,24 +3,24 @@ import styled from 'styled-components';
 export const PostBack = styled.div`
   width: 100%;
   height: 100%;
-
+  min-width: 300px;
   min-height: 100vh;
   background-color: ${({ theme }) => theme.mode.background1};
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: auto;
+  overflow-x: hidden;
 `;
 export const PostBox = styled.div`
   margin-top: 8%;
-
-  overflow-x: hidden;
+  overflow: hidden;
   margin-bottom: 20px;
+  min-width: 300px;
   height: auto;
-  width: 90vw;
+  width: 80vw;
   display: flex;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
   background-color: ${({ theme }) => theme.mode.background2};
   box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
   border-radius: 50px;
@@ -30,6 +30,7 @@ export const PostTitle = styled.div`
   padding-top: 40px;
   font-size: 25px;
   display: flex;
+  text-align: center;
   flex-direction: column;
   justify-content: space-between;
   width: 80%;
@@ -37,7 +38,6 @@ export const PostTitle = styled.div`
 `;
 export const PostTitleSide = styled.div`
   display: flex;
-
   justify-content: right;
   width: 100%;
   margin: 10px;
@@ -60,26 +60,36 @@ export const PostTitleSide = styled.div`
     &:hover {
       color: #6495ed;
     }
+    @media screen and (max-width: 600px) {
+      font-size: 10px;
+      width: 60px;
+      height: 20px;
+      line-height: 20px;
+    }
   }
 `;
 
 export const BucketlistBox = styled.div`
-  width: 80%;
+  width: 90%;
   height: 60%;
   margin-bottom: 10px;
-`;
-export const BucketlistBody = styled.div`
-  width: 100%;
-  height: 30%;
-`;
-export const BucketlistView = styled.div`
-  padding: 15px;
   display: flex;
   flex-direction: column;
+
   align-items: center;
-  width: 100%;
+`;
+// export const BucketlistBody = styled.div`
+//   width: 100%;
+//   height: 30%;
+// `;
+export const BucketlistView = styled.div`
+  padding: 15px;
+  width: 90%;
   height: 50%;
   position: relative;
+  display: flex;
+  flex-direction: column;
+
   border-radius: 30px;
   > svg {
     position: absolute;
@@ -89,12 +99,24 @@ export const BucketlistView = styled.div`
     &:hover {
       color: #6495ed;
     }
+    @media screen and (max-width: 600px) {
+      width: 15px;
+      top: 0px;
+      right: 12px;
+    }
   }
   > div {
-    width: 100%;
     display: flex;
+    flex-direction: row;
+    @media screen and (max-width: 600px) {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+  > div.btn {
+    display: flex;
+    flex-direction: row;
     justify-content: center;
-    align-content: space-around;
   }
   &:hover {
     background-color: ${({ theme }) => theme.mode.background1};
@@ -103,30 +125,43 @@ export const BucketlistView = styled.div`
 export const BucketlistImg = styled.div`
   border: 1px solid;
   text-align: center;
-  line-height: 200px;
+  line-height: 150px;
   border-radius: 30px;
-  min-width: 250px;
-  height: 200px;
+  min-width: 200px;
+  height: 150px;
   background-color: grey;
+  @media screen and (max-width: 600px) {
+    min-width: 90px;
+    border-radius: 10px;
+    height: 150px;
+    line-height: 150px;
+    font-size: 1px;
+  }
 `;
 
 export const BucketlistContent = styled.div`
   display: flex;
-  width: 55%;
+  width: 100%;
   flex-direction: column;
   justify-content: space-around;
+
   padding: 15px;
   border-radius: 30px;
-  margin-right: 115px;
 
+  @media screen and (max-width: 600px) {
+    font-size: 10px;
+  }
   > div.content {
     font-size: 18px;
-    width: 800px;
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-
+    @media screen and (max-width: 600px) {
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
     > div {
       display: flex;
       flex-direction: row;
@@ -134,11 +169,14 @@ export const BucketlistContent = styled.div`
   }
   &.simple {
     padding: 10px;
-    width: 100%;
+    width: 70%;
     height: 30px;
-    flex-direction: row;
+
     &:hover {
       background-color: ${({ theme }) => theme.mode.background1};
+    }
+    > div.content {
+      padding-left: 30px;
     }
   }
 `;
@@ -222,6 +260,16 @@ export const Btn = styled.div`
       background-color: #6495ed;
     }
   }
+  @media screen and (max-width: 600px) {
+    margin: 2px;
+    font-size: 12px;
+    width: 80px;
+    height: 20px;
+    border-radius: 20px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    text-align: center;
+    line-height: 20px;
+  }
 `;
 export const BucketlistCreate = styled.div`
   width: 100%;
@@ -232,7 +280,8 @@ export const InputBox = styled.input`
   margin-bottom: 10px;
   padding: 5px;
   height: 20%;
-  border-radius: 10px;
+  width: 100%;
+  border-radius: 5px;
   border: 1px solid #696969;
   padding-left: 15px;
   padding-right: 15px;
@@ -252,12 +301,18 @@ export const InputBox = styled.input`
     width: 95%;
     height: 40px;
   }
+  @media screen and (max-width: 600px) {
+    margin-bottom: 5px;
+    width: 75%;
+    font-size: 10px;
+  }
 `;
 export const TextArea = styled.textarea`
   margin-bottom: 10px;
   padding: 5px;
   height: 60%;
-  border-radius: 10px;
+  width: 100%;
+  border-radius: 5px;
   border: 1px solid #696969;
   padding-left: 15px;
   padding-right: 15px;
@@ -265,6 +320,11 @@ export const TextArea = styled.textarea`
   background-color: ${({ theme }) => theme.mode.BGInput};
   color: ${({ theme }) => theme.mode.FCInput};
   outline: none;
+  @media screen and (max-width: 600px) {
+    margin-bottom: 5px;
+    width: 75%;
+    font-size: 10px;
+  }
 `;
 
 export const LoginInput = styled.input`
@@ -291,11 +351,14 @@ export const LoginInput = styled.input`
 `;
 
 export const PostPoto = styled.img`
-  width: 250px;
-  height: 200px;
+  min-width: 200px;
+  height: 150px;
   padding: 0px;
-
   border-radius: 15px;
+  @media screen and (max-width: 600px) {
+    min-width: 100%;
+    height: 150px;
+  }
 `;
 
 export const ImgInput = styled.input`
@@ -327,13 +390,15 @@ export const BookAndlikeBtn = styled.div`
 `;
 export const Pagination = styled.div`
   display: flex;
-  width: 65%;
+  width: 80%;
+  flex-direction: row;
   justify-content: space-around;
 `;
 
 export const PaginationBtn = styled.div`
   border: 1px solid;
   width: 80px;
+  padding: 3px;
   text-align: center;
   line-height: 30px;
   height: 30px;
@@ -341,5 +406,13 @@ export const PaginationBtn = styled.div`
   cursor: pointer;
   &:hover {
     background-color: #6495ed;
+  }
+  @media screen and (max-width: 600px) {
+    width: 40px;
+    font-size: 10px;
+    text-align: center;
+    line-height: 20px;
+    height: 20px;
+    border-radius: 5px;
   }
 `;

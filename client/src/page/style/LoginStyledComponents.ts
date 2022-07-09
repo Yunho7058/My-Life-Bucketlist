@@ -6,7 +6,7 @@ export const LoginBack = styled.div`
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+
   align-items: center;
 `;
 
@@ -15,7 +15,7 @@ export const LoginBox = styled.div`
   box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
   width: 300px;
   height: 410px;
-  margin-top: 80px;
+  margin-top: 50px;
   border-radius: 15px;
   padding: 15px;
   display: flex;

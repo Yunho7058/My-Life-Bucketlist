@@ -145,21 +145,31 @@ export const PotoBack = styled.div`
 `;
 
 export const PotoZone = styled.img`
-  width: 250px;
-  height: 200px;
+  width: 100%;
+  height: 150px;
   padding: 0px;
-
   border-radius: 15px;
+  @media screen and (max-width: 600px) {
+    width: 100%;
+    height: 150px;
+  }
 `;
 
 export const BinPotoZone = styled.div`
   border: 1px solid;
   text-align: center;
-  line-height: 200px;
+  line-height: 150px;
   border-radius: 30px;
-  min-width: 250px;
-  height: 200px;
+  min-width: 200px;
+  height: 150px;
   background-color: grey;
+  @media screen and (max-width: 600px) {
+    min-width: 100%;
+    border-radius: 10px;
+    height: 150px;
+    line-height: 150px;
+    font-size: 11px;
+  }
 `;
 
 export const DeletePoto = styled.div`
@@ -174,6 +184,14 @@ export const DeletePoto = styled.div`
 
   &:hover {
     background-color: #c77171;
+  }
+  @media screen and (max-width: 600px) {
+    width: 100px;
+    height: 20px;
+    font-size: 10px;
+    border-radius: 10px;
+    margin-top: 5px;
+    line-height: 20px;
   }
 `;
 
