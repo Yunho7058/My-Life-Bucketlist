@@ -13,13 +13,14 @@ export const MainBack = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
-  min-width: 200px;
+  min-width: 250px;
   min-height: 100vh;
 `;
 
 export const MainPostBack = styled.div`
   height: 100%;
   width: 80%;
+
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 2rem;
@@ -27,6 +28,8 @@ export const MainPostBack = styled.div`
   @media screen and (max-width: 600px) {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 `;
 
@@ -58,8 +61,8 @@ export const MainPost = styled.div`
   }
   @media screen and (max-width: 600px) {
     height: 400px;
-    width: 100%;
-    min-width: 300px;
+    width: 90%;
+    min-width: 250px;
   }
 `;
 

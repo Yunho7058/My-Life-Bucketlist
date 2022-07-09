@@ -105,7 +105,7 @@ export const BookTitle = styled.div`
     padding-right: 5px;
   }
   @media screen and (max-width: 600px) {
-    font-size: 18px;
+    font-size: 16px;
   }
 `;
 
@@ -218,6 +218,7 @@ export const Btn = styled.div`
   }
   &.change {
     width: 130px;
+    margin-left: 12px;
     &:hover {
       background-color: #6495ed;
     }
@@ -231,6 +232,7 @@ export const Btn = styled.div`
   }
   @media screen and (max-width: 600px) {
     width: 40px;
+    font-size: 10px;
     height: 15px;
     line-height: 15px;
   }

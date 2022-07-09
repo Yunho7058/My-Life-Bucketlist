@@ -168,7 +168,7 @@ export const BinPotoZone = styled.div`
     border-radius: 10px;
     height: 150px;
     line-height: 150px;
-    font-size: 11px;
+    font-size: 15px;
   }
 `;
 
