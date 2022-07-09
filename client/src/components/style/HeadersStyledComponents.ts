@@ -3,7 +3,7 @@ import { dark } from './theme';
 
 export const HeaderBack = styled.div`
   width: 100%;
-  /* min-width: 400px; */
+  min-width: 230px;
   height: 80px;
   display: flex;
   justify-content: space-between;

@@ -32,7 +32,7 @@ export const CommentList = styled.div`
   margin-top: 20px;
   padding: 10px;
   width: 95%;
-  height: 30%;
+  height: 20%;
   display: flex;
   flex-direction: row;
 
@@ -49,18 +49,29 @@ export const CommentProfile = styled.div`
     margin-bottom: 20px;
   }
   > img {
-    border-radius: 45px;
-    width: 90px;
-    height: 90px;
+    border-radius: 10px;
+    width: 60px;
+    height: 60px;
     margin-bottom: 30px;
+
     &.comments {
       margin: 0px;
-      width: 90px;
-      height: 90px;
+      width: 40px;
+      height: 40px;
+      @media screen and (max-width: 600px) {
+        border-radius: 20px;
+        width: 30px;
+        height: 30px;
+      }
+    }
+    @media screen and (max-width: 600px) {
+      border-radius: 10px;
+      width: 30px;
+      height: 30px;
     }
   }
   &.list {
-    width: 150px;
+    width: 60px;
     justify-content: flex-start;
     > div {
       margin-left: 5px;
@@ -69,7 +80,6 @@ export const CommentProfile = styled.div`
   }
 `;
 export const CommentTextArea = styled.textarea`
-  display: flex;
   width: 95%;
   height: 60px;
   border-radius: 10px;
@@ -82,6 +92,11 @@ export const CommentTextArea = styled.textarea`
   &.list {
     width: 100%;
   }
+  @media screen and (max-width: 600px) {
+    width: 90%;
+    height: 40px;
+    border-radius: 10px;
+  }
 `;
 export const CommentTextAreaBox = styled.div`
   flex-grow: 5;
@@ -89,20 +104,18 @@ export const CommentTextAreaBox = styled.div`
   padding: 10px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  justify-content: center;
 `;
-export const CommentListProfile = styled.div`
-  flex-grow: 0.5;
-`;
+export const CommentListProfile = styled.div``;
 export const CommentListBody = styled.div`
-  flex-grow: 1;
-
   border-radius: 15px;
-
   position: relative;
   padding: 15px;
-  height: 91px;
-  font-size: 18px;
+  height: 100%;
+  font-size: 15px;
+  @media screen and (max-width: 600px) {
+    font-size: 12px;
+  }
 `;
 export const CommentListBtn = styled.div`
   position: relative;
@@ -131,6 +144,14 @@ export const CommentCreateBtn = styled.div`
   border-radius: 5px;
   &:hover {
     background-color: #6495ed;
+  }
+  @media screen and (max-width: 600px) {
+    width: 30px;
+    padding: 8px;
+    height: 3px;
+    line-height: 3px;
+    margin: 5px;
+    font-size: 12px;
   }
 `;
 export const CommentBtnBack = styled.div`
@@ -161,7 +182,6 @@ export const CommentEditBtn = styled.div`
   display: flex;
   margin-top: 10px;
   column-gap: 10px;
-  justify-content: flex-end;
   > div {
     padding: 10px;
     width: 50px;
@@ -178,6 +198,16 @@ export const CommentEditBtn = styled.div`
       &:hover {
         background-color: #6495ed;
       }
+    }
+    @media screen and (max-width: 600px) {
+      padding: 8px;
+      width: 30px;
+      height: 10px;
+      border-radius: 5px;
+      border: 2px solid rgba(0, 0, 0, 0.2);
+      text-align: center;
+      line-height: 10px;
+      font-size: 12px;
     }
   }
 `;

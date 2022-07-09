@@ -108,7 +108,7 @@ const DetailMode = ({
                     </PS.BucketlistContent>
                   </div>
 
-                  <div>
+                  <div className="btn">
                     <PS.Btn
                       className="delete"
                       onClick={(e) => {
@@ -133,20 +133,6 @@ const DetailMode = ({
                 <>
                   {/* 편집 off */}
                   <div>
-                    {/* {!spinnerImg &&
-                    el.image_path &&
-                    !/^bucketlist/.test(el.image_path) ? (
-                      el.image_path !== null ? (
-                        <PS.PostPoto src={el.image_path}></PS.PostPoto>
-                      ) : (
-                        <PS.BucketlistImg>
-                          사진을 선택해주세요.
-                        </PS.BucketlistImg>
-                      )
-                    ) : (
-                      <Spinner type="img"></Spinner>
-                    )} */}
-
                     {el.image_path ? (
                       /^bucketlist/.test(el.image_path) ? (
                         <Spinner type="img"></Spinner>
@@ -197,9 +183,9 @@ const DetailMode = ({
               </PS.BucketlistContent>
             </div>
 
-            <div>
+            <div className="btn">
               <PS.Btn
-                className="createBtn"
+                className="delete"
                 onClick={() => {
                   handleBucketlistCancel();
                 }}
@@ -207,7 +193,7 @@ const DetailMode = ({
                 취소
               </PS.Btn>
               <PS.Btn
-                className="createBtn"
+                className="modify"
                 onClick={() => {
                   handleNewBucketlist();
                 }}

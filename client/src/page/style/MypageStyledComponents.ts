@@ -3,13 +3,20 @@ import styled from 'styled-components';
 export const MypageBack = styled.div`
   width: 100%;
   height: 100%;
+  min-width: 350px;
   min-height: 100vh;
   padding-bottom: 30px;
   background-color: ${({ theme }) => theme.mode.background1};
   display: flex;
-  justify-content: center;
-  justify-content: space-around;
+  column-gap: 10px;
   overflow: auto;
+  @media screen and (max-width: 600px) {
+    flex-direction: column;
+    align-items: center;
+  }
+  @media screen and (min-width: 600px) {
+    justify-content: center;
+  }
 `;
 
 export const ListBox = styled.div`
@@ -23,6 +30,13 @@ export const ListBox = styled.div`
   justify-content: space-around;
   background-color: ${({ theme }) => theme.mode.background2};
   box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
+  @media screen and (max-width: 600px) {
+    margin-top: 20px;
+    padding: 10px;
+    width: 70%;
+    height: 120px;
+    border-radius: 20px;
+  }
 `;
 
 export const ContentBox = styled.div`
@@ -37,7 +51,14 @@ export const ContentBox = styled.div`
   background-color: ${({ theme }) => theme.mode.background2};
   box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
   &.profile {
-    height: 500px;
+    height: 400px;
+    align-items: center;
+    @media screen and (max-width: 600px) {
+      height: 250px;
+    }
+  }
+  @media screen and (max-width: 600px) {
+    margin-top: 10px;
   }
 `;
 
@@ -70,7 +91,6 @@ export const MyBucketlist = styled.div`
 export const BookBucketlistBack = styled.div`
   font-size: 20px;
   padding: 10px;
-
   line-height: 20px;
 `;
 export const BookTitle = styled.div`
@@ -78,9 +98,14 @@ export const BookTitle = styled.div`
   padding: 10px;
   height: 30px;
   line-height: 30px;
-
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   > svg {
     padding-right: 5px;
+  }
+  @media screen and (max-width: 600px) {
+    font-size: 18px;
   }
 `;
 
@@ -110,34 +135,43 @@ export const BookBucketlist = styled.div`
   }
 `;
 export const ProfilList = styled.div`
-  width: 95%;
+  width: 100%;
   height: 50px;
   display: flex;
-
-  justify-content: space-around;
-  align-items: center;
-
+  flex-direction: row;
   > svg {
     cursor: pointer;
     &:hover {
       opacity: 0.7;
     }
   }
+  @media screen and (max-width: 600px) {
+  }
 `;
 export const ProfilTilte = styled.div`
-  text-align: center;
+  text-align: left;
   font-size: 16px;
   opacity: 0.6;
-  width: 200px;
+  min-width: 100px;
   height: 20px;
+  margin-left: 20px;
+  line-height: 20px;
+  @media screen and (max-width: 600px) {
+    margin-left: 0px;
+    font-size: 12px;
+    min-width: 80px;
+  }
 `;
 export const ProfilContent = styled.div`
-  width: 300px;
-
+  width: 100px;
   height: 40px;
   font-size: 16px;
   line-height: 40px;
   text-align: center;
+  @media screen and (max-width: 600px) {
+    font-size: 13px;
+    width: 100px;
+  }
 `;
 export const ProfilContentInput = styled.input`
   width: 200px;
@@ -155,11 +189,15 @@ export const ProfilContentInput = styled.input`
     border: 1px solid #4169e1;
     background-color: ${({ theme }) => theme.mode.background2};
   }
+  @media screen and (max-width: 600px) {
+    font-size: 13px;
+    width: 70px;
+  }
 `;
 export const Btn = styled.div`
   border-radius: 10px;
-  height: 30px;
-  line-height: 30px;
+  height: 20px;
+  line-height: 20px;
   text-align: center;
   padding: 5px;
   border: 1px solid rgba(0, 0, 0, 0.4);
@@ -168,20 +206,33 @@ export const Btn = styled.div`
   width: 80px;
   &.delete {
     background-color: #cd5c5c;
-    width: 20%;
+    width: 130px;
+    margin-left: 5px;
     &:hover {
       background-color: #c77171;
     }
+    @media screen and (max-width: 600px) {
+      width: 80px;
+      font-size: 10px;
+    }
   }
   &.change {
-    width: 40%;
-    width: 100px;
+    width: 130px;
     &:hover {
       background-color: #6495ed;
+    }
+    @media screen and (max-width: 600px) {
+      width: 80px;
+      font-size: 10px;
     }
   }
   &:hover {
     background-color: #6495ed;
+  }
+  @media screen and (max-width: 600px) {
+    width: 40px;
+    height: 15px;
+    line-height: 15px;
   }
 `;
 export const ImgInput = styled.input`
@@ -196,6 +247,11 @@ export const PostPoto = styled.img`
   &:hover {
     opacity: 0.7;
   }
+  @media screen and (max-width: 600px) {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+  }
 `;
 
 export const Line = styled.div`
@@ -208,12 +264,21 @@ export const DivLine = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 150px;
+  width: 35%;
   height: 50px;
   > svg {
     cursor: pointer;
     &:hover {
       opacity: 0.7;
     }
+  }
+`;
+
+export const NicknameBtn = styled.div`
+  display: flex;
+  column-gap: 10px;
+  @media screen and (max-width: 600px) {
+    flex-direction: column;
+    row-gap: 3px;
   }
 `;

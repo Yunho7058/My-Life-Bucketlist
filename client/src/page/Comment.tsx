@@ -227,7 +227,7 @@ const Comment = () => {
                   {el.image_path ? (
                     <img src={el.image_path} className="comments" />
                   ) : (
-                    <FaUserCircle size={60} />
+                    <FaUserCircle size={30} />
                   )}
                 </CS.CommentProfile>
                 <CS.CommentDiv>

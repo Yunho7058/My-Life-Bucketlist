@@ -95,7 +95,7 @@ function Login() {
           //handleGetUserinfo();
           dispatch(getUserInfo());
 
-          navigate('/');
+          navigate('/main');
           //! setCookie(client) 와 headers(server)에 담긴 cookie 차이는?
         })
         .catch((err) => {
