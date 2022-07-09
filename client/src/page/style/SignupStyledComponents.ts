@@ -11,7 +11,7 @@ export const SignupBack = styled.div`
 `;
 export const SignupBox = styled.div`
   background-color: ${({ theme }) => theme.mode.background2};
-  width: 340px;
+  width: 85%;
   height: 340px;
   margin-bottom: 50px;
   border-radius: 40px;
