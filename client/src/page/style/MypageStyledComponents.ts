@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const MypageBack = styled.div`
   width: 100%;
   height: 100%;
-  min-width: 350px;
+
   min-height: 100vh;
   padding-bottom: 30px;
   background-color: ${({ theme }) => theme.mode.background1};

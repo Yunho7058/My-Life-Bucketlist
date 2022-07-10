@@ -11,7 +11,7 @@ export const SignupBack = styled.div`
 `;
 export const SignupBox = styled.div`
   background-color: ${({ theme }) => theme.mode.background2};
-  width: 85%;
+  width: 350px;
   height: 340px;
   margin-bottom: 50px;
   border-radius: 40px;
@@ -19,6 +19,9 @@ export const SignupBox = styled.div`
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
   &.terms {
     height: 500px;
+  }
+  @media screen and (max-width: 600px) {
+    width: 85%;
   }
 `;
 export const SignupStepBox = styled.div`
@@ -35,7 +38,7 @@ export const SignupTitle = styled.div`
 `;
 
 export const SignupInput = styled.input`
-  width: 200px;
+  width: 250px;
   height: 25px;
   margin-top: 5px;
   margin-bottom: 25px;
@@ -55,12 +58,16 @@ export const SignupInput = styled.input`
     border: 1px solid #4169e1;
     background-color: ${({ theme }) => theme.mode.background2};
   }
+  @media screen and (max-width: 600px) {
+    width: 160px;
+  }
 `;
 export const SignupInputBox = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+
   > svg {
     position: absolute;
     top: 34px;
@@ -192,7 +199,7 @@ export const TermsTitle = styled.div`
 `;
 export const TermsBox = styled.div`
   border: 1px solid;
-  width: 300px;
+  width: 90%;
   height: 120px;
   overflow-y: scroll;
 `;
@@ -208,6 +215,9 @@ export const SignupAnyBack = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
+  @media screen and (max-width: 600px) {
+    min-height: 30px;
+  }
 `;
 
 export const StepIcon = styled.div`

@@ -13,7 +13,7 @@ export const LoginBack = styled.div`
 export const LoginBox = styled.div`
   background-color: ${({ theme }) => theme.mode.background2};
   box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
-  width: 80%;
+  width: 300px;
   height: 410px;
   margin-top: 50px;
   border-radius: 15px;
@@ -22,18 +22,22 @@ export const LoginBox = styled.div`
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  @media screen and (max-width: 600px) {
+    width: 80%;
+  }
 `;
 export const LoginInputBox = styled.div`
   text-align: center;
   position: relative;
-
+  display: flex;
+  width: 100%;
   > svg {
-    top: 35px;
-    right: 8px;
+    top: 19px;
+
     position: absolute;
   }
   > svg.loginIcon {
-    left: 5px;
+    left: 12px;
   }
 `;
 
@@ -47,7 +51,7 @@ export const LoginInput = styled.input`
   border: 1px solid #696969;
   padding-left: 30px;
   padding-right: 30px;
-
+  width: 100%;
   background-color: ${({ theme }) => theme.mode.BGInput};
   color: ${({ theme }) => theme.mode.FCInput};
   outline: none;
@@ -63,10 +67,10 @@ export const LoginInput = styled.input`
 export const LoginInputText = styled.div`
   position: absolute;
   left: -2px;
-  top: 3px;
+  top: -12px;
 `;
 export const LoginBtn = styled.div`
-  width: 280px;
+  width: 90%;
   height: 45px;
   border: 1px solid;
   margin-bottom: 10px;
@@ -94,7 +98,7 @@ export const LoginLine = styled.div`
   color: ${({ theme }) => theme.mode.loginLine};
   ::before {
     content: '';
-    width: 130px;
+    width: 100px;
     flex-grow: 1;
     background-color: ${({ theme }) => theme.mode.loginLine};
     height: 1px;
@@ -103,7 +107,7 @@ export const LoginLine = styled.div`
   }
   ::after {
     content: '';
-    width: 130px;
+    width: 100px;
     flex-grow: 1;
     background-color: ${({ theme }) => theme.mode.loginLine};
     height: 1px;

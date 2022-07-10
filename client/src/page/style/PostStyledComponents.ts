@@ -171,12 +171,8 @@ export const BucketlistContent = styled.div`
     padding: 10px;
     width: 70%;
     height: 30px;
-
     &:hover {
       background-color: ${({ theme }) => theme.mode.background1};
-    }
-    > div.content {
-      padding-left: 30px;
     }
   }
 `;
