@@ -93,7 +93,7 @@ export const StartBtn = styled.div`
     background-color: #3f3e3e;
   }
   &.last {
-    width: 320px;
+    width: 80%;
     height: 80px;
     line-height: 80px;
     background-color: #3f3e3e;
