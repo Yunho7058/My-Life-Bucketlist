@@ -133,8 +133,8 @@ const Headers = function ({
   const [locationHref, setLocationHref] = useState(false);
   useEffect(() => {
     if (
-      window.location.href === 'http://localhost:3000/' ||
-      window.location.href === 'https://mylifebucketlist.shop/'
+      window.location.href === 'http://localhost:3000/main' ||
+      window.location.href === 'https://mylifebucketlist.shop/main'
     ) {
       setLocationHref(true);
     } else {
