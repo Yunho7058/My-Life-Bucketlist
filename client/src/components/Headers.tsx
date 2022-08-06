@@ -156,9 +156,10 @@ const Headers = function ({
               onChange={handleInput && handleInput('nickname')}
               onKeyPress={enterKey}
             ></HS.SearchInput>
-            <HS.SearchBtn onClick={() => handlePostNicknameSearch()}>
-              <AiOutlineSearch size={25} />
-            </HS.SearchBtn>
+            <AiOutlineSearch
+              size={25}
+              onClick={() => handlePostNicknameSearch()}
+            />
           </HS.SearchBack>
         )}
         {stateIsLogin ? (

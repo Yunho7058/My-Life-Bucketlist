@@ -1,12 +1,11 @@
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
-export const Test12 = styled.div`
-  background-color: white;
+export const Back = styled.div`
   color: white;
 `;
 
 export const FirstIntro = styled.div`
-  background-color: white;
+  background-color: #3f3e3e;
 
   width: 100vw;
   height: 100vh;
@@ -57,9 +56,9 @@ export const TreeIntro = styled.div`
 export const TextLogo = styled.div`
   z-index: 999;
   font-size: 80px;
-  margin-bottom: 50px;
+  /* margin-bottom: 50px;
   margin-top: -60px;
-  text-shadow: 15px 15px 10px rgba(0, 0, 0, 0.7);
+  text-shadow: 15px 15px 10px rgba(0, 0, 0, 0.7); */
   @media screen and (max-width: 600px) {
     font-size: 35px;
     height: 50px;
