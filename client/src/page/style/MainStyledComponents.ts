@@ -19,10 +19,18 @@ export const MainBack = styled.div`
 
 export const MainPostBack = styled.div`
   height: 100%;
-  width: 80%;
+  width: 90%;
 
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 2rem;
+  @media screen and (max-width: 800px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media screen and (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+  /* grid-template-columns: repeat(3, 1fr);
   grid-gap: 2rem;
   justify-items: center;
   @media screen and (max-width: 600px) {
@@ -31,13 +39,20 @@ export const MainPostBack = styled.div`
     justify-content: center;
     align-items: center;
   }
+  @media screen and (max-width: 1500px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  @media screen and (max-width: 2000px) {
+    grid-template-columns: repeat(5, 1fr);
+  } */
 `;
 
 export const MainPostSort = styled.div``;
 export const MainPost = styled.div`
-  height: 350px;
-  width: 300px;
+  height: 400px;
+
   z-index: 0px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
   background-color: ${({ theme }) => theme.mode.background2};
   box-shadow: 0px 0px 1px 1px ${({ theme }) => theme.mode.borderBox};
   border-radius: 20px;
@@ -57,12 +72,9 @@ export const MainPost = styled.div`
   }
   @media screen and (max-width: 1170px) {
     height: 270px;
-    width: 210px;
   }
   @media screen and (max-width: 600px) {
     height: 400px;
-    width: 90%;
-    min-width: 250px;
   }
 `;
 

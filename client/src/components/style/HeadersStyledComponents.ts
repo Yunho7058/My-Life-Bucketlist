@@ -47,6 +47,10 @@ export const LogoTitle = styled.div`
   > img {
     width: 150px;
     height: 100px;
+    @media screen and (max-width: 600px) {
+      width: 100px;
+      height: 80px;
+    }
   }
 `;
 
@@ -152,15 +156,24 @@ export const ProfileImg = styled.img`
 `;
 
 export const SearchBack = styled.div`
-  width: 20%;
   height: 40px;
+  width: 20%;
   /* border: 1px solid #696969; */
   border-radius: 10px;
   display: flex;
   flex-direction: row;
+  position: relative;
+  > svg {
+    position: absolute;
+    right: 8px;
+    top: 6px;
+  }
+  @media screen and (max-width: 600px) {
+    width: 150px;
+  }
 `;
 export const SearchSelect = styled.div`
-  width: 20%;
+  width: 25%;
   opacity: 0.6;
   text-align: center;
   line-height: 40px;
@@ -168,20 +181,12 @@ export const SearchSelect = styled.div`
   font-size: 12px;
 `;
 export const SearchInput = styled.input`
-  width: 70%;
+  width: 100%;
   font-size: 16px;
-
-  //border: 1px solid #696969;
   border: 1px solid #696969;
-  //border-left: 1px solid #696969;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-
-  /* border-bottom: none;
-  border-top: none; */
+  border-radius: 15px;
   padding-left: 10px;
   padding-right: 10px;
-
   background-color: ${({ theme }) => theme.mode.BGInput};
   color: ${({ theme }) => theme.mode.FCInput};
   outline: none;
