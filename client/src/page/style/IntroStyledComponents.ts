@@ -5,31 +5,30 @@ export const Back = styled.div`
 `;
 
 export const FirstIntro = styled.div`
-  background-color: #3f3e3e;
-
+  background-color: rgba(0, 0, 0, 0.5);
   width: 100vw;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  > img {
+  /* > img {
     top: 0px;
     position: absolute;
     width: 100vw;
     height: 100vh;
     opacity: 1;
     z-index: 10;
-  }
+  } */
 `;
 export const TextBox = styled.div`
   width: 50%;
   height: 50%;
   padding: 15px;
   z-index: 100;
-  /* display: grid; */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  row-gap: 25px;
 `;
 
 export const SecondIntro = styled.div`
@@ -83,13 +82,15 @@ export const StartBtn = styled.div`
   height: 50px;
   line-height: 50px;
   text-align: center;
-  border: 1px solid;
+  background-color: white;
+  color: black;
+  border: 1px solid rgba(0, 0, 0, 0.7);
   border-radius: 15px;
   z-index: 10;
   margin-top: 15px;
   cursor: pointer;
   &:hover {
-    background-color: #3f3e3e;
+    transform: scale(1.05);
   }
   &.last {
     width: 80%;
