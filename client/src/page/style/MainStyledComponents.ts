@@ -30,6 +30,9 @@ export const MainPostBack = styled.div`
   @media screen and (max-width: 600px) {
     grid-template-columns: 1fr;
   }
+  @media screen and (min-width: 1700px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
   /* grid-template-columns: repeat(3, 1fr);
   grid-gap: 2rem;
   justify-items: center;
