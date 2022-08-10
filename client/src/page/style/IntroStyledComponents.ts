@@ -3,6 +3,16 @@ import styled from 'styled-components';
 export const Back = styled.div`
   color: white;
 `;
+export const BackImg = styled.img`
+  height: 100vh;
+  width: 100%;
+  position: absolute;
+  right: 0px;
+  opacity: 0.7;
+  @media screen and (max-width: 600px) {
+    width: 0%;
+  }
+`;
 
 export const FirstIntro = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
@@ -11,14 +21,6 @@ export const FirstIntro = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  /* > img {
-    top: 0px;
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    opacity: 1;
-    z-index: 10;
-  } */
 `;
 export const TextBox = styled.div`
   width: 50%;
@@ -31,33 +33,9 @@ export const TextBox = styled.div`
   row-gap: 25px;
 `;
 
-export const SecondIntro = styled.div`
-  width: 100%;
-  height: 80vh;
-  background-color: white;
-  @media screen and (max-width: 600px) {
-    height: 60vh;
-    display: flex;
-  }
-`;
-
-export const TreeIntro = styled.div`
-  width: 100%;
-  height: 80vh;
-  background-color: white;
-
-  @media screen and (max-width: 600px) {
-    height: 60vh;
-    display: flex;
-  }
-`;
-
 export const TextLogo = styled.div`
   z-index: 999;
   font-size: 80px;
-  /* margin-bottom: 50px;
-  margin-top: -60px;
-  text-shadow: 15px 15px 10px rgba(0, 0, 0, 0.7); */
   @media screen and (max-width: 600px) {
     font-size: 35px;
     height: 50px;
@@ -84,7 +62,7 @@ export const StartBtn = styled.div`
   text-align: center;
   background-color: white;
   color: black;
-  border: 1px solid rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 15px;
   z-index: 10;
   margin-top: 15px;
@@ -92,60 +70,9 @@ export const StartBtn = styled.div`
   &:hover {
     transform: scale(1.05);
   }
-  &.last {
-    width: 80%;
-    height: 80px;
-    line-height: 80px;
-    background-color: #3f3e3e;
-    font-size: 20px;
-    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
-  }
+
   @media screen and (max-width: 600px) {
     width: 160px;
     height: 50px;
-  }
-`;
-export const GifBox = styled.div`
-  display: flex;
-
-  justify-content: center;
-  align-items: center;
-  > img {
-    width: 65%;
-    height: 500px;
-    border-radius: 5px;
-  }
-  @media screen and (max-width: 600px) {
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    &.Tree {
-      flex-direction: column-reverse;
-    }
-    > img {
-      width: 80%;
-      height: 300px;
-      border-radius: 5px;
-    }
-  }
-`;
-
-export const FourIntro = styled.div`
-  width: 100%;
-  height: 30vh;
-  position: relative;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  > img {
-    top: 0px;
-    position: absolute;
-    width: 100%;
-    height: 50vh;
-    opacity: 1;
-    z-index: 1;
   }
 `;
