@@ -1,5 +1,5 @@
 //library
-import styled, { ThemeProvider } from 'styled-components';
+import { ThemeProvider } from 'styled-components';
 import { Reset } from 'styled-reset';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
@@ -11,6 +11,7 @@ import ScrollToTop from './utils/scrollTopFix';
 
 import { light, dark } from './components/style/theme';
 import Spinner from './utils/spinner';
+import { Backgound } from './Backgound';
 
 let Intro = lazy(() => import('./page/Intro'));
 let Main = lazy(() => import('./page/Main'));
@@ -33,7 +34,6 @@ function App() {
         <BrowserRouter>
           <ScrollToTop />
           <Reset />
-
           <Backgound>
             <Suspense fallback={<Spinner />}>
               <Routes>
@@ -54,12 +54,5 @@ function App() {
     </>
   );
 }
-
-const Backgound = styled.div`
-  background-color: ${({ theme }) => theme.mode.mainBackground};
-  color: ${({ theme }) => theme.mode.primaryText};
-  font-family: 'IBM Plex Sans KR', sans-serif;
-  transition: 500ms;
-`;
 
 export default App;
