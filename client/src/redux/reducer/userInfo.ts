@@ -1,7 +1,7 @@
 import {
   GET_USER_INFO,
   USER_INFO_NICKNAME_EDIT,
-  USER_INFO_POTO,
+  USER_INFO_PHOTO,
 } from '../action/index';
 
 const initialization = {};
@@ -17,9 +17,9 @@ const userInfo = (state = initialization, action: any) => {
       let copy_nickname = { ...state, nickname: action.payload };
       return copy_nickname;
 
-    case USER_INFO_POTO:
-      let copy_poto = { ...state, image_path: action.payload };
-      return copy_poto;
+    case USER_INFO_PHOTO:
+      let copy_photo = { ...state, image_path: action.payload };
+      return copy_photo;
 
     default:
       return state;

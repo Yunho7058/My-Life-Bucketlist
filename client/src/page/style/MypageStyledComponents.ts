@@ -241,7 +241,7 @@ export const ImgInput = styled.input`
   cursor: pointer;
   display: none;
 `;
-export const PostPoto = styled.img`
+export const PostPhoto = styled.img`
   width: 100px;
   height: 100px;
   border-radius: 15px;

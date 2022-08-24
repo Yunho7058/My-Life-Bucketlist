@@ -6,7 +6,7 @@ import { useRef, useState } from 'react';
 import { TypeRootReducer } from '../../redux/store/store';
 import * as PS from '../style/PostStyledComponents';
 import Spinner from '../../utils/spinner';
-import PotoArea from './PotoArea';
+import PhotoArea from './PhotoArea';
 interface TypeProps {
   isPost: {
     isEditMode: boolean;
@@ -59,10 +59,10 @@ const DetailMode = ({
     (state: TypeRootReducer) => state.postReducer
   );
 
-  const potoInput = useRef<HTMLInputElement>(null);
-  const handlePotoInput = () => {
-    if (potoInput.current) {
-      potoInput.current.click();
+  const photoInput = useRef<HTMLInputElement>(null);
+  const handlePhotoInput = () => {
+    if (photoInput.current) {
+      photoInput.current.click();
     }
   };
 
@@ -84,10 +84,10 @@ const DetailMode = ({
                 <>
                   <div>
                     {!spinnerImg && (
-                      <PotoArea
+                      <PhotoArea
                         img={el.image_path || null}
                         bucketlistId={el.id}
-                      ></PotoArea>
+                      ></PhotoArea>
                     )}
 
                     <PS.BucketlistContent>
@@ -137,7 +137,7 @@ const DetailMode = ({
                       /^bucketlist/.test(el.image_path) ? (
                         <Spinner type="img"></Spinner>
                       ) : (
-                        <PS.PostPoto src={el.image_path}></PS.PostPoto>
+                        <PS.PostPhoto src={el.image_path}></PS.PostPhoto>
                       )
                     ) : (
                       <PS.BucketlistImg>사진을 선택해주세요.</PS.BucketlistImg>
@@ -163,10 +163,10 @@ const DetailMode = ({
         <>
           <PS.BucketlistView>
             <div>
-              <PotoArea
+              <PhotoArea
                 img=""
                 bucketlistId={statePost.bucketlist.length}
-              ></PotoArea>
+              ></PhotoArea>
 
               <PS.BucketlistContent>
                 <PS.InputBox

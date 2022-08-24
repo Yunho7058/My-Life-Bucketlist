@@ -9,7 +9,7 @@ import {
   commentDelete,
   commentEdit,
   commentNewContentAdd,
-  commentProfilePotoDownload,
+  commentProfilePhotoDownload,
   modalOpen,
 } from '../redux/action';
 import axios from 'axios';
@@ -73,7 +73,7 @@ const Comment = () => {
             .get(res.data.data, { responseType: 'blob' })
             .then((res) => {
               let url = window.URL.createObjectURL(new Blob([res.data]));
-              dispatch(commentProfilePotoDownload(id, url));
+              dispatch(commentProfilePhotoDownload(id, url));
             })
             .catch((err) => console.log(err));
         })
@@ -81,7 +81,7 @@ const Comment = () => {
           console.log(err, 's3 err');
         });
     } else {
-      dispatch(commentProfilePotoDownload(id, ''));
+      dispatch(commentProfilePhotoDownload(id, ''));
     }
   };
 

@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
-  isS3PotoDownload,
-  isSelectPoto,
+  isS3PhotoDownload,
+  isSelectPhoto,
   postBlobType,
   postBucketlistImgUpload,
   presignPostUpload,
@@ -12,15 +12,15 @@ import {
 import { TypeRootReducer } from '../../redux/store/store';
 import axiosInstance from '../../utils/axios';
 
-const PotoArea = ({
+const PhotoArea = ({
   img,
   bucketlistId,
 }: {
   img: string | null;
   bucketlistId: number;
 }) => {
-  const stateS3Poto = useSelector((state: TypeRootReducer) => state.s3Poto);
-  const [propsPoto, setPropsPoto] = useState(img);
+  const stateS3Photo = useSelector((state: TypeRootReducer) => state.s3Photo);
+  const [propsPhoto, setPropsPhoto] = useState(img);
   const [file, setFile] = useState<FileList | undefined>();
   const [fileName, setFileName] = useState('');
   const [presignedPost, setPresignedPost] = useState<TypePresignedPost>();
@@ -43,7 +43,7 @@ const PotoArea = ({
     if (e.target.files !== null && e.target.files.length > 0) {
       const fileList = e.target.files;
       setFile(fileList);
-      setPropsPoto(URL.createObjectURL(fileList[0]));
+      setPropsPhoto(URL.createObjectURL(fileList[0]));
       setFileName(fileList[0].name);
     }
   };
@@ -55,10 +55,10 @@ const PotoArea = ({
         .then((res) => {
           setPresignedPost(res.data);
           dispatch(presignPostUpload(res.data.fields.key));
-          dispatch(postBlobType(propsPoto));
+          dispatch(postBlobType(propsPhoto));
         })
         .catch((err) => {
-          console.log('poto err');
+          console.log('photo err');
         });
     }
   }, [fileName]);
@@ -66,7 +66,7 @@ const PotoArea = ({
   //상위 컴포넌트에서 생성/수정 버튼 클릭시 실행 (formdata로 변경 후 s3전송)
 
   useEffect(() => {
-    if (stateS3Poto.isPotoDownload && stateS3Poto.presignPost) {
+    if (stateS3Photo.isPhotoDownload && stateS3Photo.presignPost) {
       const formData = new FormData();
       if (presignedPost && file) {
         Object.entries(presignedPost.fields).forEach((entry) => {
@@ -79,9 +79,9 @@ const PotoArea = ({
             headers: { 'Content-Type': 'multipart/form-data' },
           })
           .then((res) => {
-            dispatch(isS3PotoDownload(false));
-            if (propsPoto) {
-              dispatch(postBucketlistImgUpload(bucketlistId, propsPoto));
+            dispatch(isS3PhotoDownload(false));
+            if (propsPhoto) {
+              dispatch(postBucketlistImgUpload(bucketlistId, propsPhoto));
             }
 
             //s3에 저장을 끝냈으면 아까받은 resignedPost key를 다시 서버에 전송
@@ -92,59 +92,59 @@ const PotoArea = ({
           });
       }
     }
-  }, [stateS3Poto.isPotoDownload]);
+  }, [stateS3Photo.isPhotoDownload]);
 
-  const potoInput = useRef<HTMLInputElement>(null);
-  const handlePotoInput = () => {
-    if (potoInput.current) {
-      potoInput.current.click();
+  const photoInput = useRef<HTMLInputElement>(null);
+  const handlePhotoInput = () => {
+    if (photoInput.current) {
+      photoInput.current.click();
     }
   };
   const handleImgDelete = () => {
-    setPropsPoto(null);
+    setPropsPhoto(null);
     dispatch(presignPostUpload(''));
-    dispatch(isSelectPoto());
+    dispatch(isSelectPhoto());
   };
   return (
-    <PotoBack>
-      {propsPoto ? (
-        <PotoZone
+    <PhotoBack>
+      {propsPhoto ? (
+        <PhotoZone
           alt="sample"
-          src={propsPoto}
-          onClick={() => handlePotoInput()}
+          src={propsPhoto}
+          onClick={() => handlePhotoInput()}
         />
       ) : (
-        <BinPotoZone onClick={() => handlePotoInput()}>
+        <BinPhotoZone onClick={() => handlePhotoInput()}>
           사진을 선택해주세요.
-        </BinPotoZone>
+        </BinPhotoZone>
       )}
-      <DeletePoto
+      <DeletePhoto
         onClick={() => {
           handleImgDelete();
         }}
       >
         삭제
-      </DeletePoto>
-      <PotoInput
+      </DeletePhoto>
+      <PhotoInput
         type="file"
         accept="image/*"
         name="file"
         onChange={onLoadFile}
-        ref={potoInput}
-      ></PotoInput>
-    </PotoBack>
+        ref={photoInput}
+      ></PhotoInput>
+    </PhotoBack>
   );
 };
 
-export default PotoArea;
+export default PhotoArea;
 
-export const PotoBack = styled.div`
+export const PhotoBack = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
-export const PotoZone = styled.img`
+export const PhotoZone = styled.img`
   width: 100%;
   height: 150px;
   padding: 0px;
@@ -155,7 +155,7 @@ export const PotoZone = styled.img`
   }
 `;
 
-export const BinPotoZone = styled.div`
+export const BinPhotoZone = styled.div`
   border: 1px solid;
   text-align: center;
   line-height: 150px;
@@ -172,7 +172,7 @@ export const BinPotoZone = styled.div`
   }
 `;
 
-export const DeletePoto = styled.div`
+export const DeletePhoto = styled.div`
   width: 150px;
   height: 30px;
   border-radius: 20px;
@@ -195,6 +195,6 @@ export const DeletePoto = styled.div`
   }
 `;
 
-export const PotoInput = styled.input`
+export const PhotoInput = styled.input`
   display: none;
 `;

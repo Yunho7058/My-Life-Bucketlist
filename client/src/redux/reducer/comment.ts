@@ -3,7 +3,7 @@ import {
   COMMENT_CONTENT_DELETE,
   COMMENT_CONTENT_EDIT,
   COMMENT_NEW_CONTENT_ADD,
-  COMMENT_PROFILE_POTO_DOWNLOAD,
+  COMMENT_PROFILE_PHOTO_DOWNLOAD,
 } from '../action';
 import TypeRedux from './typeRedux';
 
@@ -13,7 +13,7 @@ const commentAll = (state: TypeRedux.TypeComment[] = [], action: any) => {
       let commentAll = action.payload;
 
       return commentAll;
-    case COMMENT_PROFILE_POTO_DOWNLOAD:
+    case COMMENT_PROFILE_PHOTO_DOWNLOAD:
       let { id, url } = action.payload;
 
       let copy = state.map((el) => {

@@ -7,7 +7,7 @@ import postReducer from './postEach';
 import modal from './modal';
 import isDarkeMode from './isDarkMode';
 import userInfo from './userInfo';
-import s3Poto from './s3Poto';
+import s3Photo from './s3Photo';
 import commentAll from './comment';
 import boolean from './boolean';
 
@@ -18,7 +18,7 @@ const rootReducer = combineReducers({
   modal,
   isDarkeMode,
   userInfo,
-  s3Poto,
+  s3Photo,
   commentAll,
   boolean,
 });

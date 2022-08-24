@@ -68,8 +68,8 @@ namespace TypeRedux {
 
   export interface TypeS3Reducer {
     presignPost: string;
-    isPotoDownload: boolean;
-    potoBlob: string;
+    isPhotoDownload: boolean;
+    photoBlob: string;
   }
   export interface TypeComment {
     content: string;

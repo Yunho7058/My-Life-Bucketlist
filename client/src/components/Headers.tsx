@@ -12,7 +12,7 @@ import {
   isLogin,
   isLogout,
   postAll,
-  postAllpotoDownload,
+  postAllphotoDownload,
 } from '../redux/action';
 
 import { FaUserCircle } from 'react-icons/fa';
@@ -22,8 +22,8 @@ import Toggle from './toggle';
 import Spinner from '../utils/spinner';
 import TypeRedux from '../redux/reducer/typeRedux';
 import axios from 'axios';
-import logoBlack from '../assets/poto/logo_black.png';
-import logoWhite from '../assets/poto/logo_white.png';
+import logoBlack from '../assets/photo/logo_black.png';
+import logoWhite from '../assets/photo/logo_white.png';
 
 const Headers = function ({
   search,
@@ -112,7 +112,7 @@ const Headers = function ({
             .get(res.data.data, { responseType: 'blob' })
             .then((res) => {
               let url = window.URL.createObjectURL(new Blob([res.data]));
-              dispatch(postAllpotoDownload(id, url));
+              dispatch(postAllphotoDownload(id, url));
             })
             .catch((err) => console.log(err));
         })
@@ -120,7 +120,7 @@ const Headers = function ({
           console.log(err, 's3 err');
         });
     } else {
-      dispatch(postAllpotoDownload(id, null));
+      dispatch(postAllphotoDownload(id, null));
       //dispatch(postImgOrigin('', id));
     }
   };
@@ -173,7 +173,7 @@ const Headers = function ({
                 stateUserInfo.image_path ? (
                   <HS.ProfileImg src={stateUserInfo.image_path} />
                 ) : (
-                  <Spinner type="profilePoto" />
+                  <Spinner type="profilePhoto" />
                 )
               ) : (
                 <FaUserCircle size={40} />

@@ -72,7 +72,7 @@ TypeProps) => {
               {/*상세보기*/}
               <div>
                 {el.image_path ? (
-                  <PS.PostPoto
+                  <PS.PostPhoto
                     alt="sample"
                     src={el.image_path}
                     style={{ margin: 'auto' }}

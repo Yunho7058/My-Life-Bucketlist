@@ -5,7 +5,7 @@ import {
   POST_BUCKETLIST_NEW,
   POST_EACH_LIKE,
   POST_EACH_BOOKMARK,
-  POST_BUCKETLIST_POTO_UPLOAD,
+  POST_BUCKETLIST_PHOTO_UPLOAD,
   POST_IMG_DOWNLOAD,
   POST_IMG_ORIGIN,
 } from '../action/index';
@@ -123,7 +123,7 @@ const postReducer = (
         bucketlist: new_copy,
       };
 
-    case POST_BUCKETLIST_POTO_UPLOAD:
+    case POST_BUCKETLIST_PHOTO_UPLOAD:
       let img_copy = state.bucketlist.map((el) => {
         return el.id === action.payload.id
           ? { ...el, image_path: action.payload.image_path }
