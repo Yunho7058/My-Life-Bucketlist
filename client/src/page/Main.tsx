@@ -7,13 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import Headers from '../components/Headers';
 import { TypeRootReducer } from '../redux/store/store';
 import TypeRedux from '../redux/reducer/typeRedux';
-import { postAll, postAllAdd, postAllpotoDownload } from '../redux/action';
+import { postAll, postAllAdd, postAllphotoDownload } from '../redux/action';
 import { useEffect, useRef, useState } from 'react';
 import Spinner from '../utils/spinner';
 import axiosInstance from '../utils/axios';
-import finger1 from '../assets/poto/손1.png';
-import finger2 from '../assets/poto/손2.png';
-import finger3 from '../assets/poto/손3.png';
+import finger1 from '../assets/photo/손1.png';
+import finger2 from '../assets/photo/손2.png';
+import finger3 from '../assets/photo/손3.png';
 import * as MS from './style/MainStyledComponents';
 
 function Main() {
@@ -60,7 +60,7 @@ function Main() {
             .get(res.data.data, { responseType: 'blob' })
             .then((res) => {
               let url = window.URL.createObjectURL(new Blob([res.data]));
-              dispatch(postAllpotoDownload(id, url));
+              dispatch(postAllphotoDownload(id, url));
             })
             .catch((err) => console.log(err));
         })
@@ -68,7 +68,7 @@ function Main() {
           console.log(err, 's3 err');
         });
     } else {
-      dispatch(postAllpotoDownload(id, null));
+      dispatch(postAllphotoDownload(id, null));
       //dispatch(postImgOrigin('', id));
     }
   };

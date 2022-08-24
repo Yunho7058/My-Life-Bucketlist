@@ -21,10 +21,10 @@ import {
   postBucketlistImgUpload,
   postImgDownload,
   postImgOrigin,
-  isS3PotoDownload,
+  isS3PhotoDownload,
   postBlobType,
   presignPostUpload,
-  isNotSelectPoto,
+  isNotSelectPhoto,
 } from '../redux/action';
 import Modal from '../components/Modal';
 import * as PS from './style/PostStyledComponents';
@@ -49,7 +49,7 @@ function Post() {
   const stateIsLogin = useSelector(
     (state: TypeRootReducer) => state.isLoginReducer
   );
-  const stateS3 = useSelector((state: TypeRootReducer) => state.s3Poto);
+  const stateS3 = useSelector((state: TypeRootReducer) => state.s3Photo);
   const stateBoolean = useSelector((state: TypeRootReducer) => state.boolean);
   const [isPost, setIsPost] = useState({
     isEditMode: false,
@@ -146,9 +146,9 @@ function Post() {
     let data = statePost.bucketlist.filter((el) => el.id === id);
 
     if (stateS3.presignPost) {
-      dispatch(isS3PotoDownload(true));
+      dispatch(isS3PhotoDownload(true));
       data[0].image_path = stateS3.presignPost;
-    } else if (stateBoolean.isPoto) {
+    } else if (stateBoolean.isPhoto) {
       //선택한 사진이 없음
 
       //사진이 없는 경우와 원래 있었던 경우
@@ -161,8 +161,8 @@ function Post() {
       .then((res) => {
         dispatch(modalOpen('수정이 완료되었습니다.'));
         setBucketlistSelect(0);
-        dispatch(isNotSelectPoto());
-        dispatch(isS3PotoDownload(false));
+        dispatch(isNotSelectPhoto());
+        dispatch(isS3PhotoDownload(false));
       })
       .catch((err) => {
         console.log(err, 'bucketlist edit err');
@@ -201,7 +201,7 @@ function Post() {
       dispatch(modalOpen('버킷리스트를 작성해주세요.'));
     } else {
       if (stateS3.presignPost) {
-        dispatch(isS3PotoDownload(true));
+        dispatch(isS3PhotoDownload(true));
       }
 
       axiosInstance
@@ -215,7 +215,7 @@ function Post() {
               res.data.id,
               newBucketlist.content,
               newBucketlist.detail,
-              stateS3.potoBlob
+              stateS3.photoBlob
             )
           );
           dispatch(modalOpen('생성되었습니다.'));
@@ -225,7 +225,7 @@ function Post() {
             detail: '',
             image_path: '',
           });
-          dispatch(isS3PotoDownload(false));
+          dispatch(isS3PhotoDownload(false));
           setBucketlistSelect(0);
           dispatch(postBlobType(''));
         })
@@ -290,7 +290,7 @@ function Post() {
 
   const handleBucketlistSelect = (id: number) => {
     dispatch(presignPostUpload(''));
-    dispatch(isNotSelectPoto());
+    dispatch(isNotSelectPhoto());
     if (!isPost.isCreate) {
       if (bucketlistSelect === id) {
         setBucketlistSelect(0);

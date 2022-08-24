@@ -14,34 +14,34 @@ export const POST_BUCKETLIST_EDIT = 'POST_BUCKETLIST_EDIT';
 export const POST_BUCKETLIST_DELETE = 'POST_BUCKETLIST_DELETE';
 export const POST_BUCKETLIST_NEW = 'POST_BUCKETLIST_NEW';
 export const GET_USER_INFO = 'GET_USER_INFO';
-export const POST_BUCKETLIST_POTO_UPLOAD = 'POST_BUCKETLIST_POTO_UPLOAD';
+export const POST_BUCKETLIST_PHOTO_UPLOAD = 'POST_BUCKETLIST_PHOTO_UPLOAD';
 //export const POST_TEST = 'POST_TEST';
 export const POST_IMG_DOWNLOAD = 'POST_IMG_DOWNLOAD';
 export const POST_IMG_ORIGIN = 'POST_IMG_ORIGIN';
 export const POST_ALL_ADD = 'POST_ALL_ADD';
-export const POST_POTO_PRESIGNPOST = 'POST_POTO_PRESIGNPOST';
-export const POST_POTO_S3_DOWNLOAD = 'POST_POTO_S3_DOWNLOAD';
-export const POST_POTO_BLOB = 'POST_POTO_BLOB';
-export const POST_ALL_POTO_S3_DOWNLOAD = 'POST_ALL_POTO_S3_DOWNLOAD';
+export const POST_PHOTO_PRESIGNPOST = 'POST_PHOTO_PRESIGNPOST';
+export const POST_PHOTO_S3_DOWNLOAD = 'POST_PHOTO_S3_DOWNLOAD';
+export const POST_PHOTO_BLOB = 'POST_PHOTO_BLOB';
+export const POST_ALL_PHOTO_S3_DOWNLOAD = 'POST_ALL_PHOTO_S3_DOWNLOAD';
 export const COMMENT_ALL_ADD = 'COMMENT_ALL_ADD';
-export const COMMENT_PROFILE_POTO_DOWNLOAD = 'COMMENT_PROFILE_POTO_DOWNLOAD';
+export const COMMENT_PROFILE_PHOTO_DOWNLOAD = 'COMMENT_PROFILE_PHOTO_DOWNLOAD';
 export const COMMENT_NEW_CONTENT_ADD = 'COMMENT_NEW_CONTENT_ADD';
 export const COMMENT_CONTENT_EDIT = 'COMMENT_CONTENT_EDIT';
 export const COMMENT_CONTENT_DELETE = 'COMMENT_CONTENT_DELETE';
 export const USER_INFO_NICKNAME_EDIT = 'USER_INFO_NICKNAME_EDIT';
-export const USER_INFO_POTO = 'USER_INFO_POTO';
-export const IS_SELECT_BUCKETLIST_POTO = 'IS_SELECT_BUCKETLIST_POTO';
-export const IS_NOT_SELECT_BUCKETLIST_POTO = 'IS_NOT_SELECT_BUCKETLIST_POTO';
+export const USER_INFO_PHOTO = 'USER_INFO_PHOTO';
+export const IS_SELECT_BUCKETLIST_PHOTO = 'IS_SELECT_BUCKETLIST_PHOTO';
+export const IS_NOT_SELECT_BUCKETLIST_PHOTO = 'IS_NOT_SELECT_BUCKETLIST_PHOTO';
 
-export const isNotSelectPoto = () => {
+export const isNotSelectPhoto = () => {
   return {
-    type: IS_NOT_SELECT_BUCKETLIST_POTO,
+    type: IS_NOT_SELECT_BUCKETLIST_PHOTO,
   };
 };
 
-export const isSelectPoto = () => {
+export const isSelectPhoto = () => {
   return {
-    type: IS_SELECT_BUCKETLIST_POTO,
+    type: IS_SELECT_BUCKETLIST_PHOTO,
   };
 };
 
@@ -65,9 +65,9 @@ export const commentNewContentAdd = (comment: TypeRedux.TypeComment) => {
   };
 };
 
-export const commentProfilePotoDownload = (id: number, url: string) => {
+export const commentProfilePhotoDownload = (id: number, url: string) => {
   return {
-    type: COMMENT_PROFILE_POTO_DOWNLOAD,
+    type: COMMENT_PROFILE_PHOTO_DOWNLOAD,
     payload: {
       id,
       url,
@@ -82,9 +82,9 @@ export const commentAllAdd = (comment: TypeRedux.TypeComment[]) => {
   };
 };
 
-export const postAllpotoDownload = (id: number, url: string | null) => {
+export const postAllphotoDownload = (id: number, url: string | null) => {
   return {
-    type: POST_ALL_POTO_S3_DOWNLOAD,
+    type: POST_ALL_PHOTO_S3_DOWNLOAD,
     payload: {
       id,
       url,
@@ -94,21 +94,21 @@ export const postAllpotoDownload = (id: number, url: string | null) => {
 
 export const postBlobType = (blob: string | null) => {
   return {
-    type: POST_POTO_BLOB,
+    type: POST_PHOTO_BLOB,
     payload: blob,
   };
 };
 
-export const isS3PotoDownload = (boolean: boolean) => {
+export const isS3PhotoDownload = (boolean: boolean) => {
   return {
-    type: POST_POTO_S3_DOWNLOAD,
+    type: POST_PHOTO_S3_DOWNLOAD,
     payload: boolean,
   };
 };
 
 export const presignPostUpload = (presignPost: string) => {
   return {
-    type: POST_POTO_PRESIGNPOST,
+    type: POST_PHOTO_PRESIGNPOST,
     payload: presignPost,
   };
 };
@@ -191,7 +191,7 @@ export const postEachBookMark = () => {
 
 export const postBucketlistImgUpload = (id: number, img: string | null) => {
   return {
-    type: POST_BUCKETLIST_POTO_UPLOAD,
+    type: POST_BUCKETLIST_PHOTO_UPLOAD,
     payload: { id: id, image_path: img },
   };
 };
@@ -359,9 +359,9 @@ export const userNicknameEdit = (nickname: string) => {
   };
 };
 
-export const userPotoEdit = (poto: string) => {
+export const userPhotoEdit = (photo: string) => {
   return {
-    type: USER_INFO_POTO,
-    payload: poto,
+    type: USER_INFO_PHOTO,
+    payload: photo,
   };
 };

@@ -2,7 +2,7 @@ import axios from 'axios';
 import {
   POST_ALL,
   POST_ALL_ADD,
-  POST_ALL_POTO_S3_DOWNLOAD,
+  POST_ALL_PHOTO_S3_DOWNLOAD,
 } from '../action/index';
 import TypeRedux from './typeRedux';
 
@@ -24,7 +24,7 @@ const postsAllReducer = (
         return state.concat(allDataAdd);
       }
 
-    case POST_ALL_POTO_S3_DOWNLOAD:
+    case POST_ALL_PHOTO_S3_DOWNLOAD:
       let copy_allPost = state;
 
       const allDataS3 = copy_allPost.map((el) => {

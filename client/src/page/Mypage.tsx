@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import axiosInstance from '../utils/axios';
 import Headers from '../components/Headers';
 import Modal from '../components/Modal';
-import { modalOpen, userNicknameEdit, userPotoEdit } from '../redux/action';
+import { modalOpen, userNicknameEdit, userPhotoEdit } from '../redux/action';
 import { BiBook } from 'react-icons/bi';
 import { BsBucketFill } from 'react-icons/bs';
 import { TypeRootReducer } from '../redux/store/store';
@@ -104,10 +104,10 @@ const Mypage = () => {
     }
     dispatch(modalOpen('signout'));
   };
-  const potoInput = useRef<HTMLInputElement>(null);
-  const handlePotoInput = () => {
-    if (potoInput.current) {
-      potoInput.current.click();
+  const photoInput = useRef<HTMLInputElement>(null);
+  const handlePhotoInput = () => {
+    if (photoInput.current) {
+      photoInput.current.click();
     }
   };
 
@@ -132,7 +132,7 @@ const Mypage = () => {
       const fileList = e.target.files; //선택한 사진 파일
       let imgUrl = URL.createObjectURL(fileList[0]); //미리보기를 위한 파일 변경
 
-      dispatch(userPotoEdit(imgUrl));
+      dispatch(userPhotoEdit(imgUrl));
       setFile(fileList);
       setFileName(fileList[0].name); //선택한 사진 파일 이름
     }
@@ -146,7 +146,7 @@ const Mypage = () => {
         setPresignedPost(res.data); // server로 부터 받은 s3 key값과 url
       })
       .catch((err) => {
-        console.log('poto err');
+        console.log('photo err');
       });
   }, [fileName]);
 
@@ -236,15 +236,15 @@ const Mypage = () => {
                 </MS.DivLine>
                 <MS.DivLine>
                   {stateUserInfo.image_path ? (
-                    <MS.PostPoto
+                    <MS.PostPhoto
                       alt="sample"
                       src={stateUserInfo.image_path}
-                      onClick={() => handlePotoInput()}
+                      onClick={() => handlePhotoInput()}
                     />
                   ) : (
                     <FaUserCircle
                       size={40}
-                      onClick={() => handlePotoInput()}
+                      onClick={() => handlePhotoInput()}
                     ></FaUserCircle>
                   )}
                 </MS.DivLine>
@@ -252,7 +252,7 @@ const Mypage = () => {
                   type="file"
                   accept="image/*"
                   name="file"
-                  ref={potoInput}
+                  ref={photoInput}
                   onChange={onLoadFile}
                 />
 

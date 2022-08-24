@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 
 import * as IS from './style/IntroStyledComponents';
-import backImg from '../assets/poto/back.png';
+import backImg from '../assets/photo/back.png';
 
 const IntroPage = () => {
   const navigate = useNavigate();

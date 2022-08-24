@@ -346,7 +346,7 @@ export const LoginInput = styled.input`
   }
 `;
 
-export const PostPoto = styled.img`
+export const PostPhoto = styled.img`
   min-width: 200px;
   height: 150px;
   padding: 0px;

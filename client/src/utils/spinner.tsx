@@ -13,7 +13,7 @@ const Back = styled.div`
     height: 200px;
     border-radius: 15px;
   }
-  &.profilePoto {
+  &.profilePhoto {
     width: 40px;
     height: 40px;
     border-radius: 20px;
@@ -32,7 +32,7 @@ const SpinnerMain = styled.div`
   border-top-color: transparent;
   border-left-color: transparent;
   animation: ${Rotate} 0.7s infinite linear;
-  &.profilePoto {
+  &.profilePhoto {
     width: 25px;
     height: 25px;
   }
@@ -45,9 +45,9 @@ const Spinner = (type: { type?: string }) => {
         <Back className="img">
           <SpinnerMain></SpinnerMain>
         </Back>
-      ) : type.type === 'profilePoto' ? (
-        <Back className="profilePoto">
-          <SpinnerMain className="profilePoto"></SpinnerMain>
+      ) : type.type === 'profilePhoto' ? (
+        <Back className="profilePhoto">
+          <SpinnerMain className="profilePhoto"></SpinnerMain>
         </Back>
       ) : (
         <Back>

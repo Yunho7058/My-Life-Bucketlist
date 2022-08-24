@@ -1,32 +1,32 @@
 import {
-  POST_POTO_BLOB,
-  POST_POTO_PRESIGNPOST,
-  POST_POTO_S3_DOWNLOAD,
+  POST_PHOTO_BLOB,
+  POST_PHOTO_PRESIGNPOST,
+  POST_PHOTO_S3_DOWNLOAD,
 } from '../action';
 import TypeRedux from './typeRedux';
 
 const initialization = {
   presignPost: '',
-  isPotoDownload: false,
-  potoBlob: '',
+  isPhotoDownload: false,
+  photoBlob: '',
 };
 
-const s3Poto = (
+const s3Photo = (
   state: TypeRedux.TypeS3Reducer = initialization,
   action: any
 ) => {
   switch (action.type) {
-    case POST_POTO_BLOB:
+    case POST_PHOTO_BLOB:
       let copy_blob = action.payload;
-      return { ...state, potoBlob: copy_blob };
-    case POST_POTO_PRESIGNPOST:
+      return { ...state, photoBlob: copy_blob };
+    case POST_PHOTO_PRESIGNPOST:
       let copy = action.payload;
       return { ...state, presignPost: copy };
-    case POST_POTO_S3_DOWNLOAD:
-      return { ...state, isPotoDownload: action.payload };
+    case POST_PHOTO_S3_DOWNLOAD:
+      return { ...state, isPhotoDownload: action.payload };
     default:
       return state;
   }
 };
 
-export default s3Poto;
+export default s3Photo;
