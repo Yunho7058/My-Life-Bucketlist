@@ -10,5 +10,41 @@
 ## 배포 서버
 https://mylifebucketlist.shop/ 
 
+
+) {
+  const stateDarkMode = useSelector(
+    (state: TypeRootReducer) => state.isDarkeMode
+  );
+  const theme = stateDarkMode === 'light' ? { mode: light } : { mode: dark };
+  return (
+    <>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <ScrollToTop />
+          <Reset />
+          <Backgound>
+            <Suspense fallback={<Spinner />}>
+              <Routes>
+                <Route path="/" element={<Intro />} />
+                <Route path="/main" element={<Main />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/post/:id" element={<Post />} />
+                <Route path="/mypage" element={<Mypage />} />
+                <Route path="/oauth/naver" element={<Naver />} />
+                <Route path="/oauth/kakao" element={<Kakao />} />
+                <Route path="/oauth/google" element={<Google />} />
+              </Routes>
+            </Suspense>
+          </Backgound>
+        </BrowserRouter>
+      </ThemeProvider>
+    </>
+  );
+}
+
+
+
+
 ## Notion
 https://lilac-taurus-c4b.notion.site/MLB-e800b37bbfca47ddb050920e1c1dea3a
